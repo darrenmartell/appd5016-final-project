@@ -45,3 +45,9 @@ This frontend integrates with a backend API. The API endpoints are defined in th
 ## Additional Notes
 
 - For authentication and protected routes, see `src/context/AuthContext.jsx` and `src/routes/ProtectedRoute.jsx`.
+
+## Blazor Migration
+
+- Migration prompts live in `.github/prompts/`.
+- Migration planning and gate documentation live in `docs/blazor-migration/`.
+- The existing solution already expects the Blazor project at `blazor-migration/BlazorMigration.csproj`.

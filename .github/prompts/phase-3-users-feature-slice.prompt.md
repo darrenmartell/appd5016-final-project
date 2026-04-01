@@ -1,38 +1,49 @@
 # Phase 3 Copilot Prompt: Users Feature Slice
 
-You are implementing the users vertical slice in Blazor for a React migration.
+You are executing Phase 3 of this repo's migration from React + Vite to ASP.NET Blazor.
 
-## Goal
-Deliver parity for users list, details, and delete workflows.
+## Scope
+Deliver the users slice in Blazor with parity for list, details, and delete.
+
+## React Source Of Truth
+- `src/pages/Users.jsx`
+- `src/components/users/UserTable.jsx`
+- `src/components/users/UserDetails.jsx`
+- `src/components/users/DeleteUser.jsx`
+- `src/routes/AppRoutes.jsx`
 
 ## Tasks
-1. Build users API client methods for:
-   - get users list
-   - get user details
-   - delete user
-2. Build users UI:
-   - users table/list page
-   - user details page
-   - delete confirmation flow
-3. Implement loading, empty, and error states.
-4. Preserve current route patterns and navigation behavior.
-5. Ensure actions requiring auth use bearer token.
-6. Add minimal componentization for reuse and maintainability.
+1. Implement the users data service around the current `/users` API usage.
+2. Recreate the users list page, details page, and delete flow.
+3. Preserve the current route patterns:
+   - `/admin/users`
+   - `/admin/users/{id}/details`
+   - `/admin/users/{id}/delete`
+4. Preserve the current logged-in-user delete protection, or document and approve a correction if the React behavior is unsafe or inconsistent.
+5. Add loading, empty, and error states.
+6. Ensure any protected action sends the bearer token.
+7. Update the validation evidence in `docs/blazor-migration/phase-gates.md`.
+8. Update `docs/blazor-migration/migration-backlog.md` with any remaining parity gaps.
 
 ## Constraints
-- Match current API contracts and route behavior.
-- Keep UI parity functional before visual polish.
-- Avoid introducing unrelated architecture changes.
+- Do not redesign the feature beyond what is needed for parity.
+- Avoid hidden behavior changes to delete authorization or route semantics.
+- Keep the implementation reviewable and feature-local.
 
-## Deliverables
-1. Users feature pages/components.
-2. Users API service methods.
-3. Verified behavior checklist for users workflows.
-4. Brief notes on any parity gaps.
+## Gate 3 Checklist
+1. Users list renders from the API.
+2. User details renders for the selected user.
+3. Delete flow works or clearly blocks in the same cases as the current app.
+4. Loading, empty, and error states are present.
+5. Protected calls send the bearer token.
+6. Users parity notes are documented.
 
-## Output Format
-Return:
-1. What was implemented
-2. Files changed
-3. Validation against parity checklist
-4. Remaining gaps
+## Required Output Contract
+Return exactly:
+1. Phase Summary
+2. Work Completed
+3. Validation Evidence
+4. Gate Checklist
+5. Gate Decision (PASS/FAIL)
+6. Deferred Items
+7. Next Action
