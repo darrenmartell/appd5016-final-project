@@ -2,6 +2,26 @@
 
 This document freezes the current React behavior that the Blazor migration must either preserve or explicitly correct with documentation.
 
+## In-Scope Parity Checklist
+
+Use this checklist as the baseline for later phase validation.
+
+| Flow | Baseline Expectation | Status |
+| --- | --- | --- |
+| Login | Valid email and password submit to `/auth/login`, auth context is populated, and navigation returns to the previous route. | Baseline captured |
+| Register | Required name fields, valid email, matching passwords, auth context populated from response, and navigation goes to `/admin/home`. | Baseline captured |
+| Logout | Navbar logout clears token and user from React context only. | Baseline captured |
+| Dashboard access | `/admin/home` is reachable through the admin shell and uses the shared series dataset plus navbar search term. | Baseline captured |
+| Users list | `/admin/users` fetches `/users` and renders a table of users. | Baseline captured |
+| User details | `/admin/users/:id/details` reads the selected record from the cached users list. | Baseline captured |
+| User delete | `/admin/users/:id/delete` requires auth, blocks deletion of the logged-in user, and issues `DELETE /users/:id`. | Baseline captured |
+| Series list | `/admin/series` renders list and add button from the shared series dataset. | Baseline captured |
+| Series details | `/admin/series/:id/details` reads the selected record from the cached series list. | Baseline captured |
+| Series add | `/admin/series/add` requires auth and submits the transformed series payload to `POST /series`. | Baseline captured |
+| Series update | `/admin/series/:id/update` requires auth, hydrates existing values, and submits the transformed series payload to `PUT /series/:id`. | Baseline captured |
+| Series delete | `/admin/series/:id/delete` requires auth and issues `DELETE /series/:id`. | Baseline captured |
+| Change password | `/changepassword` is publicly routed, depends on auth context at runtime, and sends a raw JSON string to `/auth/${user._id}/changepassword`. | Baseline captured |
+
 ## Route And Auth Matrix
 
 | Route | Current React Owner | Access | Notes |
@@ -119,6 +139,13 @@ This document freezes the current React behavior that the Blazor migration must 
 6. `test-api-server/routes.json` and the visible sample data do not match the app's current domain model, so mock-server usage must be revalidated.
 7. The Blazor project referenced by the solution is currently missing.
 
+## Unresolved Assumptions
+
+1. The backend may intentionally return different token property names between login and register, but that has not been confirmed.
+2. The change-password flow may currently be broken because the UI reads `user._id` after storing `user.id`.
+3. The mock API folder may be a stale teaching artifact rather than a usable parity test harness for this app.
+4. The current public accessibility of several `/admin/*` routes may be deliberate for assignment scope or may be an accidental security gap.
+
 ## Migration Success Criteria
 
 Phase gates should measure the migration against these expectations:
@@ -127,4 +154,7 @@ Phase gates should measure the migration against these expectations:
 2. Auth flows behave the same or are corrected intentionally with a recorded reason.
 3. Users and series payloads match the documented current behavior unless a contract correction is approved.
 4. The migrated app has user-visible loading, empty, validation, and error states for the main flows.
-5. Cutover only happens after the parity checklist passes and rollback steps exist.
+5. Phase 1 must recreate `blazor-migration/BlazorMigration.csproj` and restore solution validity.
+6. Phase 2 must explicitly resolve or document the token-name and change-password contract inconsistencies.
+7. Phase 3 and Phase 4 must verify the users and series parity checklist items individually.
+8. Cutover only happens after the parity checklist passes and rollback steps exist.
