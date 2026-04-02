@@ -1,6 +1,9 @@
 # Assignment - Frontend UI Implementation
 
-This project now uses a Blazor Web App frontend only.
+This project now uses:
+
+- Blazor Web App frontend
+- ASP.NET API backend
 
 ## Tech Stack
 
@@ -11,14 +14,18 @@ This project now uses a Blazor Web App frontend only.
 
 ```bash
 dotnet build appd5016-final-project.sln
-dotnet run --project src/BlazorMigration.csproj
+dotnet run --project src/apps/api-aspnet/Appd.Api.csproj
+dotnet run --project src/apps/frontend-blazor/BlazorMigration.csproj
 ```
 
-Open: `http://localhost:5204`
+Open:
+
+- Frontend: http://localhost:5204
+- API: http://localhost:5130
 
 ## API Configuration
 
 Set API base URL in:
 
-- `src/appsettings.json`
-- `src/appsettings.Development.json`
+- src/apps/frontend-blazor/appsettings.json
+- src/apps/frontend-blazor/appsettings.Development.json
