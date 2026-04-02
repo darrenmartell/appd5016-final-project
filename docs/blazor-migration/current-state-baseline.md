@@ -183,6 +183,29 @@ These notes record the auth-related corrections or intentional preservations mad
 - Blazor behavior: login, register, and change password surface user-visible error messages for failed responses and connection failures.
 - Reason: the Phase 2 gate requires visible auth error states.
 
+## Phase 4 Series Migration Notes
+
+These notes record the series-slice corrections or intentional preservations made in the Blazor migration.
+
+### Dashboard Search Behavior
+
+- Old React behavior: the dashboard filtered the shared series dataset using a broad combined-string search driven by the navbar search term.
+- Blazor behavior: the dashboard now reads live series data and applies the same broad field search strategy against the navbar search term through shared Blazor state.
+- Reason: Phase 4 restored the dashboard dependency on series data and navbar search behavior.
+
+### Series Submit Payload Mapping
+
+- Old React behavior: the series form flattened tag inputs to `string[]`, converted `runtime_minutes` and `released_year` with `Number(...)`, converted blank rating fields to `null`, and renumbered episodes sequentially on submit.
+- Live backend validation result: the deployed write endpoints reject `0` values for `runtime_minutes` and `released_year`, and they also reject missing or null rating values on write even though some stored series data contains null ratings.
+- Blazor behavior: the form mapper still explicitly flattens tag inputs and renumbers episodes sequentially, but the form now validates runtime, released year, and all rating fields as required positive values before submit.
+- Reason: this is a documented contract correction needed to make create and update succeed against the deployed backend.
+
+### Series Error Presentation
+
+- Old React behavior: the series form relied mainly on mutation errors and minimal field validation.
+- Blazor behavior: the dashboard, list, details, add, update, and delete pages all surface user-visible loading, empty, validation, not-found, and API error states.
+- Reason: the Phase 4 gate requires visible failure states across the full series slice.
+
 ## Migration Success Criteria
 
 Phase gates should measure the migration against these expectations:

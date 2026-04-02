@@ -107,7 +107,22 @@ Use this file to record the result of each migration phase.
   - list/details/add/update/delete verified
   - payload parity verified
   - validation and submission error handling verified
-- Gate result: Not started
+- Validation evidence:
+  - `dotnet build blazor-migration/BlazorMigration.csproj` succeeded after the Phase 4 series slice implementation before the runtime validation pass began.
+  - Runtime checks against `http://localhost:5204/admin/home`, `http://localhost:5204/admin/series`, `http://localhost:5204/admin/series/test-id/details`, `http://localhost:5204/admin/series/add`, `http://localhost:5204/admin/series/test-id/update`, and `http://localhost:5204/admin/series/test-id/delete` all returned `200` and rendered the redirect-to-login content when unauthenticated.
+  - The Blazor dashboard now reads live series data and applies navbar-driven search filtering with the same broad field search strategy as the React dashboard.
+  - The Blazor series slice now includes real list, details, add, update, and delete pages backed by `ISeriesService` and `SeriesEditor`.
+  - The form mapping remains explicit through `SeriesFormMapper`, including sequential episode renumbering on submit.
+  - Live backend validation against `https://assignment2-restapi-darrenmartell-h.vercel.app` successfully exercised `POST /series`, `PUT /series/:id`, and `DELETE /series/:id` with a disposable authenticated user and a fully populated payload.
+  - Live backend validation confirmed that `DELETE /series/:id` returns `401` without a bearer token and succeeds with a valid bearer token.
+  - The series pages surface user-visible loading, empty, validation, and API error states.
+  - A write-contract correction was required: the deployed backend rejects React-style blank-to-`0` values for `runtime_minutes` and `released_year`, and also rejects missing or null rating values on write. The Blazor form now validates those fields as required for successful create and update requests. This correction is documented in the backlog.
+- Gate result: PASS
+- Decision date: 2026-04-02
+- Remaining open items:
+  - BLZ-007
+  - BLZ-010
+  - BLZ-011
 
 ## Phase 5
 

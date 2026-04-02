@@ -1,0 +1,48 @@
+@page "/admin/series/add"
+@layout AdminLayout
+@inject ISeriesService SeriesService
+@inject NavigationManager Navigation
+
+<PageTitle>Add Series</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="page-shell panel-shell">
+            <SeriesEditor FormModel="_formModel"
+                          Heading="Add Series"
+                          SubmitLabel="Add Series"
+                          IsSubmitting="_isSubmitting"
+                          ErrorMessage="_errorMessage"
+                          OnSubmit="HandleSubmitAsync" />
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private readonly SeriesFormInput _formModel = new();
+    private bool _isSubmitting;
+    private string? _errorMessage;
+
+    private async Task HandleSubmitAsync(SeriesUpsertRequest request)
+    {
+        _isSubmitting = true;
+        _errorMessage = null;
+
+        try
+        {
+            await SeriesService.CreateSeriesAsync(request);
+            Navigation.NavigateTo("/admin/series", replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

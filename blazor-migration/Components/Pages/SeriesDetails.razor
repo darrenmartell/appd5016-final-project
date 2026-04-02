@@ -1,0 +1,229 @@
+@page "/admin/series/{Id}/details"
+@layout AdminLayout
+@inject ISeriesService SeriesService
+@inject NavigationManager Navigation
+
+<PageTitle>Series Details</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="page-shell panel-shell">
+            <span class="eyebrow">Phase 4 series slice</span>
+            <h1>Series Details</h1>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="status-error">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="status-info">Loading series details...</div>
+            }
+            else if (_seriesItem is null)
+            {
+                <div class="status-info">Series not found.</div>
+            }
+            else
+            {
+                <div class="series-details-shell">
+                    <section class="series-detail-header">
+                        <h2>@(string.IsNullOrWhiteSpace(_seriesItem.Title) ? "Untitled Series" : _seriesItem.Title)</h2>
+                        <div class="series-dashboard-meta">
+                            @if (_seriesItem.ReleasedYear is not null)
+                            {
+                                <span>@_seriesItem.ReleasedYear</span>
+                            }
+                            @if (_seriesItem.RuntimeMinutes is not null)
+                            {
+                                <span>@_seriesItem.RuntimeMinutes min per episode</span>
+                            }
+                        </div>
+
+                        @if (_seriesItem.Genres.Count > 0)
+                        {
+                            <div class="series-chip-list">
+                                @foreach (var genre in _seriesItem.Genres)
+                                {
+                                    <span class="series-chip genre-chip">@genre</span>
+                                }
+                            </div>
+                        }
+                    </section>
+
+                    @if (!string.IsNullOrWhiteSpace(_seriesItem.PlotSummary))
+                    {
+                        <section class="series-plot-panel">@_seriesItem.PlotSummary</section>
+                    }
+
+                    <section class="series-metadata-grid">
+                        <div>
+                            @RenderTagSection("Cast", _seriesItem.Cast)
+                            @RenderTagSection("Directors", _seriesItem.Directors)
+                            @RenderTagSection("Producers", _seriesItem.Producers)
+                        </div>
+
+                        <div>
+                            @if (HasVisibleRatings(_seriesItem.Ratings))
+                            {
+                                <div class="series-section-block">
+                                    <div class="series-section-title">Ratings</div>
+                                    <div class="dashboard-ratings-row">
+                                        @if (_seriesItem.Ratings.Imdb is not null)
+                                        {
+                                            <div class="dashboard-rating-tile"><span>IMDb</span><strong>@_seriesItem.Ratings.Imdb</strong></div>
+                                        }
+                                        @if (_seriesItem.Ratings.RottenTomatoes is not null)
+                                        {
+                                            <div class="dashboard-rating-tile"><span>Rotten Tomatoes</span><strong>@_seriesItem.Ratings.RottenTomatoes</strong></div>
+                                        }
+                                        @if (_seriesItem.Ratings.Metacritic is not null)
+                                        {
+                                            <div class="dashboard-rating-tile"><span>Metacritic</span><strong>@_seriesItem.Ratings.Metacritic</strong></div>
+                                        }
+                                        @if (_seriesItem.Ratings.UserAverage is not null)
+                                        {
+                                            <div class="dashboard-rating-tile"><span>User Average</span><strong>@_seriesItem.Ratings.UserAverage</strong></div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="series-section-block">
+                                <div class="series-section-title">Production</div>
+                                @RenderDetailLine("Companies", _seriesItem.ProductionCompanies)
+                                @RenderDetailLine("Countries", _seriesItem.Countries)
+                                @RenderDetailLine("Languages", _seriesItem.Languages)
+                            </div>
+                        </div>
+                    </section>
+
+                    @if (_seriesItem.Episodes.Count > 0)
+                    {
+                        <section class="series-section-block">
+                            <div class="series-section-title">Episodes (@_seriesItem.Episodes.Count)</div>
+                            <div class="users-table-wrap">
+                                <table class="users-table series-episodes-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Title</th>
+                                            <th>Runtime</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var episode in _seriesItem.Episodes.OrderBy(episode => episode.EpisodeNumber))
+                                        {
+                                            <tr>
+                                                <td>@episode.EpisodeNumber</td>
+                                                <td>@episode.EpisodeTitle</td>
+                                                <td>@episode.RuntimeMinutes min</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    }
+                </div>
+            }
+
+            <div class="form-actions">
+                <button type="button" class="button-secondary" @onclick="GoBack">Back to Series List</button>
+            </div>
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    private SeriesRecord? _seriesItem;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var series = await SeriesService.GetSeriesAsync();
+            _seriesItem = series.FirstOrDefault(item => item.Id == Id);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/admin/series");
+    }
+
+    private static bool HasVisibleRatings(SeriesRatings ratings)
+    {
+        return ratings.Imdb is not null
+            || ratings.RottenTomatoes is not null
+            || ratings.Metacritic is not null
+            || ratings.UserAverage is not null;
+    }
+
+    private RenderFragment RenderTagSection(string label, IReadOnlyList<string> items) => builder =>
+    {
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        var sequence = 0;
+        builder.OpenElement(sequence++, "div");
+        builder.AddAttribute(sequence++, "class", "series-section-block");
+        builder.OpenElement(sequence++, "div");
+        builder.AddAttribute(sequence++, "class", "series-section-title");
+        builder.AddContent(sequence++, label);
+        builder.CloseElement();
+        builder.OpenElement(sequence++, "div");
+        builder.AddAttribute(sequence++, "class", "series-chip-list");
+
+        foreach (var item in items)
+        {
+            builder.OpenElement(sequence++, "span");
+            builder.AddAttribute(sequence++, "class", "series-chip neutral-chip");
+            builder.AddContent(sequence++, item);
+            builder.CloseElement();
+        }
+
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment RenderDetailLine(string label, IReadOnlyList<string> values) => builder =>
+    {
+        if (values.Count == 0)
+        {
+            return;
+        }
+
+        var sequence = 0;
+        builder.OpenElement(sequence++, "div");
+        builder.AddAttribute(sequence++, "class", "series-detail-line");
+        builder.OpenElement(sequence++, "span");
+        builder.AddAttribute(sequence++, "class", "detail-label");
+        builder.AddContent(sequence++, label);
+        builder.CloseElement();
+        builder.OpenElement(sequence++, "span");
+        builder.AddContent(sequence++, string.Join(", ", values));
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+}

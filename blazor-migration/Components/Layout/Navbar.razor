@@ -1,5 +1,6 @@
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@inject SeriesSearchState SeriesSearchState
 
 <header class="topbar">
     <div class="brand-lockup">
@@ -17,8 +18,9 @@
                 {
                     <input class="search-input"
                            type="text"
-                           placeholder="Search arrives in Phase 4"
-                           disabled />
+                           placeholder="Search series"
+                           value="@SeriesSearchState.SearchTerm"
+                           @oninput="HandleSearchInput" />
                 }
 
                 <div class="account-links">
@@ -44,7 +46,13 @@
     private async Task HandleLogoutAsync()
     {
         await AuthService.LogoutAsync();
+        SeriesSearchState.SetSearchTerm(string.Empty);
         Navigation.NavigateTo("/login", replace: true);
+    }
+
+    private void HandleSearchInput(ChangeEventArgs args)
+    {
+        SeriesSearchState.SetSearchTerm(args.Value?.ToString());
     }
 
     private static string GetDisplayName(ClaimsPrincipal user)
