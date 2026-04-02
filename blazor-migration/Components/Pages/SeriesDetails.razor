@@ -8,7 +8,7 @@
 <AuthorizeView>
     <Authorized>
         <section class="max-w-5xl mx-auto px-6 py-6 my-6">
-            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Series</span>
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-[0.18em]">Series</span>
             <h1 class="text-4xl font-bold text-white mb-6">Series Details</h1>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
@@ -27,9 +27,9 @@
             {
                 <div class="space-y-6">
                     <!-- Series Header -->
-                    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+                    <div class="border border-[#333] rounded-lg bg-[#222] p-6">
                         <h2 class="text-2xl font-bold text-white mb-2">@(string.IsNullOrWhiteSpace(_seriesItem.Title) ? "Untitled Series" : _seriesItem.Title)</h2>
-                        <div class="flex gap-4 text-text-2 mb-4">
+                        <div class="flex gap-4 text-[#888] mb-4">
                             @if (_seriesItem.ReleasedYear is not null)
                             {
                                 <span>@_seriesItem.ReleasedYear</span>
@@ -45,7 +45,7 @@
                             <div class="flex flex-wrap gap-2">
                                 @foreach (var genre in _seriesItem.Genres)
                                 {
-                                    <span class="px-2 py-1 bg-accent/20 border border-accent text-accent text-xs font-semibold rounded">@genre</span>
+                                    <span class="px-2 py-1 bg-[#e50914] text-white text-xs font-semibold rounded-full">@genre</span>
                                 }
                             </div>
                         }
@@ -53,8 +53,8 @@
 
                     @if (!string.IsNullOrWhiteSpace(_seriesItem.PlotSummary))
                     {
-                        <div class="border border-primary rounded-lg bg-surface-2 p-6">
-                            <p class="text-text-1">@_seriesItem.PlotSummary</p>
+                        <div class="border border-[#333] rounded-lg bg-[#222] p-6">
+                            <p class="text-[#b3b3b3]">@_seriesItem.PlotSummary</p>
                         </div>
                     }
 
@@ -69,31 +69,31 @@
                         <div>
                             @if (HasVisibleRatings(_seriesItem.Ratings))
                             {
-                                <div class="border border-primary rounded-lg bg-surface-2 p-4 mb-4">
+                                <div class="border border-[#333] rounded-lg bg-[#222] p-4 mb-4">
                                     <div class="font-bold text-white mb-3">Ratings</div>
                                     <div class="grid grid-cols-2 gap-3">
                                         @if (_seriesItem.Ratings.Imdb is not null)
                                         {
-                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">IMDb</span><br><strong class="text-white">@_seriesItem.Ratings.Imdb</strong></div>
+                                            <div class="p-2 bg-[#2a2a2d] border border-[#333] rounded text-center"><span class="text-[#888] text-xs">IMDb</span><br><strong class="text-[#f5c518]">@_seriesItem.Ratings.Imdb</strong></div>
                                         }
                                         @if (_seriesItem.Ratings.RottenTomatoes is not null)
                                         {
-                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">Rotten Tomatoes</span><br><strong class="text-white">@_seriesItem.Ratings.RottenTomatoes</strong></div>
+                                            <div class="p-2 bg-[#2a2a2d] border border-[#333] rounded text-center"><span class="text-[#888] text-xs">Rotten Tomatoes</span><br><strong class="text-[#fa320a]">@_seriesItem.Ratings.RottenTomatoes</strong></div>
                                         }
                                         @if (_seriesItem.Ratings.Metacritic is not null)
                                         {
-                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">Metacritic</span><br><strong class="text-white">@_seriesItem.Ratings.Metacritic</strong></div>
+                                            <div class="p-2 bg-[#2a2a2d] border border-[#333] rounded text-center"><span class="text-[#888] text-xs">Metacritic</span><br><strong class="text-[#ffcc34]">@_seriesItem.Ratings.Metacritic</strong></div>
                                         }
                                         @if (_seriesItem.Ratings.UserAverage is not null)
                                         {
-                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">User Average</span><br><strong class="text-white">@_seriesItem.Ratings.UserAverage</strong></div>
+                                            <div class="p-2 bg-[#2a2a2d] border border-[#333] rounded text-center"><span class="text-[#888] text-xs">User Average</span><br><strong class="text-white">@_seriesItem.Ratings.UserAverage</strong></div>
                                         }
                                     </div>
                                 </div>
                             }
 
-                            <div class="border border-primary rounded-lg bg-surface-2 p-4">
-                                <div class=\"font-bold text-white mb-3\">Production</div>
+                            <div class="border border-[#333] rounded-lg bg-[#222] p-4">
+                                <div class="font-bold text-white mb-3">Production</div>
                                 @RenderDetailLine("Companies", _seriesItem.ProductionCompanies)
                                 @RenderDetailLine("Countries", _seriesItem.Countries)
                                 @RenderDetailLine("Languages", _seriesItem.Languages)
@@ -103,24 +103,24 @@
 
                     @if (_seriesItem.Episodes.Count > 0)
                     {
-                        <div class="border border-primary rounded-lg bg-surface-2 p-4">
-                            <div class="font-bold text-white mb-4\">Episodes (@_seriesItem.Episodes.Count)</div>
+                        <div class="border border-[#333] rounded-lg bg-[#222] p-4">
+                            <div class="font-bold text-white mb-4">Episodes (@_seriesItem.Episodes.Count)</div>
                             <div class="overflow-x-auto">
-                                <table class="w-full border-collapse\">
+                                <table class="w-full border-collapse">
                                     <thead>
-                                        <tr class="border-b border-primary">
-                                            <th class="text-left p-3 text-text-1 font-semibold\">#</th>
-                                            <th class="text-left p-3 text-text-1 font-semibold\">Title</th>
-                                            <th class="text-left p-3 text-text-1 font-semibold\">Runtime</th>
+                                        <tr class="border-b border-[#333]">
+                                            <th class="text-left p-3 text-[#d0d0d2] font-semibold">#</th>
+                                            <th class="text-left p-3 text-[#d0d0d2] font-semibold">Title</th>
+                                            <th class="text-left p-3 text-[#d0d0d2] font-semibold">Runtime</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var episode in _seriesItem.Episodes.OrderBy(episode => episode.EpisodeNumber))
                                         {
-                                            <tr class="border-b border-primary hover:bg-surface-3\">
-                                                <td class="p-3 text-text-1\">@episode.EpisodeNumber</td>
-                                                <td class="p-3 text-text-1\">@episode.EpisodeTitle</td>
-                                                <td class="p-3 text-text-1\">@episode.RuntimeMinutes min</td>
+                                            <tr class="border-b border-[#333] hover:bg-[#2a2a2d]">
+                                                <td class="p-3 text-[#d0d0d2]">@episode.EpisodeNumber</td>
+                                                <td class="p-3 text-[#d0d0d2]">@episode.EpisodeTitle</td>
+                                                <td class="p-3 text-[#d0d0d2]">@episode.RuntimeMinutes min</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -132,7 +132,7 @@
             }
 
             <div class="flex gap-4 mt-6">
-                <button type="button" class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="GoBack">Back to Series List</button>
+                <button type="button" class="px-6 py-2 bg-[#232327] text-[#d0d0d2] border border-[#333] font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="GoBack">Back to Series List</button>
             </div>
         </section>
     </Authorized>
@@ -191,18 +191,18 @@
 
         var sequence = 0;
         builder.OpenElement(sequence++, "div");
-        builder.AddAttribute(sequence++, "class", "series-section-block");
+        builder.AddAttribute(sequence++, "class", "border border-[#333] rounded-lg bg-[#222] p-4 mb-4");
         builder.OpenElement(sequence++, "div");
-        builder.AddAttribute(sequence++, "class", "series-section-title");
+        builder.AddAttribute(sequence++, "class", "font-bold text-white mb-3");
         builder.AddContent(sequence++, label);
         builder.CloseElement();
         builder.OpenElement(sequence++, "div");
-        builder.AddAttribute(sequence++, "class", "series-chip-list");
+        builder.AddAttribute(sequence++, "class", "flex flex-wrap gap-2");
 
         foreach (var item in items)
         {
             builder.OpenElement(sequence++, "span");
-            builder.AddAttribute(sequence++, "class", "series-chip neutral-chip");
+            builder.AddAttribute(sequence++, "class", "px-2 py-1 bg-[#2a2a2d] border border-[#333] text-[#d0d0d2] text-xs font-semibold rounded-full");
             builder.AddContent(sequence++, item);
             builder.CloseElement();
         }
@@ -220,12 +220,13 @@
 
         var sequence = 0;
         builder.OpenElement(sequence++, "div");
-        builder.AddAttribute(sequence++, "class", "series-detail-line");
+        builder.AddAttribute(sequence++, "class", "flex justify-between items-start gap-3 py-2 border-b border-[#333] text-sm");
         builder.OpenElement(sequence++, "span");
-        builder.AddAttribute(sequence++, "class", "detail-label");
+        builder.AddAttribute(sequence++, "class", "text-[#a0a0a5] font-semibold");
         builder.AddContent(sequence++, label);
         builder.CloseElement();
         builder.OpenElement(sequence++, "span");
+        builder.AddAttribute(sequence++, "class", "text-[#d0d0d2] text-right");
         builder.AddContent(sequence++, string.Join(", ", values));
         builder.CloseElement();
         builder.CloseElement();

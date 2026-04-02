@@ -10,30 +10,29 @@
 <AuthorizeView>
 	<Authorized>
 		<section class="max-w-5xl mx-auto px-6 py-6 my-6">
-			<span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Dashboard</span>
-			<h1 class="text-4xl font-bold text-white mb-6">Dashboard</h1>
+			<h1 class="text-2xl py-4 font-bold text-white">Dashboard</h1>
 
 			@if (!string.IsNullOrWhiteSpace(_errorMessage))
 			{
-				<div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
+				<p class="text-[#ff6b6b]">@_errorMessage</p>
 			}
 			else if (_isLoading)
 			{
-				<div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading series...</div>
+				<p class="text-[#b3b3b3]">Loading series...</p>
 			}
 			else if (FilteredSeries.Count == 0)
 			{
-				<div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">No series found.</div>
+				<p class="text-[#b3b3b3]">No series found.</p>
 			}
 			else
 			{
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 					@foreach (var item in FilteredSeries)
 					{
-					<button type="button" class="border border-primary rounded-lg bg-surface-2 p-4 cursor-pointer hover:shadow-lg hover:border-accent transition-all text-left" @onclick="() => OpenDetails(item.Id)">
-						<div class="mb-2">
-							<h2 class="text-lg font-bold text-white mb-1">@(string.IsNullOrWhiteSpace(item.Title) ? "Untitled" : item.Title)</h2>
-							<div class="flex gap-4 text-text-2 text-sm">
+					<button type="button" class="h-full w-full flex flex-col justify-start border border-[#333] rounded-lg overflow-hidden bg-[#222] cursor-pointer hover:border-[#e50914] hover:shadow-[0_4px_16px_rgba(229,9,20,0.15)] transition-all text-left align-top" @onclick="() => OpenDetails(item.Id)">
+						<div class="px-5 pt-4 pb-3 border-b border-[#333]">
+							<h2 class="text-[18px] font-bold text-white leading-[1.3] mb-0">@(string.IsNullOrWhiteSpace(item.Title) ? "Untitled" : item.Title)</h2>
+							<div class="flex gap-3 mt-1.5 text-[#888] text-[13px]">
 									@if (item.ReleasedYear is not null)
 									{
 										<span>@item.ReleasedYear</span>
@@ -51,44 +50,44 @@
 
 							@if (item.Genres.Count > 0)
 							{
-								<div class="series-chip-list">
+								<div class="px-5 pt-2.5 flex flex-wrap gap-1">
 									@foreach (var genre in item.Genres)
 									{
-										<span class="series-chip genre-chip">@genre</span>
+										<span class="py-[2px] px-[10px] bg-[#e50914] text-white text-[11px] font-semibold rounded-[12px]">@genre</span>
 									}
 								</div>
 							}
 
 							@if (!string.IsNullOrWhiteSpace(item.PlotSummary))
 							{
-								<p class="series-dashboard-summary">@item.PlotSummary</p>
+								<div class="px-5 py-2 text-[#b3b3b3] text-sm leading-relaxed whitespace-pre-line">@item.PlotSummary</div>
 							}
 
 							@if (HasVisibleRatings(item.Ratings))
 							{
-								<div class="dashboard-ratings-row">
+								<div class="px-5 pt-2 pb-4 flex flex-wrap gap-3">
 									@if (item.Ratings.Imdb is not null)
 									{
-										<div class="dashboard-rating-tile"><span>IMDb</span><strong>@item.Ratings.Imdb</strong></div>
+										<div class="text-center"><div class="text-[10px] uppercase tracking-[0.05em] text-[#888]">IMDb</div><div class="text-base font-bold text-[#f5c518]">@item.Ratings.Imdb</div></div>
 									}
 									@if (item.Ratings.RottenTomatoes is not null)
 									{
-										<div class="dashboard-rating-tile"><span>RT</span><strong>@item.Ratings.RottenTomatoes</strong></div>
+										<div class="text-center"><div class="text-[10px] uppercase tracking-[0.05em] text-[#888]">RT</div><div class="text-base font-bold text-[#fa320a]">@item.Ratings.RottenTomatoes</div></div>
 									}
 									@if (item.Ratings.Metacritic is not null)
 									{
-										<div class="dashboard-rating-tile"><span>MC</span><strong>@item.Ratings.Metacritic</strong></div>
+										<div class="text-center"><div class="text-[10px] uppercase tracking-[0.05em] text-[#888]">MC</div><div class="text-base font-bold text-[#ffcc34]">@item.Ratings.Metacritic</div></div>
 									}
 									@if (item.Ratings.UserAverage is not null)
 									{
-										<div class="dashboard-rating-tile"><span>Users</span><strong>@item.Ratings.UserAverage</strong></div>
+										<div class="text-center"><div class="text-[10px] uppercase tracking-[0.05em] text-[#888]">Users</div><div class="text-base font-bold text-white">@item.Ratings.UserAverage</div></div>
 									}
 								</div>
 							}
 
 							@if (item.Cast.Count > 0)
 							{
-								<div class="series-cast-preview">
+								<div class="px-5 pb-4 text-[#666] text-xs">
 									@string.Join(", ", item.Cast.Take(3))@(item.Cast.Count > 3 ? $" +{item.Cast.Count - 3} more" : string.Empty)
 								</div>
 							}

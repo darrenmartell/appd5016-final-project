@@ -7,7 +7,7 @@
 <AuthorizeView>
     <Authorized>
         <section class="max-w-5xl mx-auto px-6 py-6 my-6">
-            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Users</span>
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Users</span>
             <h1 class="text-4xl font-bold text-white mb-6">User Management</h1>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
@@ -24,29 +24,36 @@
             }
             else
             {
-                <div class="overflow-x-auto border border-primary rounded-lg">
-                    <table class="w-full border-collapse">
+                <div class="bg-zinc-900 rounded-lg shadow-lg p-8 my-8 mx-auto max-w-4xl border border-zinc-800">
+                    <table class="w-full border-separate border-spacing-0">
                         <thead>
-                            <tr>
-                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">First Name</th>
-                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Last Name</th>
-                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Email</th>
-                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Actions</th>
+                            <tr class="bg-zinc-950">
+                                <th class="text-left py-3 px-2 rounded-tl-lg text-zinc-300">First Name</th>
+                                <th class="text-left py-3 px-2 text-zinc-300">Last Name</th>
+                                <th class="text-left py-3 px-2 text-zinc-300">Email</th>
+                                <th class="text-center py-3 px-2 text-zinc-300">Actions</th>
+                                <th class="py-3 px-2 rounded-tr-lg"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var user in _users)
+                            @for (var i = 0; i < _users.Count; i++)
                             {
-                                <tr class="hover:bg-surface-3 transition-colors">
-                                    <td class="p-4 border border-primary text-text-1">@user.FirstName</td>
-                                    <td class="p-4 border border-primary text-text-1">@user.LastName</td>
-                                    <td class="p-4 border border-primary text-text-1">@user.Email</td>
-                                    <td class="p-4 border border-primary text-text-1">
-                                        <div class="flex gap-2">
-                                            <a class="px-3 py-1 bg-[#232327] text-text-1 border border-primary rounded font-semibold text-sm hover:bg-[#2d2d31] transition-colors" href="@($"/admin/users/{user.Id}/details")">Details</a>
-                                            <a class="px-3 py-1 bg-[#232327] text-text-1 border border-primary rounded font-semibold text-sm hover:bg-[#2d2d31] transition-colors" href="@($"/admin/users/{user.Id}/delete")">Delete</a>
+                                var user = _users[i];
+                                <tr class="@(i % 2 == 0 ? "bg-zinc-800" : "bg-zinc-900")">
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-white">@user.FirstName</td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-white">@user.LastName</td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-zinc-300">@user.Email</td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-center">
+                                        <div class="flex justify-center gap-2">
+                                            <a class="mr-2 py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/users/{user.Id}/delete")" title="Delete" aria-label="Delete user">
+                                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                            </a>
+                                            <a class="py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/users/{user.Id}/details")" title="Details" aria-label="View user details">
+                                                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                            </a>
                                         </div>
                                     </td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800"></td>
                                 </tr>
                             }
                         </tbody>

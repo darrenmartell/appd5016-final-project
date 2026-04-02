@@ -11,34 +11,34 @@
     <ValidationSummary class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6 space-y-1" />
 
     <!-- Core Information Section -->
-    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+    <div class="border border-[#333] rounded-lg bg-[#222] p-6">
         <h3 class="text-xl font-bold text-white mb-4">Core Information</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="col-span-1 md:col-span-2">
-                <label class="block text-text-1 font-semibold mb-1" for="series-title">Title *</label>
-                <InputText id="series-title" @bind-Value="FormModel.Title" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="series-title">Title *</label>
+                <InputText id="series-title" @bind-Value="FormModel.Title" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
                 <ValidationMessage For="() => FormModel.Title" class="text-red-400 text-sm mt-1" />
             </div>
 
             <div class="col-span-1 md:col-span-2">
-                <label class="block text-text-1 font-semibold mb-1" for="series-plot">Plot Summary</label>
-                <InputTextArea id="series-plot" @bind-Value="FormModel.PlotSummary" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" rows="4" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="series-plot">Plot Summary</label>
+                <InputTextArea id="series-plot" @bind-Value="FormModel.PlotSummary" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" rows="4" />
             </div>
 
             <div>
-                <label class="block text-text-1 font-semibold mb-1" for="series-runtime">Runtime (minutes)</label>
-                <InputText id="series-runtime" @bind-Value="FormModel.RuntimeMinutes" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="series-runtime">Runtime (minutes)</label>
+                <InputText id="series-runtime" @bind-Value="FormModel.RuntimeMinutes" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
             </div>
 
             <div>
-                <label class="block text-text-1 font-semibold mb-1" for="series-year">Released Year</label>
-                <InputText id="series-year" @bind-Value="FormModel.ReleasedYear" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="series-year">Released Year</label>
+                <InputText id="series-year" @bind-Value="FormModel.ReleasedYear" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
             </div>
         </div>
     </div>
 
     <!-- People Section -->
-    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+    <div class="border border-[#333] rounded-lg bg-[#222] p-6">
         <h3 class="text-xl font-bold text-white mb-4">People</h3>
         <div class="space-y-4">
             @RenderTagEditor("Cast", FormModel.Cast, _castInput, value => _castInput = value, "Actor name")
@@ -48,7 +48,7 @@
     </div>
 
     <!-- Production Section -->
-    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+    <div class="border border-[#333] rounded-lg bg-[#222] p-6">
         <h3 class="text-xl font-bold text-white mb-4">Production</h3>
         <div class="space-y-4">
             @RenderTagEditor("Production Companies", FormModel.ProductionCompanies, _productionCompaniesInput, value => _productionCompaniesInput = value, "Company name")
@@ -59,38 +59,38 @@
     </div>
 
     <!-- Ratings Section -->
-    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+    <div class="border border-[#333] rounded-lg bg-[#222] p-6">
         <h3 class="text-xl font-bold text-white mb-4">Ratings</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <label class="block text-text-1 font-semibold mb-1" for="rating-imdb">IMDb</label>
-                <InputText id="rating-imdb" @bind-Value="FormModel.Ratings.Imdb" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="rating-imdb">IMDb</label>
+                <InputText id="rating-imdb" @bind-Value="FormModel.Ratings.Imdb" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
             </div>
             <div>
-                <label class="block text-text-1 font-semibold mb-1" for="rating-rotten">Rotten Tomatoes</label>
-                <InputText id="rating-rotten" @bind-Value="FormModel.Ratings.RottenTomatoes" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="rating-rotten">Rotten Tomatoes</label>
+                <InputText id="rating-rotten" @bind-Value="FormModel.Ratings.RottenTomatoes" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
             </div>
             <div>
-                <label class="block text-text-1 font-semibold mb-1" for="rating-meta">Metacritic</label>
-                <InputText id="rating-meta" @bind-Value="FormModel.Ratings.Metacritic" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="rating-meta">Metacritic</label>
+                <InputText id="rating-meta" @bind-Value="FormModel.Ratings.Metacritic" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
             </div>
             <div>
-                <label class="block text-text-1 font-semibold mb-1" for="rating-users">User Average</label>
-                <InputText id="rating-users" @bind-Value="FormModel.Ratings.UserAverage" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <label class="block text-[#d0d0d2] font-semibold mb-1" for="rating-users">User Average</label>
+                <InputText id="rating-users" @bind-Value="FormModel.Ratings.UserAverage" class="w-full px-3 py-2 bg-[#27272a] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
             </div>
         </div>
     </div>
 
     <!-- Episodes Section -->
-    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+    <div class="border border-[#333] rounded-lg bg-[#222] p-6">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-white">Episodes</h3>
-            <button type="button" class="px-4 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="AddEpisode">Add Episode</button>
+            <button type="button" class="px-4 py-2 bg-[#27272a] text-[#d0d0d2] border border-[#3f3f46] font-bold rounded hover:bg-[#3f3f46] transition-colors" @onclick="AddEpisode">Add Episode</button>
         </div>
 
         @if (FormModel.Episodes.Count == 0)
         {
-            <p class="text-text-2 italic py-4">No episodes added yet.</p>
+            <p class="text-[#888] italic py-4">No episodes added yet.</p>
         }
         else
         {
@@ -99,21 +99,21 @@
                 {
                     var episode = FormModel.Episodes[index];
 
-                    <div class="border border-primary/50 rounded-lg p-4 bg-surface-3">
+                    <div class="border border-[#3f3f46] rounded-lg p-4 bg-[#27272a]">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
                             <div>
-                                <label class="block text-text-1 font-semibold mb-1 text-sm">Episode #</label>
-                                <input class="w-full px-3 py-2 bg-[#1a1a1c] border border-primary/30 rounded-lg text-white" value="@(index + 1)" readonly />
+                                <label class="block text-[#d0d0d2] font-semibold mb-1 text-sm">Episode #</label>
+                                <input class="w-full px-3 py-2 bg-[#1a1a1c] border border-[#3f3f46] rounded-lg text-white" value="@(index + 1)" readonly />
                             </div>
 
                             <div class="col-span-1 md:col-span-2">
-                                <label class="block text-text-1 font-semibold mb-1 text-sm">Episode Title</label>
-                                <InputText @bind-Value="episode.EpisodeTitle" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                                <label class="block text-[#d0d0d2] font-semibold mb-1 text-sm">Episode Title</label>
+                                <InputText @bind-Value="episode.EpisodeTitle" class="w-full px-3 py-2 bg-[#1f1f21] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
                             </div>
 
                             <div>
-                                <label class="block text-text-1 font-semibold mb-1 text-sm">Minutes</label>
-                                <InputText @bind-Value="episode.RuntimeMinutes" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                                <label class="block text-[#d0d0d2] font-semibold mb-1 text-sm">Minutes</label>
+                                <InputText @bind-Value="episode.RuntimeMinutes" class="w-full px-3 py-2 bg-[#1f1f21] border border-[#3f3f46] rounded-lg focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914] text-white" />
                             </div>
                         </div>
 
@@ -126,8 +126,8 @@
 
     <!-- Form Actions -->
     <div class="flex gap-4">
-        <button type="submit" class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-accent transition-all disabled:opacity-50" disabled="@IsSubmitting">@(IsSubmitting ? "Saving..." : SubmitLabel)</button>
-        <button type="button" class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="HandleCancel">Back</button>
+        <button type="submit" class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-[0_0.8rem_2rem_rgba(229,9,20,0.16)] transition-all disabled:opacity-50" disabled="@IsSubmitting">@(IsSubmitting ? "Saving..." : SubmitLabel)</button>
+        <button type="button" class="px-6 py-2 bg-[#232327] text-[#d0d0d2] border border-[#333] font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="HandleCancel">Back</button>
     </div>
 </EditForm>
 
@@ -208,15 +208,15 @@
     {
         var sequence = 0;
         builder.OpenElement(sequence++, "div");
-        builder.AddAttribute(sequence++, "class", "series-form-field");
+        builder.AddAttribute(sequence++, "class", "space-y-2");
         builder.OpenElement(sequence++, "label");
-        builder.AddAttribute(sequence++, "class", "field-label");
+        builder.AddAttribute(sequence++, "class", "block text-[10px] uppercase tracking-[0.2em] text-[#d0d0d2] font-medium");
         builder.AddContent(sequence++, label);
         builder.CloseElement();
         builder.OpenElement(sequence++, "div");
-        builder.AddAttribute(sequence++, "class", "tag-input-row");
+        builder.AddAttribute(sequence++, "class", "flex gap-2 mb-2");
         builder.OpenElement(sequence++, "input");
-        builder.AddAttribute(sequence++, "class", "field-input");
+        builder.AddAttribute(sequence++, "class", "w-full bg-[#27272a] border border-[#3f3f46] text-white px-3 py-2 text-sm rounded focus:outline-none focus:border-[#e50914] transition-colors placeholder:text-[#888]");
         builder.AddAttribute(sequence++, "value", currentValue);
         builder.AddAttribute(sequence++, "placeholder", placeholder);
         builder.AddAttribute(sequence++, "oninput", EventCallback.Factory.CreateBinder<string>(this, value => setValue(value), currentValue));
@@ -224,7 +224,7 @@
         builder.CloseElement();
         builder.OpenElement(sequence++, "button");
         builder.AddAttribute(sequence++, "type", "button");
-        builder.AddAttribute(sequence++, "class", "button-primary tag-add-button");
+        builder.AddAttribute(sequence++, "class", "px-3 py-2 bg-[#b20710] hover:bg-[#8f050d] text-white text-xs font-bold tracking-widest uppercase rounded transition-colors");
         builder.AddAttribute(sequence++, "onclick", EventCallback.Factory.Create(this, () => AddTag(tags, currentValue, setValue)));
         builder.AddContent(sequence++, "+");
         builder.CloseElement();
@@ -233,18 +233,18 @@
         if (tags.Count > 0)
         {
             builder.OpenElement(sequence++, "div");
-            builder.AddAttribute(sequence++, "class", "tag-list");
+            builder.AddAttribute(sequence++, "class", "flex flex-wrap gap-1");
 
             foreach (var tag in tags.ToList())
             {
                 builder.OpenElement(sequence++, "span");
-                builder.AddAttribute(sequence++, "class", "tag-chip");
+                builder.AddAttribute(sequence++, "class", "inline-flex items-center gap-1 px-2 py-1 bg-[#333] border border-[#444] text-white text-xs rounded-full");
                 builder.AddContent(sequence++, tag.Value);
                 builder.OpenElement(sequence++, "button");
                 builder.AddAttribute(sequence++, "type", "button");
-                builder.AddAttribute(sequence++, "class", "tag-chip-remove");
+                builder.AddAttribute(sequence++, "class", "text-[#e50914] hover:text-[#ff6b6b] ml-1 leading-none");
                 builder.AddAttribute(sequence++, "onclick", EventCallback.Factory.Create(this, () => RemoveTag(tags, tag)));
-                builder.AddContent(sequence++, "x");
+                builder.AddContent(sequence++, "×");
                 builder.CloseElement();
                 builder.CloseElement();
             }

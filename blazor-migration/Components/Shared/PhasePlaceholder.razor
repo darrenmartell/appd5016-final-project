@@ -1,17 +1,17 @@
 <section class="max-w-5xl mx-auto px-6 py-6 my-6">
-    <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Placeholder</span>
+    <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Placeholder</span>
     <h1 class="text-4xl font-bold text-white mb-2">@Title</h1>
-    <p class="text-text-2 mb-6">@Summary</p>
+    <p class="text-[#a0a0a5] mb-6">@Summary</p>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div class="border border-primary rounded-lg bg-surface-2 p-4">
+        <div class="border border-[#333] rounded-lg bg-[#222] p-4">
             <h2 class="font-bold text-white mb-2">Route</h2>
-            <p class="text-text-1">@RoutePath</p>
+            <p class="text-[#d0d0d2]">@RoutePath</p>
         </div>
 
-        <div class="border border-primary rounded-lg bg-surface-2 p-4">
+        <div class="border border-[#333] rounded-lg bg-[#222] p-4">
             <h2 class="font-bold text-white mb-2">Current React sources</h2>
-            <ul class="list-disc list-inside text-text-1 space-y-1">
+            <ul class="list-disc list-inside text-[#d0d0d2] space-y-1">
                 @foreach (var sourceFile in SourceFiles)
                 {
                     <li>@sourceFile</li>
@@ -19,9 +19,9 @@
             </ul>
         </div>
 
-        <div class="col-span-1 md:col-span-3 border border-primary rounded-lg bg-surface-2 p-4">
+        <div class="col-span-1 md:col-span-3 border border-[#333] rounded-lg bg-[#222] p-4">
             <h2 class="font-bold text-white mb-2">Notes</h2>
-            <ul class="list-disc list-inside text-text-1 space-y-1">
+            <ul class="list-disc list-inside text-[#d0d0d2] space-y-1">
                 @foreach (var deferredItem in DeferredItems)
                 {
                     <li>@deferredItem</li>

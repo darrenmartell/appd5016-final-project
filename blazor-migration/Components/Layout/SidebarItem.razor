@@ -1,10 +1,10 @@
 <li class="group">
     <NavLink href="@Href" 
              Match="@Match" 
-             class="flex items-center py-2.5 px-3 text-text-2 hover:bg-[#333] hover:text-white transition-colors rounded-md"
-             ActiveClass="bg-[#333] border-l-2 border-accent text-white pl-2.5 font-semibold">
-        <span class="inline-flex items-center justify-center min-w-6 h-6 text-sm font-bold text-[#b3b3b3] group-hover:text-white">
-            @IconLabel
+             class="flex items-center py-2.5 px-3 text-[#a0a0a5] hover:bg-[#333] hover:text-white transition-colors rounded-md"
+             ActiveClass="bg-[#333] border-l-2 border-[#e50914] text-white pl-2.5 font-semibold">
+        <span class="inline-flex items-center justify-center min-w-6 h-6 text-sm text-[#b3b3b3] group-hover:text-white">
+            <i class="fa-solid @IconClass" aria-hidden="true"></i>
         </span>
 
         @if (!IsCollapsed)
@@ -24,7 +24,7 @@
     public string Label { get; set; } = string.Empty;
 
     [Parameter, EditorRequired]
-    public string IconLabel { get; set; } = string.Empty;
+    public string IconClass { get; set; } = string.Empty;
 
     [Parameter]
     public NavLinkMatch Match { get; set; }

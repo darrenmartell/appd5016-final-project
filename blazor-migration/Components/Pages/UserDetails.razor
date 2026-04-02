@@ -8,7 +8,7 @@
 <AuthorizeView>
     <Authorized>
         <section class="max-w-5xl mx-auto px-6 py-6 my-6">
-            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Users</span>
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Users</span>
             <h1 class="text-4xl font-bold text-white mb-6">User Details</h1>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
@@ -26,23 +26,23 @@
             else
             {
                 <div class="space-y-4">
-                    <div class="flex justify-between items-start p-3 border-b border-primary">
-                        <span class="text-text-2 font-semibold min-w-max">ID</span>
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">ID</span>
                         <span>@_user.Id</span>
                     </div>
-                    <div class="flex justify-between items-start p-3 border-b border-primary">
-                        <span class="text-text-2 font-semibold min-w-max">Name</span>
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">Name</span>
                         <span>@_user.FirstName @_user.LastName</span>
                     </div>
-                    <div class="flex justify-between items-start p-3 border-b border-primary">
-                        <span class="text-text-2 font-semibold min-w-max">Email</span>
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">Email</span>
                         <span>@_user.Email</span>
                     </div>
                 </div>
             }
 
             <div class="flex gap-4 mt-6">
-                <button class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" type="button" @onclick="GoBack">Back to Users List</button>
+                <button class="px-6 py-2 bg-[#232327] text-[#d0d0d2] border border-[#333] font-bold rounded-full hover:bg-[#2d2d31] transition-colors" type="button" @onclick="GoBack">Back to Users List</button>
             </div>
         </section>
     </Authorized>
