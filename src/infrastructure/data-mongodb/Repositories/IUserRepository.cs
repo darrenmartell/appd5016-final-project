@@ -12,5 +12,7 @@ public interface IUserRepository
 
     Task<UserDocument> AddAsync(UserDocument user, CancellationToken cancellationToken);
 
+    Task<UserDocument?> UpdatePasswordHashAsync(string id, string passwordHash, CancellationToken cancellationToken);
+
     Task<UserDocument?> DeleteByIdAsync(string id, CancellationToken cancellationToken);
 }

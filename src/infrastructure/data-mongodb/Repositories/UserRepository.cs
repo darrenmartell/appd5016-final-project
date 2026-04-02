@@ -39,6 +39,19 @@ public sealed class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<UserDocument?> UpdatePasswordHashAsync(string id, string passwordHash, CancellationToken cancellationToken)
+    {
+        var existing = await FindByIdAsync(id, cancellationToken);
+        if (existing is null)
+        {
+            return null;
+        }
+
+        existing.PasswordHash = passwordHash;
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return existing;
+    }
+
     public async Task<UserDocument?> DeleteByIdAsync(string id, CancellationToken cancellationToken)
     {
         var existing = await FindByIdAsync(id, cancellationToken);

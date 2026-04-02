@@ -44,8 +44,8 @@ Status values:
 - Description: Frontend uses PATCH /auth/{id}/changepassword but source imported API lacks this endpoint.
 - Impact: Change password flow fails after API migration unless addressed.
 - Likelihood: High
-- Status: Open
-- Mitigation: Decide in Phase 5 whether to implement endpoint, disable UI path, or document unsupported behavior.
+- Status: Mitigated
+- Mitigation: Implemented PATCH /auth/{id}/changepassword in ASP.NET API with JWT auth, id claim match check, and password policy validation.
 
 6. R-006: Mongo id format differences
 - Description: Source API validates Mongo ObjectId path params; scaffold currently uses string Guid-like ids for series document.

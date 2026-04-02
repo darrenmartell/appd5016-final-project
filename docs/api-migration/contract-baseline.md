@@ -211,7 +211,7 @@ Frontend compatibility sources:
 
 ## Known Gaps and Ambiguities
 
-1. Gap: frontend calls PATCH /auth/{id}/changepassword, but source imported API does not provide this endpoint.
+1. Gap (resolved in migration): frontend calls PATCH /auth/{id}/changepassword, while source imported API does not provide this endpoint. ASP.NET migration now provides a compatibility shim for this route.
 2. Ambiguity: imported API default success status on POST is framework default (expected 201); migration should preserve effective client behavior.
 3. Ambiguity: /users is public in imported API; this may be acceptable for migration parity but may conflict with desired production security posture.
 
