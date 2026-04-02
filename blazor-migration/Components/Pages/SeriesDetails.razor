@@ -7,28 +7,29 @@
 
 <AuthorizeView>
     <Authorized>
-        <section class="page-shell panel-shell">
-            <span class="eyebrow">Series</span>
-            <h1>Series Details</h1>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6">
+            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Series</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Series Details</h1>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
             {
-                <div class="status-error">@_errorMessage</div>
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
             }
             else if (_isLoading)
             {
-                <div class="status-info">Loading series details...</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading series details...</div>
             }
             else if (_seriesItem is null)
             {
-                <div class="status-info">Series not found.</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Series not found.</div>
             }
             else
             {
-                <div class="series-details-shell">
-                    <section class="series-detail-header">
-                        <h2>@(string.IsNullOrWhiteSpace(_seriesItem.Title) ? "Untitled Series" : _seriesItem.Title)</h2>
-                        <div class="series-dashboard-meta">
+                <div class="space-y-6">
+                    <!-- Series Header -->
+                    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+                        <h2 class="text-2xl font-bold text-white mb-2">@(string.IsNullOrWhiteSpace(_seriesItem.Title) ? "Untitled Series" : _seriesItem.Title)</h2>
+                        <div class="flex gap-4 text-text-2 mb-4">
                             @if (_seriesItem.ReleasedYear is not null)
                             {
                                 <span>@_seriesItem.ReleasedYear</span>
@@ -41,21 +42,24 @@
 
                         @if (_seriesItem.Genres.Count > 0)
                         {
-                            <div class="series-chip-list">
+                            <div class="flex flex-wrap gap-2">
                                 @foreach (var genre in _seriesItem.Genres)
                                 {
-                                    <span class="series-chip genre-chip">@genre</span>
+                                    <span class="px-2 py-1 bg-accent/20 border border-accent text-accent text-xs font-semibold rounded">@genre</span>
                                 }
                             </div>
                         }
-                    </section>
+                    </div>
 
                     @if (!string.IsNullOrWhiteSpace(_seriesItem.PlotSummary))
                     {
-                        <section class="series-plot-panel">@_seriesItem.PlotSummary</section>
+                        <div class="border border-primary rounded-lg bg-surface-2 p-6">
+                            <p class="text-text-1">@_seriesItem.PlotSummary</p>
+                        </div>
                     }
 
-                    <section class="series-metadata-grid">
+                    <!-- Metadata Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             @RenderTagSection("Cast", _seriesItem.Cast)
                             @RenderTagSection("Directors", _seriesItem.Directors)
@@ -65,70 +69,70 @@
                         <div>
                             @if (HasVisibleRatings(_seriesItem.Ratings))
                             {
-                                <div class="series-section-block">
-                                    <div class="series-section-title">Ratings</div>
-                                    <div class="dashboard-ratings-row">
+                                <div class="border border-primary rounded-lg bg-surface-2 p-4 mb-4">
+                                    <div class="font-bold text-white mb-3">Ratings</div>
+                                    <div class="grid grid-cols-2 gap-3">
                                         @if (_seriesItem.Ratings.Imdb is not null)
                                         {
-                                            <div class="dashboard-rating-tile"><span>IMDb</span><strong>@_seriesItem.Ratings.Imdb</strong></div>
+                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">IMDb</span><br><strong class="text-white">@_seriesItem.Ratings.Imdb</strong></div>
                                         }
                                         @if (_seriesItem.Ratings.RottenTomatoes is not null)
                                         {
-                                            <div class="dashboard-rating-tile"><span>Rotten Tomatoes</span><strong>@_seriesItem.Ratings.RottenTomatoes</strong></div>
+                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">Rotten Tomatoes</span><br><strong class="text-white">@_seriesItem.Ratings.RottenTomatoes</strong></div>
                                         }
                                         @if (_seriesItem.Ratings.Metacritic is not null)
                                         {
-                                            <div class="dashboard-rating-tile"><span>Metacritic</span><strong>@_seriesItem.Ratings.Metacritic</strong></div>
+                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">Metacritic</span><br><strong class="text-white">@_seriesItem.Ratings.Metacritic</strong></div>
                                         }
                                         @if (_seriesItem.Ratings.UserAverage is not null)
                                         {
-                                            <div class="dashboard-rating-tile"><span>User Average</span><strong>@_seriesItem.Ratings.UserAverage</strong></div>
+                                            <div class="p-2 bg-surface-3 rounded border border-primary/50"><span class="text-text-2 text-xs">User Average</span><br><strong class="text-white">@_seriesItem.Ratings.UserAverage</strong></div>
                                         }
                                     </div>
                                 </div>
                             }
 
-                            <div class="series-section-block">
-                                <div class="series-section-title">Production</div>
+                            <div class="border border-primary rounded-lg bg-surface-2 p-4">
+                                <div class=\"font-bold text-white mb-3\">Production</div>
                                 @RenderDetailLine("Companies", _seriesItem.ProductionCompanies)
                                 @RenderDetailLine("Countries", _seriesItem.Countries)
                                 @RenderDetailLine("Languages", _seriesItem.Languages)
                             </div>
                         </div>
-                    </section>
+                    </div>
 
                     @if (_seriesItem.Episodes.Count > 0)
                     {
-                        <section class="series-section-block">
-                            <div class="series-section-title">Episodes (@_seriesItem.Episodes.Count)</div>
-                            <div class="users-table-wrap">
-                                <table class="users-table series-episodes-table">
+                        <div class="border border-primary rounded-lg bg-surface-2 p-4">
+                            <div class="font-bold text-white mb-4\">Episodes (@_seriesItem.Episodes.Count)</div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse\">
                                     <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Title</th>
-                                            <th>Runtime</th>
+                                        <tr class="border-b border-primary">
+                                            <th class="text-left p-3 text-text-1 font-semibold\">#</th>
+                                            <th class="text-left p-3 text-text-1 font-semibold\">Title</th>
+                                            <th class="text-left p-3 text-text-1 font-semibold\">Runtime</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var episode in _seriesItem.Episodes.OrderBy(episode => episode.EpisodeNumber))
                                         {
-                                            <tr>
-                                                <td>@episode.EpisodeNumber</td>
-                                                <td>@episode.EpisodeTitle</td>
-                                                <td>@episode.RuntimeMinutes min</td>
+                                            <tr class="border-b border-primary hover:bg-surface-3\">
+                                                <td class="p-3 text-text-1\">@episode.EpisodeNumber</td>
+                                                <td class="p-3 text-text-1\">@episode.EpisodeTitle</td>
+                                                <td class="p-3 text-text-1\">@episode.RuntimeMinutes min</td>
                                             </tr>
                                         }
                                     </tbody>
                                 </table>
                             </div>
-                        </section>
+                        </div>
                     }
                 </div>
             }
 
-            <div class="form-actions">
-                <button type="button" class="button-secondary" @onclick="GoBack">Back to Series List</button>
+            <div class="flex gap-4 mt-6">
+                <button type="button" class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="GoBack">Back to Series List</button>
             </div>
         </section>
     </Authorized>

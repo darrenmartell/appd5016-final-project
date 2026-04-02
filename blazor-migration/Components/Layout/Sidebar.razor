@@ -1,13 +1,13 @@
-<aside class="sidebar @(IsCollapsed ? "sidebar-collapsed" : string.Empty)">
+<aside class="@GetSidebarClass() relative bg-[#1a1a1a] border-r border-[#333] transition-all duration-300 ease-in-out h-screen">
     <button type="button"
-            class="sidebar-toggle"
+            class="absolute -right-3 top-4 w-6 h-6 flex items-center justify-center rounded-full bg-[#333] text-[#b3b3b3] hover:bg-[#444] transition-colors cursor-pointer focus:outline-none z-10"
             @onclick="() => OnToggle.InvokeAsync()"
             aria-label="Toggle sidebar">
-        @(IsCollapsed ? ">" : "<")
+        @(IsCollapsed ? "›" : "‹")
     </button>
 
-    <nav class="sidebar-nav" aria-label="Admin sections">
-        <ul>
+    <nav class="mt-5 px-2" aria-label="Admin sections">
+        <ul class="space-y-1">
             <SidebarItem Href="/admin/home" Label="Dashboard" IconLabel="DB" Match="NavLinkMatch.All" IsCollapsed="IsCollapsed" />
             <SidebarItem Href="/admin/users" Label="User Management" IconLabel="US" Match="NavLinkMatch.All" IsCollapsed="IsCollapsed" />
             <SidebarItem Href="/admin/series" Label="Series" IconLabel="SR" Match="NavLinkMatch.All" IsCollapsed="IsCollapsed" />
@@ -21,4 +21,9 @@
 
     [Parameter]
     public EventCallback OnToggle { get; set; }
+
+    private string GetSidebarClass()
+    {
+        return IsCollapsed ? "w-16" : "w-64";
+    }
 }

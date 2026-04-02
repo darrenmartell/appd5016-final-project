@@ -1,10 +1,17 @@
-<li class="sidebar-item">
-    <NavLink href="@Href" Match="@Match" class="sidebar-link" ActiveClass="sidebar-link-active">
-        <span class="sidebar-icon">@IconLabel</span>
+<li class="group">
+    <NavLink href="@Href" 
+             Match="@Match" 
+             class="flex items-center py-2.5 px-3 text-text-2 hover:bg-[#333] hover:text-white transition-colors rounded-md"
+             ActiveClass="bg-[#333] border-l-2 border-accent text-white pl-2.5 font-semibold">
+        <span class="inline-flex items-center justify-center min-w-6 h-6 text-sm font-bold text-[#b3b3b3] group-hover:text-white">
+            @IconLabel
+        </span>
 
         @if (!IsCollapsed)
         {
-            <span class="sidebar-label">@Label</span>
+            <span class="ml-4 text-sm font-medium whitespace-nowrap">
+                @Label
+            </span>
         }
     </NavLink>
 </li>

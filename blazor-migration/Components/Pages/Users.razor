@@ -6,45 +6,45 @@
 
 <AuthorizeView>
     <Authorized>
-        <section class="page-shell panel-shell">
-            <span class="eyebrow">Users</span>
-            <h1>User Management</h1>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6">
+            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Users</span>
+            <h1 class="text-4xl font-bold text-white mb-6">User Management</h1>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
             {
-                <div class="status-error">@_errorMessage</div>
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
             }
             else if (_isLoading)
             {
-                <div class="status-info">Loading users...</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading users...</div>
             }
             else if (_users.Count == 0)
             {
-                <div class="status-info">No users found.</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">No users found.</div>
             }
             else
             {
-                <div class="users-table-wrap">
-                    <table class="users-table">
+                <div class="overflow-x-auto border border-primary rounded-lg">
+                    <table class="w-full border-collapse">
                         <thead>
                             <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Actions</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">First Name</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Last Name</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Email</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var user in _users)
                             {
-                                <tr>
-                                    <td>@user.FirstName</td>
-                                    <td>@user.LastName</td>
-                                    <td>@user.Email</td>
-                                    <td>
-                                        <div class="users-actions">
-                                            <a class="button-secondary button-link" href="@($"/admin/users/{user.Id}/details")">Details</a>
-                                            <a class="button-secondary button-link" href="@($"/admin/users/{user.Id}/delete")">Delete</a>
+                                <tr class="hover:bg-surface-3 transition-colors">
+                                    <td class="p-4 border border-primary text-text-1">@user.FirstName</td>
+                                    <td class="p-4 border border-primary text-text-1">@user.LastName</td>
+                                    <td class="p-4 border border-primary text-text-1">@user.Email</td>
+                                    <td class="p-4 border border-primary text-text-1">
+                                        <div class="flex gap-2">
+                                            <a class="px-3 py-1 bg-[#232327] text-text-1 border border-primary rounded font-semibold text-sm hover:bg-[#2d2d31] transition-colors" href="@($"/admin/users/{user.Id}/details")">Details</a>
+                                            <a class="px-3 py-1 bg-[#232327] text-text-1 border border-primary rounded font-semibold text-sm hover:bg-[#2d2d31] transition-colors" href="@($"/admin/users/{user.Id}/delete")">Delete</a>
                                         </div>
                                     </td>
                                 </tr>

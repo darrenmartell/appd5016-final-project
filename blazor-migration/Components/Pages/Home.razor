@@ -9,31 +9,31 @@
 
 <AuthorizeView>
 	<Authorized>
-		<section class="page-shell panel-shell">
-			<span class="eyebrow">Dashboard</span>
-			<h1>Dashboard</h1>
+		<section class="max-w-5xl mx-auto px-6 py-6 my-6">
+			<span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Dashboard</span>
+			<h1 class="text-4xl font-bold text-white mb-6">Dashboard</h1>
 
 			@if (!string.IsNullOrWhiteSpace(_errorMessage))
 			{
-				<div class="status-error">@_errorMessage</div>
+				<div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
 			}
 			else if (_isLoading)
 			{
-				<div class="status-info">Loading series...</div>
+				<div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading series...</div>
 			}
 			else if (FilteredSeries.Count == 0)
 			{
-				<div class="status-info">No series found.</div>
+				<div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">No series found.</div>
 			}
 			else
 			{
-				<div class="series-card-grid">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					@foreach (var item in FilteredSeries)
 					{
-						<button type="button" class="series-dashboard-card" @onclick="() => OpenDetails(item.Id)">
-							<div class="series-dashboard-header">
-								<h2>@(string.IsNullOrWhiteSpace(item.Title) ? "Untitled" : item.Title)</h2>
-								<div class="series-dashboard-meta">
+					<button type="button" class="border border-primary rounded-lg bg-surface-2 p-4 cursor-pointer hover:shadow-lg hover:border-accent transition-all text-left" @onclick="() => OpenDetails(item.Id)">
+						<div class="mb-2">
+							<h2 class="text-lg font-bold text-white mb-1">@(string.IsNullOrWhiteSpace(item.Title) ? "Untitled" : item.Title)</h2>
+							<div class="flex gap-4 text-text-2 text-sm">
 									@if (item.ReleasedYear is not null)
 									{
 										<span>@item.ReleasedYear</span>

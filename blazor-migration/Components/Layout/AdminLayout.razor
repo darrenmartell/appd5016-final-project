@@ -1,18 +1,22 @@
 @inherits LayoutComponentBase
 
-<div class="admin-shell">
+<div class="h-screen flex flex-col bg-[#141414]">
+    <!-- Full-width Header -->
     <Navbar ShowSearch="true" />
 
-    <div class="admin-body">
+    <!-- Sidebar and Content Below -->
+    <div class="flex flex-grow overflow-hidden bg-[#141414]">
+        <!-- Sidebar -->
         <Sidebar IsCollapsed="_isSidebarCollapsed" OnToggle="ToggleSidebar" />
 
-        <main class="admin-content">
+        <!-- Main Content Area -->
+        <main class="flex-grow p-4 overflow-y-auto bg-[#141414]">
             @Body
         </main>
     </div>
 </div>
 
-<div id="blazor-error-ui" data-nosnippet>
+<div id="blazor-error-ui" data-nosnippet class="hidden">
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">X</span>

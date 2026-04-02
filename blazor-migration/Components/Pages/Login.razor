@@ -4,39 +4,55 @@
 
 <PageTitle>Login</PageTitle>
 
-<section class="page-shell auth-card">
-    <span class="eyebrow">Account access</span>
-    <h1>Login</h1>
-    <p class="muted">Sign in with your account to access the admin dashboard.</p>
+<div class="min-h-screen flex items-center justify-center bg-[#141414]">
+    <section class="max-w-md w-full mx-auto my-8 p-8 bg-surface-2 rounded-2xl border border-primary shadow-netflix">
+        <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Account access</span>
+        <h1 class="text-4xl font-bold text-white mb-2">Login</h1>
+        <p class="text-text-2 mb-6">Sign in with your account to access the admin dashboard.</p>
 
-    @if (!string.IsNullOrWhiteSpace(_errorMessage))
-    {
-        <div class="status-error">@_errorMessage</div>
-    }
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="mb-4 p-3 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm">
+                @_errorMessage
+            </div>
+        }
 
-    <EditForm Model="_model" OnValidSubmit="HandleLoginAsync" class="form-stack">
-        <DataAnnotationsValidator />
+        <EditForm Model="_model" OnValidSubmit="HandleLoginAsync" class="flex flex-col gap-4">
+            <DataAnnotationsValidator />
 
-        <div class="form-field">
-            <label class="field-label" for="email">Email</label>
-            <InputText id="email" class="field-input" @bind-Value="_model.Email" />
-            <ValidationMessage For="() => _model.Email" class="field-error" />
-        </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-text-1 text-sm" for="email">Email</label>
+                <InputText id="email" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-accent/35 focus:border-accent" 
+                          @bind-Value="_model.Email" />
+                <ValidationMessage For="() => _model.Email" class="text-red-500 text-xs" />
+            </div>
 
-        <div class="form-field">
-            <label class="field-label" for="password">Password</label>
-            <InputText id="password" type="password" class="field-input" @bind-Value="_model.Password" />
-            <ValidationMessage For="() => _model.Password" class="field-error" />
-        </div>
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-text-1 text-sm" for="password">Password</label>
+                <InputText id="password" 
+                          type="password" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-accent/35 focus:border-accent" 
+                          @bind-Value="_model.Password" />
+                <ValidationMessage For="() => _model.Password" class="text-red-500 text-xs" />
+            </div>
 
-        <ValidationSummary class="validation-summary" />
+            <ValidationSummary class="p-3 rounded-lg bg-surface-3 border border-red-500 text-red-500 text-sm" />
 
-        <div class="form-actions">
-            <button class="button-primary" type="submit" disabled="@_isSubmitting">@(_isSubmitting ? "Logging in..." : "Submit")</button>
-            <NavLink class="button-secondary" href="/register">Register</NavLink>
-        </div>
-    </EditForm>
-</section>
+            <div class="flex gap-4 mt-6 justify-end">
+                <button class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-accent transition-all disabled:opacity-50" 
+                        type="submit" 
+                        disabled="@_isSubmitting">
+                    @(_isSubmitting ? "Logging in..." : "Login")
+                </button>
+                <NavLink class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" 
+                         href="/register">
+                    Register
+                </NavLink>
+            </div>
+        </EditForm>
+    </section>
+</div>
 
 @code {
     [SupplyParameterFromQuery(Name = "returnUrl")]

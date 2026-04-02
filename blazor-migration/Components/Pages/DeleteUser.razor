@@ -8,50 +8,50 @@
 
 <AuthorizeView>
     <Authorized>
-        <section class="page-shell panel-shell danger-card">
-            <span class="eyebrow">Users</span>
-            <h1>Delete User</h1>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6 p-8 border-2 border-red-500 bg-surface-2 rounded-2xl">
+            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Users</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Delete User</h1>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
             {
-                <div class="status-error">@_errorMessage</div>
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
             }
             else if (_isLoading)
             {
-                <div class="status-info">Loading user record...</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading user record...</div>
             }
             else if (_user is null)
             {
-                <div class="status-info">User not found.</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">User not found.</div>
             }
             else if (IsLoggedInUser)
             {
-                <div class="status-info">You cannot delete the currently logged in user.</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">You cannot delete the currently logged in user.</div>
             }
             else
             {
-                <div class="details-grid">
-                    <div class="detail-row">
-                        <span class="detail-label">ID</span>
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-start p-3 border-b border-primary">
+                        <span class="text-text-2 font-semibold min-w-max">ID</span>
                         <span>@_user.Id</span>
                     </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Name</span>
+                    <div class="flex justify-between items-start p-3 border-b border-primary">
+                        <span class="text-text-2 font-semibold min-w-max">Name</span>
                         <span>@_user.FirstName @_user.LastName</span>
                     </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Email</span>
+                    <div class="flex justify-between items-start p-3 border-b border-primary">
+                        <span class="text-text-2 font-semibold min-w-max">Email</span>
                         <span>@_user.Email</span>
                     </div>
                 </div>
 
-                <div class="form-actions">
-                    <button class="button-primary" type="button" disabled="@_isDeleting" @onclick="DeleteAsync">@(_isDeleting ? "Deleting..." : "Delete User")</button>
+                <div class="flex gap-4 mb-6">
+                    <button class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-accent transition-all disabled:opacity-50" type="button" disabled="@_isDeleting" @onclick="DeleteAsync">@(_isDeleting ? "Deleting..." : "Delete User")</button>
                 </div>
             }
 
-            <div class="form-actions">
-                <button class="button-secondary" type="button" @onclick="GoBack">Back to Users List</button>
+            <div class="flex gap-4">
+                <button class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" type="button" @onclick="GoBack">Back to Users List</button>
             </div>
         </section>
     </Authorized>

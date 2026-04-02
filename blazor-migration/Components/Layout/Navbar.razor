@@ -2,41 +2,70 @@
 @inject NavigationManager Navigation
 @inject SeriesSearchState SeriesSearchState
 
-<header class="topbar">
-    <div class="brand-lockup">
-        <div class="brand-mark"></div>
-        <div>
-            <div class="brand-name">Harlen Coben Netflix Series</div>
-            <div class="brand-subtitle">Admin dashboard</div>
+<header class="sticky top-0 z-20 w-full bg-[#141414] border-b border-primary backdrop-blur-sm px-6 py-4">
+    <nav class="flex items-center justify-between">
+        <!-- Logo and brand -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-[#ff3d47] to-[#b20710] rounded-full shadow-md"></div>
+            <div class="flex flex-col">
+                <div class="text-xl font-bold text-white">Harlen Coben Netflix Series</div>
+                <div class="text-xs text-text-2 font-medium">Admin dashboard</div>
+            </div>
         </div>
-    </div>
 
-    <div class="topbar-actions">
-        <AuthorizeView>
-            <Authorized Context="authState">
-                @if (ShowSearch)
-                {
-                    <input class="search-input"
-                           type="text"
-                           placeholder="Search series"
-                           value="@SeriesSearchState.SearchTerm"
-                           @oninput="HandleSearchInput" />
-                }
+        <!-- Actions -->
+        <div>
+            <AuthorizeView>
+                <Authorized Context="authState">
+                    <div class="flex items-center gap-6 text-text-2">
+                        <!-- Search input (hidden on mobile) -->
+                        @if (ShowSearch)
+                        {
+                            <input class="hidden md:block px-3 py-2 bg-[#333] border border-[#444] text-white rounded-md focus:outline-none focus:ring focus:border-accent placeholder:text-[#888]"
+                                   type="text"
+                                   placeholder="Search series"
+                                   value="@SeriesSearchState.SearchTerm"
+                                   @oninput="HandleSearchInput" />
+                        }
 
-                <div class="account-links">
-                    <span class="account-pill">@GetDisplayName(authState.User)</span>
-                    <NavLink class="account-link" ActiveClass="account-link-active" href="/changepassword" Match="NavLinkMatch.All">Change Password</NavLink>
-                    <button type="button" class="account-link account-button" @onclick="HandleLogoutAsync">Logout</button>
-                </div>
-            </Authorized>
-            <NotAuthorized>
-                <nav class="account-links" aria-label="Primary links">
-                    <NavLink class="account-link" ActiveClass="account-link-active" href="/login" Match="NavLinkMatch.All">Login</NavLink>
-                    <NavLink class="account-link" ActiveClass="account-link-active" href="/register" Match="NavLinkMatch.All">Register</NavLink>
-                </nav>
-            </NotAuthorized>
-        </AuthorizeView>
-    </div>
+                        <!-- Account menu -->
+                        <div class="flex items-center gap-4">
+                            <span class="hidden md:inline px-3 py-1 bg-[#2a2a2d] text-text-1 rounded-full text-sm font-medium">
+                                @GetDisplayName(authState.User)
+                            </span>
+                            <NavLink href="/changepassword" 
+                                     class="text-text-2 hover:text-white transition-colors text-sm" 
+                                     ActiveClass="text-white font-semibold" 
+                                     Match="NavLinkMatch.All">
+                                Change Password
+                            </NavLink>
+                            <button type="button" 
+                                    class="text-text-2 hover:text-white transition-colors text-sm font-medium" 
+                                    @onclick="HandleLogoutAsync">
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <nav class="flex items-center gap-6" aria-label="Primary links">
+                        <NavLink href="/login" 
+                                 class="text-text-2 hover:text-white transition-colors text-sm font-medium" 
+                                 ActiveClass="text-white font-semibold" 
+                                 Match="NavLinkMatch.All">
+                            Login
+                        </NavLink>
+                        <NavLink href="/register" 
+                                 class="text-text-2 hover:text-white transition-colors text-sm font-medium" 
+                                 ActiveClass="text-white font-semibold" 
+                                 Match="NavLinkMatch.All">
+                            Register
+                        </NavLink>
+                    </nav>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </nav>
 </header>
 
 @code {

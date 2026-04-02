@@ -6,48 +6,48 @@
 
 <AuthorizeView>
     <Authorized>
-        <section class="page-shell panel-shell">
-            <span class="eyebrow">Series</span>
-            <h1>Series Management</h1>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6">
+            <span class="inline-block mb-3 px-2 py-1 text-eyebrow text-[#ff7b84] uppercase tracking-widest">Series</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Series Management</h1>
 
-            <div class="form-actions series-list-actions">
-                <a class="button-primary button-link" href="/admin/series/add">Add Series</a>
+            <div class="mb-6">
+                <a class="inline-block px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-accent transition-all" href="/admin/series/add">Add Series</a>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(_errorMessage))
             {
-                <div class="status-error">@_errorMessage</div>
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
             }
             else if (_isLoading)
             {
-                <div class="status-info">Loading series...</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading series...</div>
             }
             else if (_series.Count == 0)
             {
-                <div class="status-info">No series found.</div>
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">No series found.</div>
             }
             else
             {
-                <div class="users-table-wrap">
-                    <table class="users-table series-table">
+                <div class="overflow-x-auto border border-primary rounded-lg">
+                    <table class="w-full border-collapse">
                         <thead>
                             <tr>
-                                <th>Title</th>
-                                <th>Plot Summary</th>
-                                <th>Actions</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Title</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Plot Summary</th>
+                                <th class="text-left p-4 bg-surface-2 border border-primary font-semibold text-text-0">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var item in _series)
                             {
-                                <tr>
-                                    <td>@item.Title</td>
-                                    <td>@item.PlotSummary</td>
-                                    <td>
-                                        <div class="users-actions">
-                                            <a class="button-primary button-link series-action-button" href="@($"/admin/series/{item.Id}/update")">Edit</a>
-                                            <a class="button-secondary button-link" href="@($"/admin/series/{item.Id}/delete")">Delete</a>
-                                            <a class="button-secondary button-link" href="@($"/admin/series/{item.Id}/details")">Details</a>
+                                <tr class="hover:bg-surface-3 transition-colors">
+                                    <td class="p-4 border border-primary text-text-1">@item.Title</td>
+                                    <td class="p-4 border border-primary text-text-1">@item.PlotSummary</td>
+                                    <td class="p-4 border border-primary text-text-1">
+                                        <div class="flex gap-2">
+                                            <a class="px-3 py-1 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white rounded font-semibold text-sm hover:shadow-accent transition-all" href="@($"/admin/series/{item.Id}/update")">Edit</a>
+                                            <a class="px-3 py-1 bg-[#232327] text-text-1 border border-primary rounded font-semibold text-sm hover:bg-[#2d2d31] transition-colors" href="@($"/admin/series/{item.Id}/delete")">Delete</a>
+                                            <a class="px-3 py-1 bg-[#232327] text-text-1 border border-primary rounded font-semibold text-sm hover:bg-[#2d2d31] transition-colors" href="@($"/admin/series/{item.Id}/details")">Details</a>
                                         </div>
                                     </td>
                                 </tr>

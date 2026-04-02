@@ -1,132 +1,133 @@
 @inject NavigationManager Navigation
 
-<EditForm Model="FormModel" OnValidSubmit="HandleValidSubmitAsync" class="series-form-shell">
+<EditForm Model="FormModel" OnValidSubmit="HandleValidSubmitAsync" class="space-y-6">
     <DataAnnotationsValidator />
-
-    <section class="series-form-header">
-        <span class="eyebrow">Series</span>
-        <h1>@Heading</h1>
-    </section>
 
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
-        <div class="status-error">@ErrorMessage</div>
+        <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@ErrorMessage</div>
     }
 
-    <ValidationSummary class="validation-summary" />
+    <ValidationSummary class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6 space-y-1" />
 
-    <section class="series-form-section">
-        <div class="series-form-section-label">Core Information</div>
-        <div class="series-form-grid">
-            <div class="series-form-field series-form-field-wide">
-                <label class="field-label" for="series-title">Title *</label>
-                <InputText id="series-title" class="field-input" @bind-Value="FormModel.Title" />
-                <ValidationMessage For="() => FormModel.Title" class="field-error" />
+    <!-- Core Information Section -->
+    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+        <h3 class="text-xl font-bold text-white mb-4">Core Information</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="col-span-1 md:col-span-2">
+                <label class="block text-text-1 font-semibold mb-1" for="series-title">Title *</label>
+                <InputText id="series-title" @bind-Value="FormModel.Title" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
+                <ValidationMessage For="() => FormModel.Title" class="text-red-400 text-sm mt-1" />
             </div>
 
-            <div class="series-form-field series-form-field-wide">
-                <label class="field-label" for="series-plot">Plot Summary</label>
-                <InputTextArea id="series-plot" class="field-input field-textarea" @bind-Value="FormModel.PlotSummary" />
+            <div class="col-span-1 md:col-span-2">
+                <label class="block text-text-1 font-semibold mb-1" for="series-plot">Plot Summary</label>
+                <InputTextArea id="series-plot" @bind-Value="FormModel.PlotSummary" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" rows="4" />
             </div>
 
-            <div class="series-form-field">
-                <label class="field-label" for="series-runtime">Runtime (minutes)</label>
-                <InputText id="series-runtime" class="field-input" @bind-Value="FormModel.RuntimeMinutes" />
+            <div>
+                <label class="block text-text-1 font-semibold mb-1" for="series-runtime">Runtime (minutes)</label>
+                <InputText id="series-runtime" @bind-Value="FormModel.RuntimeMinutes" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
             </div>
 
-            <div class="series-form-field">
-                <label class="field-label" for="series-year">Released Year</label>
-                <InputText id="series-year" class="field-input" @bind-Value="FormModel.ReleasedYear" />
+            <div>
+                <label class="block text-text-1 font-semibold mb-1" for="series-year">Released Year</label>
+                <InputText id="series-year" @bind-Value="FormModel.ReleasedYear" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
             </div>
         </div>
-    </section>
+    </div>
 
-    <section class="series-form-section">
-        <div class="series-form-section-label">People</div>
-        <div class="series-form-grid">
+    <!-- People Section -->
+    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+        <h3 class="text-xl font-bold text-white mb-4">People</h3>
+        <div class="space-y-4">
             @RenderTagEditor("Cast", FormModel.Cast, _castInput, value => _castInput = value, "Actor name")
             @RenderTagEditor("Directors", FormModel.Directors, _directorsInput, value => _directorsInput = value, "Director name")
             @RenderTagEditor("Producers", FormModel.Producers, _producersInput, value => _producersInput = value, "Producer name")
         </div>
-    </section>
+    </div>
 
-    <section class="series-form-section">
-        <div class="series-form-section-label">Production</div>
-        <div class="series-form-grid">
+    <!-- Production Section -->
+    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+        <h3 class="text-xl font-bold text-white mb-4">Production</h3>
+        <div class="space-y-4">
             @RenderTagEditor("Production Companies", FormModel.ProductionCompanies, _productionCompaniesInput, value => _productionCompaniesInput = value, "Company name")
             @RenderTagEditor("Countries", FormModel.Countries, _countriesInput, value => _countriesInput = value, "Country")
             @RenderTagEditor("Languages", FormModel.Languages, _languagesInput, value => _languagesInput = value, "Language")
             @RenderTagEditor("Genres", FormModel.Genres, _genresInput, value => _genresInput = value, "Genre")
         </div>
-    </section>
+    </div>
 
-    <section class="series-form-section">
-        <div class="series-form-section-label">Ratings</div>
-        <div class="series-form-grid series-ratings-grid">
-            <div class="series-form-field">
-                <label class="field-label" for="rating-imdb">IMDb</label>
-                <InputText id="rating-imdb" class="field-input" @bind-Value="FormModel.Ratings.Imdb" />
+    <!-- Ratings Section -->
+    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+        <h3 class="text-xl font-bold text-white mb-4">Ratings</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-text-1 font-semibold mb-1" for="rating-imdb">IMDb</label>
+                <InputText id="rating-imdb" @bind-Value="FormModel.Ratings.Imdb" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
             </div>
-            <div class="series-form-field">
-                <label class="field-label" for="rating-rotten">Rotten Tomatoes</label>
-                <InputText id="rating-rotten" class="field-input" @bind-Value="FormModel.Ratings.RottenTomatoes" />
+            <div>
+                <label class="block text-text-1 font-semibold mb-1" for="rating-rotten">Rotten Tomatoes</label>
+                <InputText id="rating-rotten" @bind-Value="FormModel.Ratings.RottenTomatoes" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
             </div>
-            <div class="series-form-field">
-                <label class="field-label" for="rating-meta">Metacritic</label>
-                <InputText id="rating-meta" class="field-input" @bind-Value="FormModel.Ratings.Metacritic" />
+            <div>
+                <label class="block text-text-1 font-semibold mb-1" for="rating-meta">Metacritic</label>
+                <InputText id="rating-meta" @bind-Value="FormModel.Ratings.Metacritic" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
             </div>
-            <div class="series-form-field">
-                <label class="field-label" for="rating-users">User Average</label>
-                <InputText id="rating-users" class="field-input" @bind-Value="FormModel.Ratings.UserAverage" />
+            <div>
+                <label class="block text-text-1 font-semibold mb-1" for="rating-users">User Average</label>
+                <InputText id="rating-users" @bind-Value="FormModel.Ratings.UserAverage" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
             </div>
         </div>
-    </section>
+    </div>
 
-    <section class="series-form-section">
-        <div class="series-form-section-header">
-            <div class="series-form-section-label">Episodes</div>
-            <button type="button" class="button-secondary" @onclick="AddEpisode">Add Episode</button>
+    <!-- Episodes Section -->
+    <div class="border border-primary rounded-lg bg-surface-2 p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-white">Episodes</h3>
+            <button type="button" class="px-4 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="AddEpisode">Add Episode</button>
         </div>
 
         @if (FormModel.Episodes.Count == 0)
         {
-            <div class="series-empty-state">No episodes added yet.</div>
+            <p class="text-text-2 italic py-4">No episodes added yet.</p>
         }
         else
         {
-            <div class="series-episodes-stack">
+            <div class="space-y-4">
                 @for (var index = 0; index < FormModel.Episodes.Count; index++)
                 {
                     var episode = FormModel.Episodes[index];
 
-                    <div class="series-episode-row">
-                        <div class="series-form-grid series-episode-grid">
-                            <div class="series-form-field">
-                                <label class="field-label">Episode #</label>
-                                <input class="field-input" value="@(index + 1)" readonly />
+                    <div class="border border-primary/50 rounded-lg p-4 bg-surface-3">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
+                            <div>
+                                <label class="block text-text-1 font-semibold mb-1 text-sm">Episode #</label>
+                                <input class="w-full px-3 py-2 bg-[#1a1a1c] border border-primary/30 rounded-lg text-white" value="@(index + 1)" readonly />
                             </div>
 
-                            <div class="series-form-field series-form-field-wide">
-                                <label class="field-label">Episode Title</label>
-                                <InputText class="field-input" @bind-Value="episode.EpisodeTitle" />
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="block text-text-1 font-semibold mb-1 text-sm">Episode Title</label>
+                                <InputText @bind-Value="episode.EpisodeTitle" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
                             </div>
 
-                            <div class="series-form-field">
-                                <label class="field-label">Minutes</label>
-                                <InputText class="field-input" @bind-Value="episode.RuntimeMinutes" />
+                            <div>
+                                <label class="block text-text-1 font-semibold mb-1 text-sm">Minutes</label>
+                                <InputText @bind-Value="episode.RuntimeMinutes" class="w-full px-3 py-2 bg-[#232327] border border-primary rounded-lg focus:ring-2 focus:ring-accent/35 focus:border-accent text-white" />
                             </div>
                         </div>
 
-                        <button type="button" class="episode-remove-button" @onclick="() => RemoveEpisode(index)">Remove</button>
+                        <button type="button" class="px-3 py-1 bg-red-900/20 text-red-300 border border-red-500/30 text-sm font-semibold rounded hover:bg-red-900/40 transition-colors" @onclick="() => RemoveEpisode(index)">Remove Episode</button>
                     </div>
                 }
             </div>
         }
-    </section>
+    </div>
 
-    <div class="form-actions">
-        <button type="submit" class="button-primary" disabled="@IsSubmitting">@(IsSubmitting ? "Saving..." : SubmitLabel)</button>
-        <button type="button" class="button-secondary" @onclick="HandleCancel">Back</button>
+    <!-- Form Actions -->
+    <div class="flex gap-4">
+        <button type="submit" class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-accent transition-all disabled:opacity-50" disabled="@IsSubmitting">@(IsSubmitting ? "Saving..." : SubmitLabel)</button>
+        <button type="button" class="px-6 py-2 bg-[#232327] text-text-1 border border-primary font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="HandleCancel">Back</button>
     </div>
 </EditForm>
 
