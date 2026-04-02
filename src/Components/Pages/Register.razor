@@ -1,0 +1,114 @@
+@page "/register"
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Register</PageTitle>
+
+<div class="min-h-screen flex items-center justify-center bg-[#141414]">
+    <section class="max-w-md w-full mx-auto my-8 p-8 bg-[#222] rounded-2xl border border-[#333] shadow-[0_1.25rem_2.75rem_rgba(0,0,0,0.28)]">
+        <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Account access</span>
+        <h1 class="text-4xl font-bold text-white mb-2">Register</h1>
+        <p class="text-[#a0a0a5] mb-6">Create an account to access the admin dashboard.</p>
+
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
+        {
+            <div class="mb-4 p-3 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm">
+                @_errorMessage
+            </div>
+        }
+
+        <EditForm Model="_model" OnValidSubmit="HandleRegisterAsync" class="flex flex-col gap-4">
+            <DataAnnotationsValidator />
+
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-[#d0d0d2] text-sm" for="firstName">First Name</label>
+                <InputText id="firstName" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-[#333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914]" 
+                          name="firstName"
+                          autocomplete="given-name"
+                          @bind-Value="_model.FirstName" />
+                <ValidationMessage For="() => _model.FirstName" class="text-red-500 text-xs" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-[#d0d0d2] text-sm" for="lastName">Last Name</label>
+                <InputText id="lastName" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-[#333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914]" 
+                          name="lastName"
+                          autocomplete="family-name"
+                          @bind-Value="_model.LastName" />
+                <ValidationMessage For="() => _model.LastName" class="text-red-500 text-xs" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-[#d0d0d2] text-sm" for="registerEmail">Email</label>
+                <InputText id="registerEmail" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-[#333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914]" 
+                          name="email"
+                          autocomplete="email"
+                          @bind-Value="_model.Email" />
+                <ValidationMessage For="() => _model.Email" class="text-red-500 text-xs" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-[#d0d0d2] text-sm" for="registerPassword">Password</label>
+                <InputText id="registerPassword" 
+                          type="password" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-[#333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914]" 
+                          name="newPassword"
+                          autocomplete="new-password"
+                          @bind-Value="_model.Password" />
+                <ValidationMessage For="() => _model.Password" class="text-red-500 text-xs" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="font-semibold text-[#d0d0d2] text-sm" for="confirmPassword">Confirm Password</label>
+                <InputText id="confirmPassword" 
+                          type="password" 
+                          class="w-full px-3 py-2 bg-[#232327] border border-[#333] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#e50914]/35 focus:border-[#e50914]" 
+                          name="confirmPassword"
+                          autocomplete="new-password"
+                          @bind-Value="_model.ConfirmPassword" />
+                <ValidationMessage For="() => _model.ConfirmPassword" class="text-red-500 text-xs" />
+            </div>
+
+            <div class="flex gap-4 mt-6 justify-end">
+                <button class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-[0_0.8rem_2rem_rgba(229,9,20,0.16)] transition-all disabled:opacity-50" 
+                        type="submit" 
+                        disabled="@_isSubmitting">
+                    @(_isSubmitting ? "Registering..." : "Register")
+                </button>
+                <NavLink class="px-6 py-2 bg-[#232327] text-[#d0d0d2] border border-[#333] font-bold rounded-full hover:bg-[#2d2d31] transition-colors" 
+                         href="/login">
+                    Login
+                </NavLink>
+            </div>
+        </EditForm>
+    </section>
+</div>
+
+@code {
+    private readonly RegisterInput _model = new();
+    private string? _errorMessage;
+    private bool _isSubmitting;
+
+    private async Task HandleRegisterAsync()
+    {
+        _errorMessage = null;
+        _isSubmitting = true;
+
+        try
+        {
+            await AuthService.RegisterAsync(new RegisterRequest(_model.FirstName, _model.LastName, _model.Email, _model.Password));
+            Navigation.NavigateTo("/admin/home", replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

@@ -1,0 +1,51 @@
+@page "/admin/series/add"
+@layout AdminLayout
+@inject ISeriesService SeriesService
+@inject NavigationManager Navigation
+
+<PageTitle>Add Series</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6">
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Series</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Add Series</h1>
+            
+            <SeriesEditor FormModel="_formModel"
+                          Heading="Add Series"
+                          SubmitLabel="Add Series"
+                          IsSubmitting="_isSubmitting"
+                          ErrorMessage="@_errorMessage"
+                          OnSubmit="HandleSubmitAsync" />
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private readonly SeriesFormInput _formModel = new();
+    private bool _isSubmitting;
+    private string? _errorMessage;
+
+    private async Task HandleSubmitAsync(SeriesUpsertRequest request)
+    {
+        _isSubmitting = true;
+        _errorMessage = null;
+
+        try
+        {
+            await SeriesService.CreateSeriesAsync(request);
+            Navigation.NavigateTo("/admin/series", replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

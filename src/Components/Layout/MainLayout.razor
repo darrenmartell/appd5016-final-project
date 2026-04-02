@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+
+<div class="min-h-screen flex flex-col bg-[#141414]">
+    <!-- Header -->
+    <Navbar ShowSearch="false" />
+
+    <!-- Main Content -->
+    <main class="flex-grow px-6 py-8">
+        @Body
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet class="hidden fixed bottom-0 left-0 z-20 w-full bg-[#fff7d6] text-[#222] shadow-[0_-0.25rem_0.75rem_rgba(0,0,0,0.2)] px-5 py-3">
+    An unhandled error has occurred.
+    <a href="." class="reload ml-2 underline font-semibold">Reload</a>
+    <span class="dismiss absolute right-3 top-2 cursor-pointer">X</span>
+</div>

@@ -1,0 +1,162 @@
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject SeriesSearchState SeriesSearchState
+@implements IDisposable
+
+<header class="sticky top-0 z-20 w-full bg-[#141414] border-b border-[#333] backdrop-blur-sm px-6 py-4">
+    <nav class="flex items-center justify-between">
+        <!-- Logo and brand -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-[#ff3d47] to-[#b20710] rounded-full shadow-md"></div>
+            <div class="flex flex-col">
+                <div class="text-xl font-bold text-white">Harlen Coben Netflix Series</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div>
+            <AuthorizeView>
+                <Authorized Context="authState">
+                    <div class="flex items-center gap-6 text-[#a0a0a5]">
+                        <!-- Search input (hidden on mobile) -->
+                        @if (ShowSearch)
+                        {
+                            <input class="hidden md:block px-3 py-1 bg-[#333] border border-[#444] text-white rounded-md focus:outline-none focus:ring focus:border-[#e50914] placeholder:text-[#888]"
+                                   type="text"
+                                   placeholder="Search"
+                                   value="@SeriesSearchState.SearchTerm"
+                                   @oninput="HandleSearchInput" />
+                        }
+
+                        <!-- Account menu -->
+                        <div class="relative">
+                            <button type="button"
+                                    class="flex items-center gap-2 text-[#b3b3b3] hover:text-white transition-colors"
+                                    @onclick="ToggleDropdownAsync"
+                                    aria-expanded="@_isDropdownOpen"
+                                    aria-label="Account menu">
+                                <i class="fa-solid fa-user" aria-hidden="true"></i>
+                                <span class="hidden md:block font-medium">@GetDisplayName(authState.User)</span>
+                                <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            </button>
+
+                            @if (_isDropdownOpen)
+                            {
+                                <div class="absolute right-0 mt-4 w-48 bg-[#222] border border-[#333] shadow-lg rounded-md z-10">
+                                    <ul class="py-2">
+                                        <li>
+                                            <button type="button"
+                                                    class="w-full text-left px-4 py-2 text-[#b3b3b3] hover:bg-[#333] hover:text-white transition-colors"
+                                                    @onclick="HandleLogoutAsync">
+                                                Logout
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <nav class="flex items-center gap-6" aria-label="Primary links">
+                        <NavLink href="/login" 
+                                 class="text-[#a0a0a5] hover:text-white transition-colors text-sm font-medium" 
+                                 ActiveClass="text-white font-semibold" 
+                                 Match="NavLinkMatch.All">
+                            Login
+                        </NavLink>
+                        <NavLink href="/register" 
+                                 class="text-[#a0a0a5] hover:text-white transition-colors text-sm font-medium" 
+                                 ActiveClass="text-white font-semibold" 
+                                 Match="NavLinkMatch.All">
+                            Register
+                        </NavLink>
+                    </nav>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </nav>
+</header>
+
+@code {
+    [Parameter]
+    public bool ShowSearch { get; set; }
+
+    private bool _isDropdownOpen;
+    private CancellationTokenSource? _dropdownCloseTokenSource;
+
+    private async Task HandleLogoutAsync()
+    {
+        CloseDropdown();
+        await AuthService.LogoutAsync();
+        SeriesSearchState.SetSearchTerm(string.Empty);
+        Navigation.NavigateTo("/login", replace: true);
+    }
+
+    private Task ToggleDropdownAsync()
+    {
+        _isDropdownOpen = !_isDropdownOpen;
+
+        if (_isDropdownOpen)
+        {
+            ScheduleDropdownClose();
+        }
+        else
+        {
+            CancelDropdownClose();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void ScheduleDropdownClose()
+    {
+        CancelDropdownClose();
+        _dropdownCloseTokenSource = new CancellationTokenSource();
+        _ = CloseDropdownAfterDelayAsync(_dropdownCloseTokenSource.Token);
+    }
+
+    private async Task CloseDropdownAfterDelayAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+            _isDropdownOpen = false;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancellation when the user closes the menu manually.
+        }
+    }
+
+    private void CancelDropdownClose()
+    {
+        _dropdownCloseTokenSource?.Cancel();
+        _dropdownCloseTokenSource?.Dispose();
+        _dropdownCloseTokenSource = null;
+    }
+
+    private void CloseDropdown()
+    {
+        _isDropdownOpen = false;
+        CancelDropdownClose();
+    }
+
+    private void HandleSearchInput(ChangeEventArgs args)
+    {
+        SeriesSearchState.SetSearchTerm(args.Value?.ToString());
+    }
+
+    private static string GetDisplayName(ClaimsPrincipal user)
+    {
+        return user.FindFirst(ClaimTypes.Email)?.Value
+            ?? user.Identity?.Name
+            ?? "Signed in";
+    }
+
+    public void Dispose()
+    {
+        CancelDropdownClose();
+    }
+}
