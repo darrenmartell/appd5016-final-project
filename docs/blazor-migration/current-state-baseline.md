@@ -146,6 +146,43 @@ Use this checklist as the baseline for later phase validation.
 3. The mock API folder may be a stale teaching artifact rather than a usable parity test harness for this app.
 4. The current public accessibility of several `/admin/*` routes may be deliberate for assignment scope or may be an accidental security gap.
 
+## Phase 2 Auth Migration Notes
+
+These notes record the auth-related corrections or intentional preservations made in the Blazor migration.
+
+### Token Property Name Mismatch
+
+- Old React behavior: login expected `access_token`, while register expected `accessToken`.
+- Live backend validation result: both login and register return `access_token`.
+- Blazor behavior: the auth service accepts either token property name for both login and register.
+- Reason: the fallback support is harmless, but the deployed backend appears consistent.
+
+### Authenticated User Identifier Mismatch
+
+- Old React behavior: login and register stored `user.id`, but change password read `user._id`.
+- Live backend validation result: both login and register return `_id`.
+- Blazor behavior: the auth state stores both `id` and `_id` when available and uses an `EffectiveId` fallback for change password.
+- Reason: this avoids repeating the React inconsistency while preserving compatibility with either response shape.
+
+### Change Password Request Body
+
+- Old React behavior: change password validated three fields but submitted only the raw `newPassword` JSON string.
+- Live backend validation result: the deployed API does not expose a working change-password endpoint for the tested route and method variants.
+- Blazor behavior: the route remains present, but the page is now formally blocked with a user-visible message instead of attempting a failing request.
+- Reason: you confirmed that no backend change-password route exists yet, so the migration now records this as an accepted backend gap rather than an unknown contract mismatch.
+
+### Protected Routes
+
+- Old React behavior: `/admin/home`, `/admin/users`, `/admin/series`, and `/changepassword` were publicly routeable except for some nested destructive actions.
+- Blazor behavior: `/admin/home`, `/admin/users`, `/admin/series`, and `/changepassword` now redirect unauthenticated users to `/login`.
+- Reason: Phase 2 intentionally corrects the inconsistent route protection so protected pages align with the intended auth model.
+
+### Error Presentation
+
+- Old React behavior: auth failures surfaced user-visible root form messages.
+- Blazor behavior: login, register, and change password surface user-visible error messages for failed responses and connection failures.
+- Reason: the Phase 2 gate requires visible auth error states.
+
 ## Migration Success Criteria
 
 Phase gates should measure the migration against these expectations:

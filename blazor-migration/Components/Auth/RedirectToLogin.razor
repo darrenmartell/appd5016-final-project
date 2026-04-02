@@ -1,0 +1,27 @@
+@inject NavigationManager Navigation
+
+<section class="page-shell auth-card">
+    <span class="eyebrow">Authorization required</span>
+    <h1>Redirecting to login</h1>
+    <p class="muted">Phase 2 protects Blazor routes and sends unauthorized users to the login page.</p>
+</section>
+
+@code {
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var relativePath = "/" + Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        if (relativePath.StartsWith("/login", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var target = $"/login?returnUrl={Uri.EscapeDataString(relativePath)}";
+        Navigation.NavigateTo(target, replace: true);
+    }
+}

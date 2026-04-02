@@ -1,24 +1,83 @@
 @page "/register"
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <PageTitle>Register</PageTitle>
 
-<PhasePlaceholder Title="Register"
-                  Summary="The register route now exists in Blazor. The actual registration form, validation, and auth-state updates are deferred to Phase 2."
-                  RoutePath="/register"
-                  SourceFiles="RegisterSourceFiles"
-                  DeferredItems="RegisterDeferredItems" />
+<section class="page-shell auth-card">
+    <span class="eyebrow">Account access</span>
+    <h1>Register</h1>
+    <p class="muted">Phase 2 restores registration with the current name, email, password, and confirm-password rules.</p>
+
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <div class="status-error">@_errorMessage</div>
+    }
+
+    <EditForm Model="_model" OnValidSubmit="HandleRegisterAsync" class="form-stack">
+        <DataAnnotationsValidator />
+
+        <div class="form-field">
+            <label class="field-label" for="firstName">First Name</label>
+            <InputText id="firstName" class="field-input" @bind-Value="_model.FirstName" />
+            <ValidationMessage For="() => _model.FirstName" class="field-error" />
+        </div>
+
+        <div class="form-field">
+            <label class="field-label" for="lastName">Last Name</label>
+            <InputText id="lastName" class="field-input" @bind-Value="_model.LastName" />
+            <ValidationMessage For="() => _model.LastName" class="field-error" />
+        </div>
+
+        <div class="form-field">
+            <label class="field-label" for="registerEmail">Email</label>
+            <InputText id="registerEmail" class="field-input" @bind-Value="_model.Email" />
+            <ValidationMessage For="() => _model.Email" class="field-error" />
+        </div>
+
+        <div class="form-field">
+            <label class="field-label" for="registerPassword">Password</label>
+            <InputText id="registerPassword" type="password" class="field-input" @bind-Value="_model.Password" />
+            <ValidationMessage For="() => _model.Password" class="field-error" />
+        </div>
+
+        <div class="form-field">
+            <label class="field-label" for="confirmPassword">Confirm Password</label>
+            <InputText id="confirmPassword" type="password" class="field-input" @bind-Value="_model.ConfirmPassword" />
+            <ValidationMessage For="() => _model.ConfirmPassword" class="field-error" />
+        </div>
+
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-actions">
+            <button class="button-primary" type="submit" disabled="@_isSubmitting">@(_isSubmitting ? "Registering..." : "Submit")</button>
+            <NavLink class="button-secondary" href="/login">Login</NavLink>
+        </div>
+    </EditForm>
+</section>
 
 @code {
-    private static readonly string[] RegisterSourceFiles =
-    [
-        "src/pages/Register.jsx",
-        "src/context/AuthContext.jsx"
-    ];
+    private readonly RegisterInput _model = new();
+    private string? _errorMessage;
+    private bool _isSubmitting;
 
-    private static readonly string[] RegisterDeferredItems =
-    [
-        "Implement registration form and validation in Phase 2.",
-        "Restore token and user-state handling in Phase 2.",
-        "Restore post-register navigation to `/admin/home` in Phase 2."
-    ];
+    private async Task HandleRegisterAsync()
+    {
+        _errorMessage = null;
+        _isSubmitting = true;
+
+        try
+        {
+            await AuthService.RegisterAsync(new RegisterRequest(_model.FirstName, _model.LastName, _model.Email, _model.Password));
+            Navigation.NavigateTo("/admin/home", replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
 }

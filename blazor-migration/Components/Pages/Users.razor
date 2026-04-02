@@ -3,11 +3,18 @@
 
 <PageTitle>User Management</PageTitle>
 
-<PhasePlaceholder Title="User Management"
-                  Summary="This page establishes the Blazor route and admin-shell placement for the users slice. API wiring, table rendering, details, and delete behavior are deferred to Phase 3."
-                  RoutePath="/admin/users"
-                  SourceFiles="UsersSourceFiles"
-                  DeferredItems="UsersDeferredItems" />
+<AuthorizeView>
+    <Authorized>
+        <PhasePlaceholder Title="User Management"
+                          Summary="This page establishes the Blazor route and admin-shell placement for the users slice. API wiring, table rendering, details, and delete behavior are deferred to Phase 3."
+                          RoutePath="/admin/users"
+                          SourceFiles="UsersSourceFiles"
+                          DeferredItems="UsersDeferredItems" />
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private static readonly string[] UsersSourceFiles =

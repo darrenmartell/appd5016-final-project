@@ -3,11 +3,18 @@
 
 <PageTitle>Dashboard</PageTitle>
 
-<PhasePlaceholder Title="Dashboard"
-				  Summary="This route now exists in Blazor and sits inside the shared admin shell. Series search, cards, and live data are deferred to the series migration phase."
-				  RoutePath="/admin/home"
-				  SourceFiles="HomeSourceFiles"
-				  DeferredItems="HomeDeferredItems" />
+<AuthorizeView>
+	<Authorized>
+		<PhasePlaceholder Title="Dashboard"
+						  Summary="This route now exists in Blazor and sits inside the shared admin shell. Series search, cards, and live data are deferred to the series migration phase."
+						  RoutePath="/admin/home"
+						  SourceFiles="HomeSourceFiles"
+						  DeferredItems="HomeDeferredItems" />
+	</Authorized>
+	<NotAuthorized>
+		<RedirectToLogin />
+	</NotAuthorized>
+</AuthorizeView>
 
 @code {
 	private static readonly string[] HomeSourceFiles =

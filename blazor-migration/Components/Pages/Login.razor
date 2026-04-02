@@ -1,25 +1,80 @@
 @page "/login"
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <PageTitle>Login</PageTitle>
 
-<PhasePlaceholder Title="Login"
-                  Summary="The login route now exists in Blazor. The actual auth form, validation, error handling, and navigation behavior are deferred to Phase 2."
-                  RoutePath="/login"
-                  SourceFiles="LoginSourceFiles"
-                  DeferredItems="LoginDeferredItems" />
+<section class="page-shell auth-card">
+    <span class="eyebrow">Account access</span>
+    <h1>Login</h1>
+    <p class="muted">Phase 2 restores the login form, validation, and auth state updates for the external API.</p>
+
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <div class="status-error">@_errorMessage</div>
+    }
+
+    <EditForm Model="_model" OnValidSubmit="HandleLoginAsync" class="form-stack">
+        <DataAnnotationsValidator />
+
+        <div class="form-field">
+            <label class="field-label" for="email">Email</label>
+            <InputText id="email" class="field-input" @bind-Value="_model.Email" />
+            <ValidationMessage For="() => _model.Email" class="field-error" />
+        </div>
+
+        <div class="form-field">
+            <label class="field-label" for="password">Password</label>
+            <InputText id="password" type="password" class="field-input" @bind-Value="_model.Password" />
+            <ValidationMessage For="() => _model.Password" class="field-error" />
+        </div>
+
+        <ValidationSummary class="validation-summary" />
+
+        <div class="form-actions">
+            <button class="button-primary" type="submit" disabled="@_isSubmitting">@(_isSubmitting ? "Logging in..." : "Submit")</button>
+            <NavLink class="button-secondary" href="/register">Register</NavLink>
+        </div>
+    </EditForm>
+</section>
 
 @code {
-    private static readonly string[] LoginSourceFiles =
-    [
-        "src/pages/Login.jsx",
-        "src/context/AuthContext.jsx",
-        "src/routes/ProtectedRoute.jsx"
-    ];
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
 
-    private static readonly string[] LoginDeferredItems =
-    [
-        "Implement auth services and form validation in Phase 2.",
-        "Restore login error messaging and redirect behavior in Phase 2.",
-        "Attach protected-route logic in Phase 2."
-    ];
+    private readonly LoginInput _model = new();
+    private string? _errorMessage;
+    private bool _isSubmitting;
+
+    private async Task HandleLoginAsync()
+    {
+        _errorMessage = null;
+        _isSubmitting = true;
+
+        try
+        {
+            await AuthService.LoginAsync(new LoginRequest(_model.Email, _model.Password));
+            Navigation.NavigateTo(GetReturnTarget(), replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private string GetReturnTarget()
+    {
+        if (string.IsNullOrWhiteSpace(ReturnUrl) || !ReturnUrl.StartsWith('/'))
+        {
+            return "/admin/home";
+        }
+
+        return ReturnUrl.StartsWith("/login", StringComparison.OrdinalIgnoreCase)
+            ? "/admin/home"
+            : ReturnUrl;
+    }
 }

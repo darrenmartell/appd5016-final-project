@@ -1,30 +1,56 @@
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
 <header class="topbar">
     <div class="brand-lockup">
         <div class="brand-mark"></div>
         <div>
             <div class="brand-name">Harlen Coben Netflix Series</div>
-            <div class="brand-subtitle">Phase 1 shell in Blazor</div>
+            <div class="brand-subtitle">Blazor migration in progress</div>
         </div>
     </div>
 
     <div class="topbar-actions">
-        @if (ShowSearch)
-        {
-            <input class="search-input"
-                   type="text"
-                   placeholder="Search arrives in Phase 4"
-                   disabled />
-        }
+        <AuthorizeView>
+            <Authorized Context="authState">
+                @if (ShowSearch)
+                {
+                    <input class="search-input"
+                           type="text"
+                           placeholder="Search arrives in Phase 4"
+                           disabled />
+                }
 
-        <nav class="account-links" aria-label="Primary links">
-            <NavLink class="account-link" ActiveClass="account-link-active" href="/login" Match="NavLinkMatch.All">Login</NavLink>
-            <NavLink class="account-link" ActiveClass="account-link-active" href="/register" Match="NavLinkMatch.All">Register</NavLink>
-            <NavLink class="account-link" ActiveClass="account-link-active" href="/changepassword" Match="NavLinkMatch.All">Change Password</NavLink>
-        </nav>
+                <div class="account-links">
+                    <span class="account-pill">@GetDisplayName(authState.User)</span>
+                    <NavLink class="account-link" ActiveClass="account-link-active" href="/changepassword" Match="NavLinkMatch.All">Change Password</NavLink>
+                    <button type="button" class="account-link account-button" @onclick="HandleLogoutAsync">Logout</button>
+                </div>
+            </Authorized>
+            <NotAuthorized>
+                <nav class="account-links" aria-label="Primary links">
+                    <NavLink class="account-link" ActiveClass="account-link-active" href="/login" Match="NavLinkMatch.All">Login</NavLink>
+                    <NavLink class="account-link" ActiveClass="account-link-active" href="/register" Match="NavLinkMatch.All">Register</NavLink>
+                </nav>
+            </NotAuthorized>
+        </AuthorizeView>
     </div>
 </header>
 
 @code {
     [Parameter]
     public bool ShowSearch { get; set; }
+
+    private async Task HandleLogoutAsync()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login", replace: true);
+    }
+
+    private static string GetDisplayName(ClaimsPrincipal user)
+    {
+        return user.FindFirst(ClaimTypes.Email)?.Value
+            ?? user.Identity?.Name
+            ?? "Signed in";
+    }
 }

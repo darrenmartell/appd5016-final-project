@@ -59,7 +59,23 @@ Use this file to record the result of each migration phase.
   - change password implemented or formally blocked with evidence
   - protected-route behavior verified
   - auth error handling verified
-- Gate result: Not started
+- Validation evidence:
+  - `dotnet build appd5016-final-project.sln` succeeded after the Phase 2 auth implementation and route-guard changes.
+  - The login page at `/login` rendered the Phase 2 auth form and email field during runtime checks.
+  - An unauthenticated request to `/admin/home` rendered the redirect-to-login content during runtime checks.
+  - Live backend validation against `https://assignment2-restapi-darrenmartell-h.vercel.app` confirmed that both register and login return `_id` and `access_token`.
+  - The auth service accepts both `access_token` and `accessToken` and supports both `id` and `_id` for compatibility, even though the deployed backend returned `_id` and `access_token` consistently.
+  - Login and register were successfully exercised against the live backend with a disposable test user.
+  - Logout clears the in-memory auth state through `IAuthService.LogoutAsync` and the navbar switches back to unauthenticated links.
+  - The change-password route is now formally blocked with a user-visible message because you confirmed there is no backend change-password route yet.
+  - Login and register pages surface user-visible error messages for failed responses and connection failures.
+  - Live registration and login were successfully exercised against the deployed backend using a disposable test user.
+- Gate result: PASS
+- Decision date: 2026-04-01
+- Remaining open items:
+  - BLZ-007
+  - BLZ-008
+  - BLZ-010
 
 ## Phase 3
 
