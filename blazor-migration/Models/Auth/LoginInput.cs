@@ -9,6 +9,6 @@ public sealed class LoginInput
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [RegularExpression(ValidationPatterns.Password, ErrorMessage = ValidationPatterns.PasswordError)]
+    [RegularExpression(ValidationPatterns.StrongSecretRegex, ErrorMessage = ValidationPatterns.PasswordError)]
     public string Password { get; set; } = string.Empty;
 }

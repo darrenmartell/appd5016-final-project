@@ -1,15 +1,15 @@
 # Blazor Migration Runbook
 
-This folder contains the repo-specific documentation required to migrate the current React + Vite frontend to a Blazor Web App in gated phases.
+This folder now serves as the repo-local migration record for the completed move from the React + Vite frontend to the Blazor Web App.
 
 ## Purpose
 
-Use these files as the migration control plane:
+Use these files as the migration control plane and historical record:
 
 - `current-state-baseline.md`: frozen description of how the React app behaves today
 - `target-blazor-architecture.md`: agreed Blazor project shape and technical decisions
 - `phase-gates.md`: evidence log and gate checklist outcomes by phase
-- `migration-backlog.md`: risks, uncertainties, and deferred work
+- `migration-backlog.md`: residual risks, uncertainties, and approved corrections
 - `cutover-and-rollback.md`: final release and fallback plan
 
 ## Phase Order
@@ -23,11 +23,11 @@ Use these files as the migration control plane:
 
 ## Repo-Specific Migration Rules
 
-1. Preserve the React app in `src/` until Phase 5 PASS.
+1. The React app remains in `src/` as the repo-local fallback path after Phase 5 PASS.
 2. Recreate the missing Blazor project at `blazor-migration/BlazorMigration.csproj` because `appd5016-final-project.sln` already references that location.
 3. Treat the React files as the current behavior source of truth.
 4. Record every contract inconsistency or approved behavior correction in `migration-backlog.md`.
-5. Before Phase 1 or later code work, retrieve current Blazor Web App guidance with an MCP documentation source.
+5. Use the phase gates and backlog as the source of truth for what was preserved, corrected, or deferred.
 
 ## Core React Sources
 
@@ -39,4 +39,4 @@ Use these files as the migration control plane:
 
 ## Expected Outcome
 
-By the end of Phase 5, the Blazor app should replace the React frontend with documented parity for auth, dashboard, users, and series flows, plus a clear rollback path.
+Phase 5 is now PASS. The Blazor app replaces the React frontend for ongoing work, with documented parity for auth, dashboard, users, and series flows plus a clear repo-local rollback path.

@@ -15,11 +15,11 @@ public sealed class RegisterInput
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [RegularExpression(ValidationPatterns.Password, ErrorMessage = ValidationPatterns.PasswordError)]
+    [RegularExpression(ValidationPatterns.StrongSecretRegex, ErrorMessage = ValidationPatterns.PasswordError)]
     public string Password { get; set; } = string.Empty;
 
     [Required]
     [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
-    [RegularExpression(ValidationPatterns.Password, ErrorMessage = ValidationPatterns.PasswordError)]
+    [RegularExpression(ValidationPatterns.StrongSecretRegex, ErrorMessage = ValidationPatterns.PasswordError)]
     public string ConfirmPassword { get; set; } = string.Empty;
 }

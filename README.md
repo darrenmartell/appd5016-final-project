@@ -1,53 +1,63 @@
-## Live Frontend URL
+## Current Frontend State
 
-> Harlan Coben Series URL: (https://harlan-coben-series.netlify.app/)
+The repo now contains two frontend implementations:
 
----
+- The migrated Blazor Web App in `blazor-migration/`
+- The original React + Vite frontend in `src/`, retained as a repo-local fallback during cutover planning
 
-## API Integration Details
+The active migration record and gate evidence live under `docs/blazor-migration/`.
 
-This frontend integrates with a backend API. The API endpoints are defined in the `.env.development` and `.env.production` files. All non-GET and `/auth` requests are made using fetch and are protected by authentication (see `src/context/AuthContext.jsx`).
+## Blazor App
 
-**API endpoints:**
-- Series: `/api/series` (CRUD operations)
-- Users: `/api/users` (CRUD operations)
-- Auth: `/api/auth` (login, register)
+The Blazor app is the Phase 5 migration target and currently provides:
 
-**Integration:**
-- The frontend uses context and protected routes to manage authentication and API access.
-- See `src/pages/` for main page logic and `src/components/` for UI components.
+- Auth routes: `/login`, `/register`, `/changepassword`
+- Protected admin routes: `/admin/home`, `/admin/users`, `/admin/series`
+- Users list/details/delete
+- Series dashboard, list, details, add, update, and delete
 
----
+### Local Run
 
-## Setup Instructions for Local Development
+1. Restore and build the solution:
 
-1. **Clone the repository:**
-	```bash
-	git clone <repo-url>
-	cd assignment3-frontend-darrenmartell
-	```
+```bash
+dotnet build appd5016-final-project.sln
+```
 
-2. **Install dependencies:**
-	```bash
-	pnpm install
-	```
+2. Run the Blazor app:
 
-3. **Start the local development server:**
-	```bash
-	pnpm run dev
-	```
+```bash
+dotnet run --project blazor-migration/BlazorMigration.csproj
+```
 
-4. **Configure API endpoints:**
-	- Edit the `.env.development` and `.env.production` files to point to your local or remote API server.
+3. Open the local app at `http://localhost:5204`
 
----
+### Local Configuration
 
-## Additional Notes
+- The Blazor app uses `blazor-migration/appsettings.json`
+- Development launch settings live in `blazor-migration/Properties/launchSettings.json`
+- The current API base URL is `https://assignment2-restapi-darrenmartell-h.vercel.app`
 
-- For authentication and protected routes, see `src/context/AuthContext.jsx` and `src/routes/ProtectedRoute.jsx`.
+## React Fallback
 
-## Blazor Migration
+The original React frontend remains in the repo for rollback and comparison during migration closeout.
 
-- Migration prompts live in `.github/prompts/`.
-- Migration planning and gate documentation live in `docs/blazor-migration/`.
-- The existing solution already expects the Blazor project at `blazor-migration/BlazorMigration.csproj`.
+### Local Run
+
+1. Install dependencies:
+
+```bash
+pnpm install
+```
+
+2. Start the React dev server:
+
+```bash
+pnpm run dev
+```
+
+## Migration Docs
+
+- Migration prompts live in `.github/prompts/`
+- Migration planning and gate documentation live in `docs/blazor-migration/`
+- The repo-local cutover and rollback plan lives in `docs/blazor-migration/cutover-and-rollback.md`

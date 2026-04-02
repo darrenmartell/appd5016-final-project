@@ -7,24 +7,24 @@ This document records the intended Blazor project structure and architectural ch
 - Recreate the missing project at `blazor-migration/BlazorMigration.csproj`.
 - Reason: `appd5016-final-project.sln` already references this exact path.
 
-## Recommended Starting Point
+## Starting Point Used
 
-- Scaffold a Blazor Web App rather than an older Blazor Server or standalone WebAssembly template.
-- Favor a structure that supports nested layouts, routeable components, forms, and DI-friendly API services.
-- Retrieve current Blazor Web App documentation with MCP before scaffolding or changing architectural decisions.
+- The migration used a Blazor Web App rather than an older Blazor Server or standalone WebAssembly template.
+- The chosen structure supports nested layouts, routeable components, forms, and DI-friendly API services.
+- Current Blazor Web App guidance was used during scaffolding and migration planning.
 
 ## Initial Rendering Strategy
 
 - Default to the simplest Blazor Web App setup that supports SPA-like interactivity for the migrated pages.
 - Avoid adding extra client projects or browser persistence unless the later phases require them for parity.
 - Because the current React app does not persist auth across full refreshes, in-memory auth state is acceptable as the initial parity target.
-- Phase 1 uses the .NET 10 Blazor Web App template with interactive server rendering applied at the router so the shell can support sidebar collapse and future auth and search interactions without introducing a separate client project.
+- The app uses the .NET 10 Blazor Web App template with interactive server rendering applied at the router so the shell can support sidebar collapse and search interactions without introducing a separate client project.
 
-## Implemented Phase 1 Shell Structure
+## Final Blazor Structure
 
 - `Components/Layout/MainLayout.razor`: public layout with shared navbar
 - `Components/Layout/AdminLayout.razor`: admin shell with navbar, collapsible sidebar, and content region
-- `Components/Layout/Navbar.razor`: shared top navigation and placeholder search box
+- `Components/Layout/Navbar.razor`: shared top navigation and series search input
 - `Components/Layout/Sidebar.razor`: collapsible admin navigation
 - `Components/Layout/SidebarItem.razor`: active-link item component
 - `Components/Shared/PhasePlaceholder.razor`: placeholder panel used by scaffolded pages
@@ -36,8 +36,17 @@ This document records the intended Blazor project structure and architectural ch
 - `Components/Pages/Login.razor`: `/login`
 - `Components/Pages/Register.razor`: `/register`
 - `Components/Pages/ChangePassword.razor`: `/changepassword`
+- `Components/Pages/UserDetails.razor`: `/admin/users/{id}/details`
+- `Components/Pages/DeleteUser.razor`: `/admin/users/{id}/delete`
+- `Components/Pages/SeriesDetails.razor`: `/admin/series/{id}/details`
+- `Components/Pages/AddSeries.razor`: `/admin/series/add`
+- `Components/Pages/UpdateSeries.razor`: `/admin/series/{id}/update`
+- `Components/Pages/DeleteSeries.razor`: `/admin/series/{id}/delete`
+- `Components/Series/SeriesEditor.razor`: reusable series add/update form component
+- `Services/Users/*`: users API integration and delete behavior
+- `Services/Series/*`: series API integration, search state, and mutation behavior
 
-## Proposed Feature Mapping
+## Feature Mapping
 
 | Current React Area | Current Source | Target Blazor Area |
 | --- | --- | --- |
@@ -50,14 +59,14 @@ This document records the intended Blazor project structure and architectural ch
 | Series slice | `src/pages/Series.jsx`, `src/components/series/*` | series feature components/services |
 | Dashboard | `src/pages/Dashboard.jsx` | dashboard page using series search/filter state |
 
-## Expected Blazor Concerns
+## Architectural Notes
 
-1. `HttpClient` must be registered in a way that works for the chosen Blazor render mode.
-2. Route protection should use Blazor authorization patterns instead of React route wrappers.
-3. Forms should preserve current validation behavior before any UX improvements.
-4. Series form mapping should be implemented explicitly because it contains the most payload-shaping logic.
+1. `HttpClient` is registered through a named backend client configured from `ApiOptions`.
+2. Route protection uses Blazor authorization patterns and redirect-to-login rendering instead of React route wrappers.
+3. Forms preserve the documented validation behavior except where the deployed backend required an approved correction.
+4. Series form mapping remains explicit because it contains the most payload-shaping logic.
 
-## Phase Deliverables
+## Completed Deliverables
 
 ### Phase 1
 
