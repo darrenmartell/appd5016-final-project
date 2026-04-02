@@ -28,3 +28,7 @@ app.MapSeriesDomainEndpoints();
 app.MapSeriesEndpoints();
 
 app.Run();
+
+public partial class Program
+{
+}
