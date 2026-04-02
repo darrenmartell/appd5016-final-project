@@ -12,6 +12,20 @@ public sealed class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
+    public async Task<IReadOnlyList<UserDocument>> ListAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.Users
+            .OrderBy(user => user.FirstName)
+            .ThenBy(user => user.LastName)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<UserDocument?> FindByIdAsync(string id, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Users
+            .SingleOrDefaultAsync(user => user.Id == id, cancellationToken);
+    }
+
     public async Task<UserDocument?> FindByEmailAsync(string email, CancellationToken cancellationToken)
     {
         return await _dbContext.Users
@@ -23,5 +37,18 @@ public sealed class UserRepository : IUserRepository
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return user;
+    }
+
+    public async Task<UserDocument?> DeleteByIdAsync(string id, CancellationToken cancellationToken)
+    {
+        var existing = await FindByIdAsync(id, cancellationToken);
+        if (existing is null)
+        {
+            return null;
+        }
+
+        _dbContext.Users.Remove(existing);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return existing;
     }
 }

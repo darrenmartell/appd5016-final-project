@@ -1,6 +1,7 @@
 using System.Text;
 using Appd.Api.Auth;
 using Appd.Api.Common.Authorization;
+using Appd.Api.Services.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddProblemDetails();
 
         var jwtSection = configuration.GetSection(JwtOptions.SectionName);
+        services.Configure<JwtOptions>(jwtSection);
         var configuredSigningKey = jwtSection["Key"];
         var signingKey = string.IsNullOrWhiteSpace(configuredSigningKey)
             ? "development-signing-key-change-before-production"
@@ -39,6 +41,8 @@ public static class ServiceCollectionExtensions
             });
 
         services.AddAuthorization();
+        services.AddScoped<IAuthTokenService, JwtAuthTokenService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         var corsOrigins = configuration
             .GetSection("Cors:AllowedOrigins")
