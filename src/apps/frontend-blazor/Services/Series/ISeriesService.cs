@@ -1,6 +1,6 @@
-using BlazorMigration.Models.Series;
+using SeriesCatalog.Frontend.Models.Series;
 
-namespace BlazorMigration.Services.Series;
+namespace SeriesCatalog.Frontend.Services.Series;
 
 public interface ISeriesService
 {
@@ -12,3 +12,4 @@ public interface ISeriesService
 
     Task<SeriesRecord> DeleteSeriesAsync(string id, CancellationToken cancellationToken = default);
 }
+

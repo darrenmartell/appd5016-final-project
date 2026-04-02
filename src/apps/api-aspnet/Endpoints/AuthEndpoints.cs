@@ -1,13 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
-using Appd.Api.Common.Validation;
-using Appd.Api.Contracts.Auth;
-using Appd.Api.Services.Auth;
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.WebApi.Common.Validation;
+using SeriesCatalog.WebApi.Contracts.Auth;
+using SeriesCatalog.WebApi.Services.Auth;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Appd.Api.Endpoints;
+namespace SeriesCatalog.WebApi.Endpoints;
 
 public static class AuthEndpoints
 {
@@ -108,3 +108,5 @@ public static class AuthEndpoints
         return errors;
     }
 }
+
+

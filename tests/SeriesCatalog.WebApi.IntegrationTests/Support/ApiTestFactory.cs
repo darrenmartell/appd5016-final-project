@@ -1,10 +1,10 @@
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Appd.Api.IntegrationTests.Support;
+namespace SeriesCatalog.WebApi.IntegrationTests.Support;
 
 public sealed class ApiTestFactory : WebApplicationFactory<Program>
 {
@@ -22,3 +22,5 @@ public sealed class ApiTestFactory : WebApplicationFactory<Program>
         });
     }
 }
+
+

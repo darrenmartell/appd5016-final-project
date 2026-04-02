@@ -1,9 +1,9 @@
-using Appd.Api.Contracts.Auth;
-using Appd.Api.Auth;
-using Appd.Infrastructure.MongoDb.Documents;
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.WebApi.Contracts.Auth;
+using SeriesCatalog.WebApi.Auth;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 
-namespace Appd.Api.Services.Auth;
+namespace SeriesCatalog.WebApi.Services.Auth;
 
 public sealed class AuthService : IAuthService
 {
@@ -75,3 +75,5 @@ public sealed class AuthService : IAuthService
         return email.Trim().ToLowerInvariant();
     }
 }
+
+

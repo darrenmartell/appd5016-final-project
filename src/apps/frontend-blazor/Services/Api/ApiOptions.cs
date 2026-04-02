@@ -1,4 +1,4 @@
-namespace BlazorMigration.Services.Api;
+namespace SeriesCatalog.Frontend.Services.Api;
 
 public sealed class ApiOptions
 {
@@ -6,3 +6,4 @@ public sealed class ApiOptions
 
     public string BaseUrl { get; set; } = "http://localhost:3000";
 }
+

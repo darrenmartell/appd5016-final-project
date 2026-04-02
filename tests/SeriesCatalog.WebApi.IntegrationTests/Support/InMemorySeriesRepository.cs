@@ -1,9 +1,9 @@
 using System.Collections.Concurrent;
-using Appd.Infrastructure.MongoDb.Documents;
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 using MongoDB.Bson;
 
-namespace Appd.Api.IntegrationTests.Support;
+namespace SeriesCatalog.WebApi.IntegrationTests.Support;
 
 internal sealed class InMemorySeriesRepository : ISeriesRepository
 {
@@ -52,3 +52,5 @@ internal sealed class InMemorySeriesRepository : ISeriesRepository
         return Task.FromResult(deleted);
     }
 }
+
+

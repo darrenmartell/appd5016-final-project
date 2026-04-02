@@ -1,4 +1,4 @@
-namespace Appd.Api.Auth;
+namespace SeriesCatalog.WebApi.Auth;
 
 public sealed class JwtOptions
 {
@@ -12,3 +12,4 @@ public sealed class JwtOptions
 
     public int ExpiresMinutes { get; set; } = 30;
 }
+

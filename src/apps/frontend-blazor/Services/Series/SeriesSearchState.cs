@@ -1,4 +1,4 @@
-namespace BlazorMigration.Services.Series;
+namespace SeriesCatalog.Frontend.Services.Series;
 
 public sealed class SeriesSearchState
 {
@@ -19,3 +19,4 @@ public sealed class SeriesSearchState
         SearchChanged?.Invoke();
     }
 }
+

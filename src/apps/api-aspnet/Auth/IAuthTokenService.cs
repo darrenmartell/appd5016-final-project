@@ -1,8 +1,10 @@
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 
-namespace Appd.Api.Auth;
+namespace SeriesCatalog.WebApi.Auth;
 
 public interface IAuthTokenService
 {
     string CreateToken(UserDocument user);
 }
+
+

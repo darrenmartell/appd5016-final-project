@@ -1,11 +1,11 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using BlazorMigration.Models.Auth;
-using BlazorMigration.Services.Api;
+using SeriesCatalog.Frontend.Models.Auth;
+using SeriesCatalog.Frontend.Services.Api;
 using Microsoft.Extensions.Options;
 
-namespace BlazorMigration.Services.Auth;
+namespace SeriesCatalog.Frontend.Services.Auth;
 
 public sealed class AuthService : IAuthService
 {
@@ -151,3 +151,4 @@ public sealed class AuthService : IAuthService
         };
     }
 }
+

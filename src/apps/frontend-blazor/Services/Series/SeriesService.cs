@@ -1,12 +1,12 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using BlazorMigration.Models.Series;
-using BlazorMigration.Services.Api;
-using BlazorMigration.Services.Auth;
+using SeriesCatalog.Frontend.Models.Series;
+using SeriesCatalog.Frontend.Services.Api;
+using SeriesCatalog.Frontend.Services.Auth;
 using Microsoft.Extensions.Options;
 
-namespace BlazorMigration.Services.Series;
+namespace SeriesCatalog.Frontend.Services.Series;
 
 public sealed class SeriesService : ISeriesService
 {
@@ -122,3 +122,4 @@ public sealed class SeriesService : ISeriesService
         _ => "Unable to complete the series request right now."
     };
 }
+

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Appd.Api.Contracts.Series;
+namespace SeriesCatalog.WebApi.Contracts.Series;
 
 public sealed class SeriesUpsertRequest : IValidatableObject
 {
@@ -116,3 +116,4 @@ public sealed class SeriesUpsertRequest : IValidatableObject
         }
     }
 }
+

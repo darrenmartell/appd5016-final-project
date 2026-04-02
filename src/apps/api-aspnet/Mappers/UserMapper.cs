@@ -1,7 +1,7 @@
-using Appd.Api.Contracts.Users;
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.WebApi.Contracts.Users;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 
-namespace Appd.Api.Mappers;
+namespace SeriesCatalog.WebApi.Mappers;
 
 public static class UserMapper
 {
@@ -16,3 +16,5 @@ public static class UserMapper
         };
     }
 }
+
+

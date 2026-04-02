@@ -1,6 +1,6 @@
-using BlazorMigration.Models.Users;
+using SeriesCatalog.Frontend.Models.Users;
 
-namespace BlazorMigration.Services.Users;
+namespace SeriesCatalog.Frontend.Services.Users;
 
 public interface IUsersService
 {
@@ -8,3 +8,4 @@ public interface IUsersService
 
     Task DeleteUserAsync(string userId, CancellationToken cancellationToken = default);
 }
+

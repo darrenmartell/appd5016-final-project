@@ -1,4 +1,4 @@
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public sealed class SeriesRatingsInput
 {
@@ -10,3 +10,4 @@ public sealed class SeriesRatingsInput
 
     public string UserAverage { get; set; } = string.Empty;
 }
+

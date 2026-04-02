@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace BlazorMigration.Services.Auth;
+namespace SeriesCatalog.Frontend.Services.Auth;
 
 public sealed class BlazorAuthStateProvider : AuthenticationStateProvider, IDisposable
 {
@@ -27,3 +27,4 @@ public sealed class BlazorAuthStateProvider : AuthenticationStateProvider, IDisp
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 }
+

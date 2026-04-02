@@ -23,13 +23,13 @@ dotnet build appd5016-final-project.sln
 2. Run the Blazor app:
 
 ```bash
-dotnet run --project src/apps/frontend-blazor/BlazorMigration.csproj
+dotnet run --project src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj
 ```
 
 3. Run the API (separate terminal):
 
 ```bash
-dotnet run --project src/apps/api-aspnet/Appd.Api.csproj
+dotnet run --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj
 ```
 
 4. Open the local apps:
@@ -47,3 +47,4 @@ dotnet run --project src/apps/api-aspnet/Appd.Api.csproj
 
 - Migration prompts live in `.github/prompts/`
 - API migration planning and gate documentation live in docs/api-migration
+

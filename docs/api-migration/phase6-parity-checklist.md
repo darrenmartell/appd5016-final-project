@@ -5,7 +5,7 @@ Date: 2026-04-02
 ## Automated Integration Coverage
 
 Test project:
-- tests/Appd.Api.IntegrationTests
+- tests/SeriesCatalog.WebApi.IntegrationTests
 
 Covered scenarios:
 1. Register response contract includes access_token and _id.

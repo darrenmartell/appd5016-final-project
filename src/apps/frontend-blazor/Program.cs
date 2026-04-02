@@ -1,8 +1,8 @@
-using BlazorMigration.Components;
-using BlazorMigration.Services.Api;
-using BlazorMigration.Services.Auth;
-using BlazorMigration.Services.Series;
-using BlazorMigration.Services.Users;
+using SeriesCatalog.Frontend.Components;
+using SeriesCatalog.Frontend.Services.Api;
+using SeriesCatalog.Frontend.Services.Auth;
+using SeriesCatalog.Frontend.Services.Series;
+using SeriesCatalog.Frontend.Services.Users;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,3 +41,5 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 await app.RunAsync();
+
+

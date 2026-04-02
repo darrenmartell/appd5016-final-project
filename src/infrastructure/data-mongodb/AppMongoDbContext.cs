@@ -1,7 +1,7 @@
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 using Microsoft.EntityFrameworkCore;
 
-namespace Appd.Infrastructure.MongoDb;
+namespace SeriesCatalog.Infrastructure.MongoDb;
 
 public sealed class AppMongoDbContext(DbContextOptions<AppMongoDbContext> options) : DbContext(options)
 {
@@ -19,3 +19,4 @@ public sealed class AppMongoDbContext(DbContextOptions<AppMongoDbContext> option
         });
     }
 }
+

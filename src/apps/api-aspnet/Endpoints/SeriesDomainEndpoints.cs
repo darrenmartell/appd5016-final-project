@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
-using Appd.Api.Common.Validation;
-using Appd.Api.Contracts.Series;
-using Appd.Api.Services.Series;
+using SeriesCatalog.WebApi.Common.Validation;
+using SeriesCatalog.WebApi.Contracts.Series;
+using SeriesCatalog.WebApi.Services.Series;
 
-namespace Appd.Api.Endpoints;
+namespace SeriesCatalog.WebApi.Endpoints;
 
 public static partial class SeriesDomainEndpoints
 {
@@ -103,3 +103,4 @@ public static partial class SeriesDomainEndpoints
         return !string.IsNullOrWhiteSpace(id) && MongoObjectIdRegex().IsMatch(id);
     }
 }
+

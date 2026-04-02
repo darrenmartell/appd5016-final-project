@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Appd.Api.Contracts.Series;
+namespace SeriesCatalog.WebApi.Contracts.Series;
 
 internal static class SeriesValidation
 {
@@ -74,3 +74,4 @@ internal static class SeriesValidation
         }
     }
 }
+

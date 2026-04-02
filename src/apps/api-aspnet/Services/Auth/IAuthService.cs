@@ -1,6 +1,6 @@
-using Appd.Api.Contracts.Auth;
+using SeriesCatalog.WebApi.Contracts.Auth;
 
-namespace Appd.Api.Services.Auth;
+namespace SeriesCatalog.WebApi.Services.Auth;
 
 public interface IAuthService
 {
@@ -8,3 +8,4 @@ public interface IAuthService
 
     Task<(LoginResponse? Response, bool UserExists)> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken);
 }
+

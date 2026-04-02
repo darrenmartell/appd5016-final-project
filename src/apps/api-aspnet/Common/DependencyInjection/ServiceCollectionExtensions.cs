@@ -1,12 +1,12 @@
 using System.Text;
-using Appd.Api.Auth;
-using Appd.Api.Common.Authorization;
-using Appd.Api.Services.Auth;
-using Appd.Api.Services.Series;
+using SeriesCatalog.WebApi.Auth;
+using SeriesCatalog.WebApi.Common.Authorization;
+using SeriesCatalog.WebApi.Services.Auth;
+using SeriesCatalog.WebApi.Services.Series;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Appd.Api.Common.DependencyInjection;
+namespace SeriesCatalog.WebApi.Common.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -83,3 +83,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+

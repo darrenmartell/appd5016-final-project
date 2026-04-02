@@ -1,4 +1,4 @@
-namespace Appd.Infrastructure.MongoDb.Options;
+namespace SeriesCatalog.Infrastructure.MongoDb.Options;
 
 public sealed class MongoOptions
 {
@@ -8,3 +8,4 @@ public sealed class MongoOptions
 
     public string DatabaseName { get; set; } = string.Empty;
 }
+

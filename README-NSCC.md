@@ -14,8 +14,8 @@ This project now uses:
 
 ```bash
 dotnet build appd5016-final-project.sln
-dotnet run --project src/apps/api-aspnet/Appd.Api.csproj
-dotnet run --project src/apps/frontend-blazor/BlazorMigration.csproj
+dotnet run --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj
+dotnet run --project src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj
 ```
 
 Open:
@@ -29,3 +29,4 @@ Set API base URL in:
 
 - src/apps/frontend-blazor/appsettings.json
 - src/apps/frontend-blazor/appsettings.Development.json
+

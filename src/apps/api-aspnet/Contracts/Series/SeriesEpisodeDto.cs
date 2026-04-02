@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Appd.Api.Contracts.Series;
+namespace SeriesCatalog.WebApi.Contracts.Series;
 
 public sealed class SeriesEpisodeDto
 {
@@ -18,3 +18,4 @@ public sealed class SeriesEpisodeDto
     [Range(1, int.MaxValue)]
     public int RuntimeMinutes { get; init; }
 }
+

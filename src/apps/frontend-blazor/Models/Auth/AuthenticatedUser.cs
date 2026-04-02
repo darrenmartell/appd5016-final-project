@@ -1,4 +1,4 @@
-namespace BlazorMigration.Models.Auth;
+namespace SeriesCatalog.Frontend.Models.Auth;
 
 public sealed class AuthenticatedUser
 {
@@ -14,3 +14,4 @@ public sealed class AuthenticatedUser
 
     public string? EffectiveId => !string.IsNullOrWhiteSpace(LegacyId) ? LegacyId : Id;
 }
+

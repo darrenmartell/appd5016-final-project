@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorMigration.Models.Auth;
+namespace SeriesCatalog.Frontend.Models.Auth;
 
 public sealed class RegisterInput
 {
@@ -23,3 +23,4 @@ public sealed class RegisterInput
     [RegularExpression(ValidationPatterns.StrongSecretRegex, ErrorMessage = ValidationPatterns.PasswordError)]
     public string ConfirmPassword { get; set; } = string.Empty;
 }
+

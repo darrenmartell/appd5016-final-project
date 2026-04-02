@@ -1,4 +1,4 @@
-namespace Appd.Api.Endpoints;
+namespace SeriesCatalog.WebApi.Endpoints;
 
 public static class HealthEndpoints
 {
@@ -10,3 +10,4 @@ public static class HealthEndpoints
         return endpoints;
     }
 }
+

@@ -1,11 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Appd.Api.Auth;
+namespace SeriesCatalog.WebApi.Auth;
 
 public sealed class JwtAuthTokenService : IAuthTokenService
 {
@@ -42,3 +42,5 @@ public sealed class JwtAuthTokenService : IAuthTokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
+
+

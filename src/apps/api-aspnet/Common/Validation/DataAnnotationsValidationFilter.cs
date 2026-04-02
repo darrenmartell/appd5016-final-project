@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Appd.Api.Common.Validation;
+namespace SeriesCatalog.WebApi.Common.Validation;
 
 public sealed class DataAnnotationsValidationFilter<TRequest> : IEndpointFilter where TRequest : class
 {
@@ -41,3 +41,4 @@ public sealed class DataAnnotationsValidationFilter<TRequest> : IEndpointFilter 
         return TypedResults.ValidationProblem(errors);
     }
 }
+

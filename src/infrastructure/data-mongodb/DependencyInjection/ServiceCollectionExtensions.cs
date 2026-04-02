@@ -1,12 +1,12 @@
-using Appd.Infrastructure.MongoDb.Options;
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.Infrastructure.MongoDb.Options;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Appd.Infrastructure.MongoDb.DependencyInjection;
+namespace SeriesCatalog.Infrastructure.MongoDb.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -42,3 +42,4 @@ public static class ServiceCollectionExtensions
         return services;
     }
 }
+

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Appd.Api.Contracts.Users;
+namespace SeriesCatalog.WebApi.Contracts.Users;
 
 public class UserResponse
 {
@@ -13,3 +13,4 @@ public class UserResponse
 
     public string LastName { get; init; } = string.Empty;
 }
+

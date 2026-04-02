@@ -1,4 +1,4 @@
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public static class SeriesFormMapper
 {
@@ -110,3 +110,4 @@ public static class SeriesFormMapper
         return parsedValue;
     }
 }
+

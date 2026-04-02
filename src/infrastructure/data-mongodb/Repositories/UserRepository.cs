@@ -1,67 +1,59 @@
-using Appd.Infrastructure.MongoDb.Documents;
-using Microsoft.EntityFrameworkCore;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
+using MongoDB.Driver;
 
-namespace Appd.Infrastructure.MongoDb.Repositories;
+namespace SeriesCatalog.Infrastructure.MongoDb.Repositories;
 
 public sealed class UserRepository : IUserRepository
 {
-    private readonly AppMongoDbContext _dbContext;
+    private readonly IMongoCollection<UserDocument> _users;
 
-    public UserRepository(AppMongoDbContext dbContext)
+    public UserRepository(IMongoDatabase database)
     {
-        _dbContext = dbContext;
+        _users = database.GetCollection<UserDocument>("users");
     }
 
     public async Task<IReadOnlyList<UserDocument>> ListAsync(CancellationToken cancellationToken)
     {
-        return await _dbContext.Users
-            .OrderBy(user => user.FirstName)
+        return await _users.Find(FilterDefinition<UserDocument>.Empty)
+            .SortBy(user => user.FirstName)
             .ThenBy(user => user.LastName)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<UserDocument?> FindByIdAsync(string id, CancellationToken cancellationToken)
     {
-        return await _dbContext.Users
-            .SingleOrDefaultAsync(user => user.Id == id, cancellationToken);
+        return await _users.Find(user => user.Id == id)
+            .SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<UserDocument?> FindByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        return await _dbContext.Users
-            .SingleOrDefaultAsync(user => user.Email == email, cancellationToken);
+        return await _users.Find(user => user.Email == email)
+            .SingleOrDefaultAsync(cancellationToken);
     }
 
     public async Task<UserDocument> AddAsync(UserDocument user, CancellationToken cancellationToken)
     {
-        _dbContext.Users.Add(user);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _users.InsertOneAsync(user, cancellationToken: cancellationToken);
         return user;
     }
 
     public async Task<UserDocument?> UpdatePasswordHashAsync(string id, string passwordHash, CancellationToken cancellationToken)
     {
-        var existing = await FindByIdAsync(id, cancellationToken);
-        if (existing is null)
+        var options = new FindOneAndUpdateOptions<UserDocument>
         {
-            return null;
-        }
+            ReturnDocument = ReturnDocument.After
+        };
 
-        existing.PasswordHash = passwordHash;
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return existing;
+        var update = Builders<UserDocument>.Update
+            .Set(user => user.PasswordHash, passwordHash);
+
+        return await _users.FindOneAndUpdateAsync(user => user.Id == id, update, options, cancellationToken);
     }
 
     public async Task<UserDocument?> DeleteByIdAsync(string id, CancellationToken cancellationToken)
     {
-        var existing = await FindByIdAsync(id, cancellationToken);
-        if (existing is null)
-        {
-            return null;
-        }
-
-        _dbContext.Users.Remove(existing);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return existing;
+        return await _users.FindOneAndDeleteAsync(user => user.Id == id, cancellationToken: cancellationToken);
     }
 }
+

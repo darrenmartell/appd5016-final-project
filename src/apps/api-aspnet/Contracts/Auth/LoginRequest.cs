@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Appd.Api.Contracts.Auth;
+namespace SeriesCatalog.WebApi.Contracts.Auth;
 
 public sealed class LoginRequest
 {
@@ -15,3 +15,4 @@ public sealed class LoginRequest
         ErrorMessage = "Password must contain uppercase, lowercase, digit, and special character")]
     public string Password { get; init; } = string.Empty;
 }
+

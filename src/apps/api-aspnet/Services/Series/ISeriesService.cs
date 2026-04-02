@@ -1,7 +1,7 @@
-using Appd.Api.Contracts.Series;
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.WebApi.Contracts.Series;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 
-namespace Appd.Api.Services.Series;
+namespace SeriesCatalog.WebApi.Services.Series;
 
 public interface ISeriesService
 {
@@ -17,3 +17,5 @@ public interface ISeriesService
 
     Task<SeriesDocument?> DeleteAsync(string id, CancellationToken cancellationToken);
 }
+
+

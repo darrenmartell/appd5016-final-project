@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using BlazorMigration.Models.Auth;
+using SeriesCatalog.Frontend.Models.Auth;
 
-namespace BlazorMigration.Services.Auth;
+namespace SeriesCatalog.Frontend.Services.Auth;
 
 public sealed class ClientAuthState
 {
@@ -60,3 +60,4 @@ public sealed class ClientAuthState
         return new ClaimsPrincipal(new ClaimsIdentity(claims, "CustomAuth"));
     }
 }
+

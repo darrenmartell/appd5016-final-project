@@ -1,6 +1,6 @@
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 
-namespace Appd.Infrastructure.MongoDb.Repositories;
+namespace SeriesCatalog.Infrastructure.MongoDb.Repositories;
 
 public interface IUserRepository
 {
@@ -16,3 +16,4 @@ public interface IUserRepository
 
     Task<UserDocument?> DeleteByIdAsync(string id, CancellationToken cancellationToken);
 }
+

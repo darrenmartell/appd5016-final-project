@@ -1,11 +1,11 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using BlazorMigration.Models.Users;
-using BlazorMigration.Services.Auth;
-using BlazorMigration.Services.Api;
+using SeriesCatalog.Frontend.Models.Users;
+using SeriesCatalog.Frontend.Services.Auth;
+using SeriesCatalog.Frontend.Services.Api;
 using Microsoft.Extensions.Options;
 
-namespace BlazorMigration.Services.Users;
+namespace SeriesCatalog.Frontend.Services.Users;
 
 public sealed class UsersService : IUsersService
 {
@@ -108,3 +108,4 @@ public sealed class UsersService : IUsersService
         };
     }
 }
+

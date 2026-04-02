@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public sealed class SeriesRecord
 {
@@ -46,3 +46,4 @@ public sealed class SeriesRecord
     [JsonPropertyName("episodes")]
     public List<SeriesEpisode> Episodes { get; set; } = [];
 }
+

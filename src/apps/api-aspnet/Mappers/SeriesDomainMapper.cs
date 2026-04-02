@@ -1,7 +1,7 @@
-using Appd.Api.Contracts.Series;
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.WebApi.Contracts.Series;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 
-namespace Appd.Api.Mappers;
+namespace SeriesCatalog.WebApi.Mappers;
 
 public static class SeriesDomainMapper
 {
@@ -143,3 +143,5 @@ public static class SeriesDomainMapper
         }
     }
 }
+
+

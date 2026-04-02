@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public sealed class SeriesEpisode
 {
@@ -13,3 +13,4 @@ public sealed class SeriesEpisode
     [JsonPropertyName("runtime_minutes")]
     public int RuntimeMinutes { get; set; }
 }
+

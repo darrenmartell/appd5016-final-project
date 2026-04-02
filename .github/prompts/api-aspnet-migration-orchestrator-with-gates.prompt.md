@@ -227,7 +227,7 @@ Use this exact structure:
 ## Suggested Validation Commands
 
 - dotnet build appd5016-final-project.sln
-- dotnet run --project src/apps/api-aspnet/Appd.Api.csproj
+- dotnet run --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj
 - dotnet test
 
 If dotnet test is unavailable due to missing test projects, state that explicitly and run targeted smoke checks instead.

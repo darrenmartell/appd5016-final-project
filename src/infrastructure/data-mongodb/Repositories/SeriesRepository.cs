@@ -1,7 +1,7 @@
-using Appd.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
 using MongoDB.Driver;
 
-namespace Appd.Infrastructure.MongoDb.Repositories;
+namespace SeriesCatalog.Infrastructure.MongoDb.Repositories;
 
 public sealed class SeriesRepository : ISeriesRepository
 {
@@ -9,7 +9,7 @@ public sealed class SeriesRepository : ISeriesRepository
 
     public SeriesRepository(IMongoDatabase database)
     {
-        _series = database.GetCollection<SeriesDocument>("Series");
+        _series = database.GetCollection<SeriesDocument>("series");
     }
 
     public async Task<IReadOnlyList<SeriesDocument>> ListAsync(CancellationToken cancellationToken)
@@ -47,3 +47,4 @@ public sealed class SeriesRepository : ISeriesRepository
         return await _series.FindOneAndDeleteAsync(item => item.Id == id, cancellationToken: cancellationToken);
     }
 }
+

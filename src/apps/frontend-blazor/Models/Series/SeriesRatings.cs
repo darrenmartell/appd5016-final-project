@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public sealed class SeriesRatings
 {
@@ -16,3 +16,4 @@ public sealed class SeriesRatings
     [JsonPropertyName("user_average")]
     public double? UserAverage { get; set; }
 }
+

@@ -1,6 +1,6 @@
-using BlazorMigration.Models.Auth;
+using SeriesCatalog.Frontend.Models.Auth;
 
-namespace BlazorMigration.Services.Auth;
+namespace SeriesCatalog.Frontend.Services.Auth;
 
 public interface IAuthService
 {
@@ -12,3 +12,4 @@ public interface IAuthService
 
     Task LogoutAsync();
 }
+

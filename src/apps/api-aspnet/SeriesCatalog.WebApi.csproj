@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>SeriesCatalog.WebApi</AssemblyName>
+    <RootNamespace>SeriesCatalog.WebApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\infrastructure\data-mongodb\Appd.Infrastructure.MongoDb.csproj" />
+    <ProjectReference Include="..\..\infrastructure\data-mongodb\SeriesCatalog.Infrastructure.MongoDb.csproj" />
   </ItemGroup>
 
 </Project>
+

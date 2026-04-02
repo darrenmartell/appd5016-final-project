@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using Appd.Api.Contracts.Users;
+using SeriesCatalog.WebApi.Contracts.Users;
 
-namespace Appd.Api.Contracts.Auth;
+namespace SeriesCatalog.WebApi.Contracts.Auth;
 
 public sealed class LoginResponse : UserResponse
 {
@@ -10,3 +10,4 @@ public sealed class LoginResponse : UserResponse
     [JsonPropertyName("access_token")]
     public string AccessToken { get; init; } = string.Empty;
 }
+

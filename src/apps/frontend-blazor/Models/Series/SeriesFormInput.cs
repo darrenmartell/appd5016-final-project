@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public sealed class SeriesFormInput : IValidatableObject
 {
@@ -74,3 +74,4 @@ public sealed class SeriesFormInput : IValidatableObject
         return double.TryParse(value, out parsedValue) && parsedValue > 0 && parsedValue <= maxValue;
     }
 }
+

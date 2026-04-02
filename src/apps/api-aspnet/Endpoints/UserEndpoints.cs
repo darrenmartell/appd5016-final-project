@@ -1,7 +1,7 @@
-using Appd.Api.Mappers;
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.WebApi.Mappers;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 
-namespace Appd.Api.Endpoints;
+namespace SeriesCatalog.WebApi.Endpoints;
 
 public static class UserEndpoints
 {
@@ -44,3 +44,5 @@ public static class UserEndpoints
         return endpoints;
     }
 }
+
+

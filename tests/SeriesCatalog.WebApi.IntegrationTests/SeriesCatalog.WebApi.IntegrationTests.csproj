@@ -22,8 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\apps\api-aspnet\Appd.Api.csproj" />
-    <ProjectReference Include="..\..\src\infrastructure\data-mongodb\Appd.Infrastructure.MongoDb.csproj" />
+    <ProjectReference Include="..\..\src\apps\api-aspnet\SeriesCatalog.WebApi.csproj" />
+    <ProjectReference Include="..\..\src\infrastructure\data-mongodb\SeriesCatalog.Infrastructure.MongoDb.csproj" />
   </ItemGroup>
 
 </Project>
+

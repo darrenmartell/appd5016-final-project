@@ -1,4 +1,4 @@
-namespace BlazorMigration.Models.Users;
+namespace SeriesCatalog.Frontend.Models.Users;
 
 public sealed class UserSummary
 {
@@ -10,3 +10,4 @@ public sealed class UserSummary
 
     public string Email { get; init; } = string.Empty;
 }
+

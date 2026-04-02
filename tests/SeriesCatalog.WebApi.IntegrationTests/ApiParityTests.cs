@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Appd.Api.Contracts.Auth;
-using Appd.Api.IntegrationTests.Support;
+using SeriesCatalog.WebApi.Contracts.Auth;
+using SeriesCatalog.WebApi.IntegrationTests.Support;
 using Xunit;
 
-namespace Appd.Api.IntegrationTests;
+namespace SeriesCatalog.WebApi.IntegrationTests;
 
 public sealed class ApiParityTests : IClassFixture<ApiTestFactory>
 {
@@ -230,3 +230,4 @@ public sealed class ApiParityTests : IClassFixture<ApiTestFactory>
         return $"phase6_{Guid.NewGuid():N}@example.com";
     }
 }
+

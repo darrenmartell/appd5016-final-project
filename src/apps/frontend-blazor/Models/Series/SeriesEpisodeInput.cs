@@ -1,4 +1,4 @@
-namespace BlazorMigration.Models.Series;
+namespace SeriesCatalog.Frontend.Models.Series;
 
 public sealed class SeriesEpisodeInput
 {
@@ -8,3 +8,4 @@ public sealed class SeriesEpisodeInput
 
     public string RuntimeMinutes { get; set; } = string.Empty;
 }
+

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorMigration.Models.Auth;
+namespace SeriesCatalog.Frontend.Models.Auth;
 
 public sealed class ChangePasswordInput
 {
@@ -17,3 +17,4 @@ public sealed class ChangePasswordInput
     [RegularExpression(ValidationPatterns.StrongSecretRegex, ErrorMessage = ValidationPatterns.PasswordError)]
     public string ConfirmPassword { get; set; } = string.Empty;
 }
+

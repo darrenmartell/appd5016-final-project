@@ -1,9 +1,9 @@
-using Appd.Api.Contracts.Series;
-using Appd.Api.Mappers;
-using Appd.Infrastructure.MongoDb.Documents;
-using Appd.Infrastructure.MongoDb.Repositories;
+using SeriesCatalog.WebApi.Contracts.Series;
+using SeriesCatalog.WebApi.Mappers;
+using SeriesCatalog.Infrastructure.MongoDb.Documents;
+using SeriesCatalog.Infrastructure.MongoDb.Repositories;
 
-namespace Appd.Api.Services.Series;
+namespace SeriesCatalog.WebApi.Services.Series;
 
 public sealed class SeriesService : ISeriesService
 {
@@ -58,3 +58,5 @@ public sealed class SeriesService : ISeriesService
         return _seriesRepository.DeleteByIdAsync(id, cancellationToken);
     }
 }
+
+
