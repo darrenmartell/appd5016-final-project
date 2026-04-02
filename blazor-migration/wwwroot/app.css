@@ -167,6 +167,78 @@ input {
     color: #ffb2b9;
 }
 
+.panel-shell {
+    max-width: 72rem;
+    margin: 0 auto;
+}
+
+.users-table-wrap {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 38rem;
+}
+
+.users-table th,
+.users-table td {
+    padding: 1rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid #323237;
+}
+
+.users-table thead {
+    background: #17171a;
+}
+
+.users-table tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.users-actions {
+    display: flex;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.button-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.details-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.detail-row {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.detail-label {
+    color: var(--text-2);
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.danger-card {
+    border-color: rgba(221, 75, 94, 0.35);
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

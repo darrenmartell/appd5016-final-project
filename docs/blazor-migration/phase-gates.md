@@ -84,7 +84,21 @@ Use this file to record the result of each migration phase.
   - users list/details/delete verified
   - loading/empty/error states verified
   - bearer token usage verified for protected actions
-- Gate result: Not started
+- Validation evidence:
+  - `dotnet build blazor-migration/BlazorMigration.csproj` succeeded after the Phase 3 users slice implementation.
+  - Runtime checks against `http://localhost:5204/admin/users`, `http://localhost:5204/admin/users/test-id/details`, and `http://localhost:5204/admin/users/test-id/delete` all returned `200` and rendered the redirect-to-login content when unauthenticated.
+  - The Blazor users slice now includes a real users list page plus routeable details and delete pages backed by `IUsersService`.
+  - The users list page handles loading, empty, and API error states directly in the page UI.
+  - The details page handles loading, missing-user, and API error states directly in the page UI.
+  - The delete page handles loading, missing-user, self-delete-blocked, in-flight delete, and API error states directly in the page UI.
+  - Live backend validation against `https://assignment2-restapi-darrenmartell-h.vercel.app` confirmed that `DELETE /users/{id}` returns `401` without a bearer token and succeeds with a valid bearer token for a disposable test user.
+  - The delete UI preserves the React parity rule that the currently logged-in user cannot delete their own account from the users screen.
+- Gate result: PASS
+- Decision date: 2026-04-01
+- Remaining open items:
+  - BLZ-007
+  - BLZ-008
+  - BLZ-010
 
 ## Phase 4
 

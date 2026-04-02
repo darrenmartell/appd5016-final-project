@@ -1,6 +1,7 @@
 using BlazorMigration.Components;
 using BlazorMigration.Services.Api;
 using BlazorMigration.Services.Auth;
+using BlazorMigration.Services.Users;
 using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddScoped<ClientAuthState>();
 builder.Services.AddScoped<BlazorAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<BlazorAuthStateProvider>());
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddHttpClient("BackendApi", (sp, client) =>
 {
     var apiOptions = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApiOptions>>().Value;
@@ -35,4 +37,4 @@ app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+await app.RunAsync();

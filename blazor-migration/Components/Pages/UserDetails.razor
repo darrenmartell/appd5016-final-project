@@ -1,0 +1,86 @@
+@page "/admin/users/{Id}/details"
+@layout AdminLayout
+@inject IUsersService UsersService
+@inject NavigationManager Navigation
+
+<PageTitle>User Details</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="page-shell panel-shell">
+            <span class="eyebrow">Phase 3 users slice</span>
+            <h1>User Details</h1>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="status-error">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="status-info">Loading user details...</div>
+            }
+            else if (_user is null)
+            {
+                <div class="status-info">User not found.</div>
+            }
+            else
+            {
+                <div class="details-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">ID</span>
+                        <span>@_user.Id</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Name</span>
+                        <span>@_user.FirstName @_user.LastName</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span>@_user.Email</span>
+                    </div>
+                </div>
+            }
+
+            <div class="form-actions">
+                <button class="button-secondary" type="button" @onclick="GoBack">Back to Users List</button>
+            </div>
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    private UserSummary? _user;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var users = await UsersService.GetUsersAsync();
+            _user = users.FirstOrDefault(item => item.Id == Id);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/admin/users");
+    }
+}

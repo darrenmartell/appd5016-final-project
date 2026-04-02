@@ -1,15 +1,59 @@
 @page "/admin/users"
 @layout AdminLayout
+@inject IUsersService UsersService
 
 <PageTitle>User Management</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <PhasePlaceholder Title="User Management"
-                          Summary="This page establishes the Blazor route and admin-shell placement for the users slice. API wiring, table rendering, details, and delete behavior are deferred to Phase 3."
-                          RoutePath="/admin/users"
-                          SourceFiles="UsersSourceFiles"
-                          DeferredItems="UsersDeferredItems" />
+        <section class="page-shell panel-shell">
+            <span class="eyebrow">Phase 3 users slice</span>
+            <h1>User Management</h1>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="status-error">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="status-info">Loading users...</div>
+            }
+            else if (_users.Count == 0)
+            {
+                <div class="status-info">No users found.</div>
+            }
+            else
+            {
+                <div class="users-table-wrap">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in _users)
+                            {
+                                <tr>
+                                    <td>@user.FirstName</td>
+                                    <td>@user.LastName</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        <div class="users-actions">
+                                            <a class="button-secondary button-link" href="@($"/admin/users/{user.Id}/details")">Details</a>
+                                            <a class="button-secondary button-link" href="@($"/admin/users/{user.Id}/delete")">Delete</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin />
@@ -17,18 +61,25 @@
 </AuthorizeView>
 
 @code {
-    private static readonly string[] UsersSourceFiles =
-    [
-        "src/pages/Users.jsx",
-        "src/components/users/UserTable.jsx",
-        "src/components/users/UserDetails.jsx",
-        "src/components/users/DeleteUser.jsx"
-    ];
+    private readonly List<UserSummary> _users = [];
+    private bool _isLoading = true;
+    private string? _errorMessage;
 
-    private static readonly string[] UsersDeferredItems =
-    [
-        "Create the users API service and list page in Phase 3.",
-        "Add details and delete routes backed by real data in Phase 3.",
-        "Recreate loading, empty, and error states in Phase 3."
-    ];
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var users = await UsersService.GetUsersAsync();
+            _users.Clear();
+            _users.AddRange(users);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 }
