@@ -1,4 +1,5 @@
 using Appd.Api.Contracts.Series;
+using Appd.Api.Common.Validation;
 using Appd.Api.Mappers;
 using Appd.Infrastructure.MongoDb.Repositories;
 
@@ -15,10 +16,11 @@ public static class SeriesEndpoints
         });
 
         endpoints.MapPost("/api/series", async (CreateSeriesRequest request, ISeriesRepository repository, CancellationToken cancellationToken) =>
-        {
-            var item = await repository.AddAsync(request.ToDocument(), cancellationToken);
-            return Results.Created($"/api/series/{item.Id}", item);
-        });
+            {
+                var item = await repository.AddAsync(request.ToDocument(), cancellationToken);
+                return Results.Created($"/api/series/{item.Id}", item);
+            })
+            .AddEndpointFilter<DataAnnotationsValidationFilter<CreateSeriesRequest>>();
 
         return endpoints;
     }
