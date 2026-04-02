@@ -37,6 +37,35 @@ dotnet run --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj
 - Frontend: http://localhost:5204
 - API: http://localhost:5130
 
+### Docker Run
+
+From the repository root:
+
+1. Create a local Docker env file (one-time setup):
+
+```powershell
+Copy-Item deploy/docker/.env.example deploy/docker/.env
+```
+
+2. Start the stack:
+
+```bash
+docker compose --env-file deploy/docker/.env -f deploy/docker/docker-compose.yml up --build -d
+```
+
+3. Open the containerized apps:
+
+- Frontend: http://localhost:8082
+- API: not published to the host (internal Docker network only)
+
+Security note: only the frontend is published on a host port. The API is reachable only by other containers on the Docker network (for example, the frontend at http://api:8080).
+
+4. Stop and remove the stack when done:
+
+```bash
+docker compose --env-file deploy/docker/.env -f deploy/docker/docker-compose.yml down
+```
+
 ### Local Configuration
 
 - Frontend settings: src/apps/frontend-blazor/appsettings.json and src/apps/frontend-blazor/appsettings.Development.json
