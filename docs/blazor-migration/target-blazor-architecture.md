@@ -18,6 +18,24 @@ This document records the intended Blazor project structure and architectural ch
 - Default to the simplest Blazor Web App setup that supports SPA-like interactivity for the migrated pages.
 - Avoid adding extra client projects or browser persistence unless the later phases require them for parity.
 - Because the current React app does not persist auth across full refreshes, in-memory auth state is acceptable as the initial parity target.
+- Phase 1 uses the .NET 10 Blazor Web App template with interactive server rendering applied at the router so the shell can support sidebar collapse and future auth and search interactions without introducing a separate client project.
+
+## Implemented Phase 1 Shell Structure
+
+- `Components/Layout/MainLayout.razor`: public layout with shared navbar
+- `Components/Layout/AdminLayout.razor`: admin shell with navbar, collapsible sidebar, and content region
+- `Components/Layout/Navbar.razor`: shared top navigation and placeholder search box
+- `Components/Layout/Sidebar.razor`: collapsible admin navigation
+- `Components/Layout/SidebarItem.razor`: active-link item component
+- `Components/Shared/PhasePlaceholder.razor`: placeholder panel used by scaffolded pages
+- `Components/Pages/Index.razor`: redirect from `/` to `/admin/home`
+- `Components/Pages/AdminRedirect.razor`: redirect from `/admin` to `/admin/home`
+- `Components/Pages/Home.razor`: `/admin/home`
+- `Components/Pages/Users.razor`: `/admin/users`
+- `Components/Pages/Series.razor`: `/admin/series`
+- `Components/Pages/Login.razor`: `/login`
+- `Components/Pages/Register.razor`: `/register`
+- `Components/Pages/ChangePassword.razor`: `/changepassword`
 
 ## Proposed Feature Mapping
 

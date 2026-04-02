@@ -1,0 +1,24 @@
+@page "/register"
+
+<PageTitle>Register</PageTitle>
+
+<PhasePlaceholder Title="Register"
+                  Summary="The register route now exists in Blazor. The actual registration form, validation, and auth-state updates are deferred to Phase 2."
+                  RoutePath="/register"
+                  SourceFiles="RegisterSourceFiles"
+                  DeferredItems="RegisterDeferredItems" />
+
+@code {
+    private static readonly string[] RegisterSourceFiles =
+    [
+        "src/pages/Register.jsx",
+        "src/context/AuthContext.jsx"
+    ];
+
+    private static readonly string[] RegisterDeferredItems =
+    [
+        "Implement registration form and validation in Phase 2.",
+        "Restore token and user-state handling in Phase 2.",
+        "Restore post-register navigation to `/admin/home` in Phase 2."
+    ];
+}

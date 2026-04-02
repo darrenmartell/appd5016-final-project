@@ -1,0 +1,26 @@
+﻿@page "/admin/home"
+@layout AdminLayout
+
+<PageTitle>Dashboard</PageTitle>
+
+<PhasePlaceholder Title="Dashboard"
+				  Summary="This route now exists in Blazor and sits inside the shared admin shell. Series search, cards, and live data are deferred to the series migration phase."
+				  RoutePath="/admin/home"
+				  SourceFiles="HomeSourceFiles"
+				  DeferredItems="HomeDeferredItems" />
+
+@code {
+	private static readonly string[] HomeSourceFiles =
+	[
+		"src/pages/Dashboard.jsx",
+		"src/components/layouts/AdminLayout.jsx",
+		"src/components/layouts/Navbar.jsx"
+	];
+
+	private static readonly string[] HomeDeferredItems =
+	[
+		"Wire shared series data into the dashboard in Phase 4.",
+		"Restore navbar-driven search behavior in Phase 4.",
+		"Match the current dashboard card layout once real data exists."
+	];
+}

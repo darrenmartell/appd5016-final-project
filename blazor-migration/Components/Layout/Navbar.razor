@@ -1,0 +1,30 @@
+<header class="topbar">
+    <div class="brand-lockup">
+        <div class="brand-mark"></div>
+        <div>
+            <div class="brand-name">Harlen Coben Netflix Series</div>
+            <div class="brand-subtitle">Phase 1 shell in Blazor</div>
+        </div>
+    </div>
+
+    <div class="topbar-actions">
+        @if (ShowSearch)
+        {
+            <input class="search-input"
+                   type="text"
+                   placeholder="Search arrives in Phase 4"
+                   disabled />
+        }
+
+        <nav class="account-links" aria-label="Primary links">
+            <NavLink class="account-link" ActiveClass="account-link-active" href="/login" Match="NavLinkMatch.All">Login</NavLink>
+            <NavLink class="account-link" ActiveClass="account-link-active" href="/register" Match="NavLinkMatch.All">Register</NavLink>
+            <NavLink class="account-link" ActiveClass="account-link-active" href="/changepassword" Match="NavLinkMatch.All">Change Password</NavLink>
+        </nav>
+    </div>
+</header>
+
+@code {
+    [Parameter]
+    public bool ShowSearch { get; set; }
+}

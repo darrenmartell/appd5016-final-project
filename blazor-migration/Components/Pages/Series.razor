@@ -1,0 +1,28 @@
+@page "/admin/series"
+@layout AdminLayout
+
+<PageTitle>Series</PageTitle>
+
+<PhasePlaceholder Title="Series"
+                  Summary="This page establishes the Blazor route and admin-shell placement for the series slice. List, details, create, update, delete, and dashboard data sharing are deferred to Phase 4."
+                  RoutePath="/admin/series"
+                  SourceFiles="SeriesSourceFiles"
+                  DeferredItems="SeriesDeferredItems" />
+
+@code {
+    private static readonly string[] SeriesSourceFiles =
+    [
+        "src/pages/Series.jsx",
+        "src/components/series/SeriesTable.jsx",
+        "src/components/series/SeriesDetails.jsx",
+        "src/components/series/SeriesForm.jsx",
+        "src/components/series/DeleteSeries.jsx"
+    ];
+
+    private static readonly string[] SeriesDeferredItems =
+    [
+        "Create the series API service and list page in Phase 4.",
+        "Add details, create, update, and delete routes backed by real data in Phase 4.",
+        "Restore series form payload shaping and validation in Phase 4."
+    ];
+}

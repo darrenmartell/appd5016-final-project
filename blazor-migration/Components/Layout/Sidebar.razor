@@ -1,0 +1,24 @@
+<aside class="sidebar @(IsCollapsed ? "sidebar-collapsed" : string.Empty)">
+    <button type="button"
+            class="sidebar-toggle"
+            @onclick="() => OnToggle.InvokeAsync()"
+            aria-label="Toggle sidebar">
+        @(IsCollapsed ? ">" : "<")
+    </button>
+
+    <nav class="sidebar-nav" aria-label="Admin sections">
+        <ul>
+            <SidebarItem Href="/admin/home" Label="Dashboard" IconLabel="DB" Match="NavLinkMatch.All" IsCollapsed="IsCollapsed" />
+            <SidebarItem Href="/admin/users" Label="User Management" IconLabel="US" Match="NavLinkMatch.All" IsCollapsed="IsCollapsed" />
+            <SidebarItem Href="/admin/series" Label="Series" IconLabel="SR" Match="NavLinkMatch.All" IsCollapsed="IsCollapsed" />
+        </ul>
+    </nav>
+</aside>
+
+@code {
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+
+    [Parameter]
+    public EventCallback OnToggle { get; set; }
+}

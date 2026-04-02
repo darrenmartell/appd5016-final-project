@@ -1,0 +1,27 @@
+@page "/admin/users"
+@layout AdminLayout
+
+<PageTitle>User Management</PageTitle>
+
+<PhasePlaceholder Title="User Management"
+                  Summary="This page establishes the Blazor route and admin-shell placement for the users slice. API wiring, table rendering, details, and delete behavior are deferred to Phase 3."
+                  RoutePath="/admin/users"
+                  SourceFiles="UsersSourceFiles"
+                  DeferredItems="UsersDeferredItems" />
+
+@code {
+    private static readonly string[] UsersSourceFiles =
+    [
+        "src/pages/Users.jsx",
+        "src/components/users/UserTable.jsx",
+        "src/components/users/UserDetails.jsx",
+        "src/components/users/DeleteUser.jsx"
+    ];
+
+    private static readonly string[] UsersDeferredItems =
+    [
+        "Create the users API service and list page in Phase 3.",
+        "Add details and delete routes backed by real data in Phase 3.",
+        "Recreate loading, empty, and error states in Phase 3."
+    ];
+}

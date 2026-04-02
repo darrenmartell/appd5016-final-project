@@ -1,0 +1,25 @@
+@page "/login"
+
+<PageTitle>Login</PageTitle>
+
+<PhasePlaceholder Title="Login"
+                  Summary="The login route now exists in Blazor. The actual auth form, validation, error handling, and navigation behavior are deferred to Phase 2."
+                  RoutePath="/login"
+                  SourceFiles="LoginSourceFiles"
+                  DeferredItems="LoginDeferredItems" />
+
+@code {
+    private static readonly string[] LoginSourceFiles =
+    [
+        "src/pages/Login.jsx",
+        "src/context/AuthContext.jsx",
+        "src/routes/ProtectedRoute.jsx"
+    ];
+
+    private static readonly string[] LoginDeferredItems =
+    [
+        "Implement auth services and form validation in Phase 2.",
+        "Restore login error messaging and redirect behavior in Phase 2.",
+        "Attach protected-route logic in Phase 2."
+    ];
+}
