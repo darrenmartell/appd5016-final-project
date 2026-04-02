@@ -7,11 +7,24 @@ public static class SeriesMapper
 {
     public static SeriesDocument ToDocument(this CreateSeriesRequest request)
     {
+        var normalizedGenre = request.Genre.Trim();
+
         return new SeriesDocument
         {
             Title = request.Title,
-            Genre = request.Genre,
-            ReleaseYear = request.ReleaseYear
+            PlotSummary = string.Empty,
+            RuntimeMinutes = 1,
+            ReleasedYear = request.ReleaseYear,
+            Genre = normalizedGenre,
+            ReleaseYear = request.ReleaseYear,
+            Genres = string.IsNullOrWhiteSpace(normalizedGenre) ? [] : [normalizedGenre],
+            Ratings = new SeriesRatingsDocument
+            {
+                Imdb = 1,
+                RottenTomatoes = 1,
+                Metacritic = 1,
+                UserAverage = 1
+            }
         };
     }
 }

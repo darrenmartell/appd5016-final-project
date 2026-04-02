@@ -1,28 +1,49 @@
 using Appd.Infrastructure.MongoDb.Documents;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace Appd.Infrastructure.MongoDb.Repositories;
 
 public sealed class SeriesRepository : ISeriesRepository
 {
-    private readonly AppMongoDbContext _dbContext;
+    private readonly IMongoCollection<SeriesDocument> _series;
 
-    public SeriesRepository(AppMongoDbContext dbContext)
+    public SeriesRepository(IMongoDatabase database)
     {
-        _dbContext = dbContext;
+        _series = database.GetCollection<SeriesDocument>("Series");
     }
 
     public async Task<IReadOnlyList<SeriesDocument>> ListAsync(CancellationToken cancellationToken)
     {
-        return await _dbContext.Series
-            .OrderBy(item => item.Title)
+        return await _series.Find(FilterDefinition<SeriesDocument>.Empty)
+            .SortBy(item => item.Title)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<SeriesDocument?> FindByIdAsync(string id, CancellationToken cancellationToken)
+    {
+        return await _series.Find(item => item.Id == id)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<SeriesDocument> AddAsync(SeriesDocument series, CancellationToken cancellationToken)
     {
-        _dbContext.Series.Add(series);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _series.InsertOneAsync(series, cancellationToken: cancellationToken);
         return series;
+    }
+
+    public async Task<SeriesDocument?> ReplaceAsync(string id, SeriesDocument series, CancellationToken cancellationToken)
+    {
+        series.Id = id;
+        var options = new FindOneAndReplaceOptions<SeriesDocument>
+        {
+            ReturnDocument = ReturnDocument.After
+        };
+
+        return await _series.FindOneAndReplaceAsync(item => item.Id == id, series, options, cancellationToken);
+    }
+
+    public async Task<SeriesDocument?> DeleteByIdAsync(string id, CancellationToken cancellationToken)
+    {
+        return await _series.FindOneAndDeleteAsync(item => item.Id == id, cancellationToken: cancellationToken);
     }
 }

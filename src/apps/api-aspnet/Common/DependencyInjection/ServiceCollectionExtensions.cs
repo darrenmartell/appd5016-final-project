@@ -2,6 +2,7 @@ using System.Text;
 using Appd.Api.Auth;
 using Appd.Api.Common.Authorization;
 using Appd.Api.Services.Auth;
+using Appd.Api.Services.Series;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -43,6 +44,7 @@ public static class ServiceCollectionExtensions
         services.AddAuthorization();
         services.AddScoped<IAuthTokenService, JwtAuthTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ISeriesService, SeriesService>();
 
         var corsOrigins = configuration
             .GetSection("Cors:AllowedOrigins")
