@@ -14,13 +14,15 @@ $ErrorActionPreference = "Stop"
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
         @"
+Docker Desktop/local kind teardown script.
+
 Usage:
-    pwsh deploy/k8s/scripts/teardown-app.ps1 [-Overlay docker-desktop-single|docker-desktop] [-Namespace seriescatalog] [-Context <name>] [-DeletePvc] [-DeleteNamespace]
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 [-Overlay docker-desktop-single|docker-desktop] [-Namespace seriescatalog] [-Context <name>] [-DeletePvc] [-DeleteNamespace]
 
 Examples:
-    pwsh deploy/k8s/scripts/teardown-app.ps1
-    pwsh deploy/k8s/scripts/teardown-app.ps1 -Overlay docker-desktop
-    pwsh deploy/k8s/scripts/teardown-app.ps1 -DeletePvc
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -Overlay docker-desktop
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -DeletePvc
 "@ | Write-Host
         return
 }
@@ -30,9 +32,10 @@ if ([string]::IsNullOrWhiteSpace($Context)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($Context)) {
-    throw "No docker-desktop/kind context found. Enable Kubernetes in Docker Desktop first."
+    throw "No Docker Desktop/local kind context found. This teardown script targets Docker Desktop overlays only."
 }
 
+Write-Host "Docker Desktop teardown mode"
 Write-Host "Using context: $Context"
 kubectl config use-context $Context | Out-Null
 
@@ -59,3 +62,4 @@ else {
 }
 
 Write-Host "Teardown complete."
+

@@ -6,6 +6,8 @@ This folder contains a clean baseline for running the app on k3s:
 - `optional/hpa.yaml` enables autoscaling once metrics server is available.
 - `overlays/docker-desktop/` adapts ingress and images for Docker Desktop Kubernetes.
 - `overlays/docker-desktop-single/` keeps Docker Desktop settings but forces one API pod and one frontend pod.
+- `overlays/oci/` adapts ingress, image names, and pull secrets for OKE/OCIR with 2+2 replicas.
+- `overlays/oci-single/` keeps OCI settings but forces one API pod and one frontend pod.
 
 ## 1) Update Secrets
 
@@ -99,37 +101,23 @@ Troubleshooting:
    - `kubectl describe pvc seriescatalog-frontend-keys -n seriescatalog`
    - then restart frontend pods and clear browser cookies once.
 
-One-shot PowerShell bootstrap (context + ingress-nginx + image build + deploy):
+One-shot PowerShell bootstrap script (context + ingress-nginx + image build + deploy):
 
 ```powershell
-$ErrorActionPreference = "Stop"
-
-# Pick Docker Desktop or kind context automatically.
-$ctx = kubectl config get-contexts -o name | Where-Object { $_ -match "docker-desktop|kind" } | Select-Object -First 1
-if (-not $ctx) { throw "No docker-desktop/kind context found. Enable Kubernetes in Docker Desktop first." }
-
-kubectl config use-context $ctx
-kubectl cluster-info
-kubectl get nodes
-
-# Install ingress-nginx.
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml
-kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=300s
-kubectl get ingressclass
-kubectl get pods -n ingress-nginx
-
-# Build local images for Docker Desktop overlays.
-docker build -f deploy/docker/api/Dockerfile -t docker-api:latest .
-docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .
-
-# Deploy lighter local overlay (1 API + 1 frontend replica).
-kubectl apply -k deploy/k8s/overlays/docker-desktop-single
-kubectl rollout status deployment/seriescatalog-api -n seriescatalog --timeout=180s
-kubectl rollout status deployment/seriescatalog-frontend -n seriescatalog --timeout=180s
-kubectl get pods,svc,ingress -n seriescatalog
+pwsh deploy/k8s/scripts/docker-desktop/deploy-docker-desktop.ps1
 ```
 
-Use `deploy/k8s/overlays/docker-desktop` instead if you want the 2+2 replica setup.
+For 2+2 replicas:
+
+```powershell
+pwsh deploy/k8s/scripts/docker-desktop/deploy-docker-desktop.ps1 -Overlay docker-desktop
+```
+
+Skip ingress install if already present:
+
+```powershell
+pwsh deploy/k8s/scripts/docker-desktop/deploy-docker-desktop.ps1 -SkipIngressInstall
+```
 
 ## Update Existing Deployment
 
@@ -138,65 +126,106 @@ Use these when you already deployed and only changed one side.
 Frontend-only update:
 
 ```powershell
-$ErrorActionPreference = "Stop"
-$ctx = kubectl config get-contexts -o name | Where-Object { $_ -match "docker-desktop|kind" } | Select-Object -First 1
-if (-not $ctx) { throw "No docker-desktop/kind context found. Enable Kubernetes in Docker Desktop first." }
-
-kubectl config use-context $ctx
-docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .
-kubectl apply -k deploy/k8s/overlays/docker-desktop-single
-kubectl rollout restart deployment/seriescatalog-frontend -n seriescatalog
-kubectl rollout status deployment/seriescatalog-frontend -n seriescatalog --timeout=180s
-kubectl get pods,svc,ingress -n seriescatalog
+pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-frontend.ps1
 ```
 
 Backend-only update:
 
 ```powershell
-$ErrorActionPreference = "Stop"
-$ctx = kubectl config get-contexts -o name | Where-Object { $_ -match "docker-desktop|kind" } | Select-Object -First 1
-if (-not $ctx) { throw "No docker-desktop/kind context found. Enable Kubernetes in Docker Desktop first." }
-
-kubectl config use-context $ctx
-docker build -f deploy/docker/api/Dockerfile -t docker-api:latest .
-kubectl apply -k deploy/k8s/overlays/docker-desktop-single
-kubectl rollout restart deployment/seriescatalog-api -n seriescatalog
-kubectl rollout status deployment/seriescatalog-api -n seriescatalog --timeout=180s
-kubectl get pods,svc,ingress -n seriescatalog
+pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-api.ps1
 ```
 
-Swap `deploy/k8s/overlays/docker-desktop-single` with `deploy/k8s/overlays/docker-desktop` if you are running the 2+2 replica overlay.
+Use `-Overlay docker-desktop` with either script if you are running the 2+2 overlay.
+
+## OCI OKE Runbook
+
+Use the full OCI Free Tier deployment guide here:
+
+- `docs/oci-oke-free-tier-runbook.md`
+
+Reusable OCI deployment script:
+
+- `deploy/k8s/scripts/oci/deploy-oci.ps1`
+- `deploy/k8s/scripts/oci/update-oci-frontend.ps1`
+- `deploy/k8s/scripts/oci/update-oci-api.ps1`
+- `deploy/k8s/scripts/oci/teardown-oci-app.ps1`
+- `deploy/k8s/scripts/oci/teardown-oci-full.ps1`
+
+Example (deploy to OKE with 1+1 overlay):
+
+```powershell
+pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
+  -RegionKey iad `
+  -RegionIdentifier us-ashburn-1 `
+  -ClusterOcid ocid1.cluster.oc1.iad.example `
+  -OciUsername my.user@company.com `
+  -OciAuthToken "<auth-token>" `
+  -Email my.user@company.com `
+  -Overlay oci-single
+```
+
+Frontend-only OCI update:
+
+```powershell
+pwsh deploy/k8s/scripts/oci/update-oci-frontend.ps1 `
+  -RegionKey iad `
+  -OciUsername my.user@company.com `
+  -OciAuthToken "<auth-token>" `
+  -Email my.user@company.com
+```
+
+Backend-only OCI update:
+
+```powershell
+pwsh deploy/k8s/scripts/oci/update-oci-api.ps1 `
+  -RegionKey iad `
+  -OciUsername my.user@company.com `
+  -OciAuthToken "<auth-token>" `
+  -Email my.user@company.com
+```
+
+OCI teardown:
+
+```powershell
+pwsh deploy/k8s/scripts/oci/teardown-oci-app.ps1
+pwsh deploy/k8s/scripts/oci/teardown-oci-full.ps1
+```
+
+OCI overlays in this repo:
+
+- `deploy/k8s/overlays/oci` (2 API + 2 frontend replicas)
+- `deploy/k8s/overlays/oci-single` (1 API + 1 frontend replica)
 
 ## Teardown
 
 App teardown script (keeps cluster and ingress controller):
 
 ```powershell
-pwsh deploy/k8s/scripts/teardown-app.ps1
+pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1
 ```
 
 App teardown with 2+2 overlay selection:
 
 ```powershell
-pwsh deploy/k8s/scripts/teardown-app.ps1 -Overlay docker-desktop
+pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -Overlay docker-desktop
 ```
 
 App teardown plus persistent key storage cleanup:
 
 ```powershell
-pwsh deploy/k8s/scripts/teardown-app.ps1 -DeletePvc
+pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -DeletePvc
 ```
 
 Full teardown (deletes app overlays and namespace):
 
 ```powershell
-pwsh deploy/k8s/scripts/teardown-full.ps1
+pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-full.ps1
 ```
 
 Full teardown including ingress-nginx uninstall:
 
 ```powershell
-pwsh deploy/k8s/scripts/teardown-full.ps1 -DeleteIngressNginx
+pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-full.ps1 -DeleteIngressNginx
 ```
 
 ## Routing Model
@@ -268,3 +297,4 @@ kubectl logs -n seriescatalog deployment/seriescatalog-api -f --since=2m
 ```
 
 Best practice: run ingress, frontend, and API log streams in separate terminals so you can correlate the same request across components.
+

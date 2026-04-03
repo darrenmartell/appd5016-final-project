@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+images:
+  - name: ghcr.io/darrenmartell/seriescatalog-api
+    newName: iad.ocir.io/replace-tenancy-namespace/seriescatalog/api
+    newTag: replace-with-tag
+  - name: ghcr.io/darrenmartell/seriescatalog-frontend
+    newName: iad.ocir.io/replace-tenancy-namespace/seriescatalog/frontend
+    newTag: replace-with-tag
+
+patches:
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: seriescatalog-ingress
+    path: ingress-json-patch.yaml
+  - path: api-imagepullsecret-patch.yaml
+  - path: frontend-imagepullsecret-patch.yaml

@@ -11,12 +11,14 @@ $ErrorActionPreference = "Stop"
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
         @"
+Docker Desktop/local kind full teardown script.
+
 Usage:
-    pwsh deploy/k8s/scripts/teardown-full.ps1 [-Namespace seriescatalog] [-Context <name>] [-DeleteIngressNginx]
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-full.ps1 [-Namespace seriescatalog] [-Context <name>] [-DeleteIngressNginx]
 
 Examples:
-    pwsh deploy/k8s/scripts/teardown-full.ps1
-    pwsh deploy/k8s/scripts/teardown-full.ps1 -DeleteIngressNginx
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-full.ps1
+    pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-full.ps1 -DeleteIngressNginx
 "@ | Write-Host
         return
 }
@@ -26,9 +28,10 @@ if ([string]::IsNullOrWhiteSpace($Context)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($Context)) {
-    throw "No docker-desktop/kind context found. Enable Kubernetes in Docker Desktop first."
+    throw "No Docker Desktop/local kind context found. This full teardown script targets Docker Desktop overlays only."
 }
 
+Write-Host "Docker Desktop full teardown mode"
 Write-Host "Using context: $Context"
 kubectl config use-context $Context | Out-Null
 
@@ -51,3 +54,4 @@ Write-Host "Remaining namespaces:"
 kubectl get ns
 
 Write-Host "Full teardown complete."
+
