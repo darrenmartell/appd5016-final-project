@@ -151,6 +151,7 @@ pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
   -RegionKey iad `
   -RegionIdentifier us-ashburn-1 `
   -ClusterOcid ocid1.cluster.oc1.iad.example `
+  -Context my-oke-context `
   -OciUsername my.user@company.com `
   -OciAuthToken "<auth-token>" `
   -Email my.user@company.com `
@@ -164,6 +165,7 @@ pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
   -RegionKey iad `
   -RegionIdentifier us-ashburn-1 `
   -ClusterOcid ocid1.cluster.oc1.iad.example `
+  -Context my-oke-context `
   -OciUsername my.user@company.com `
   -OciAuthToken "<auth-token>" `
   -Email my.user@company.com `

@@ -16,6 +16,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
 @"
@@ -60,7 +61,7 @@ if ([string]::IsNullOrWhiteSpace($Context)) {
     throw "No kubectl context set. Set -Context explicitly or configure kubectl for OKE first."
 }
 
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
 Push-Location $repoRoot
 
 try {
@@ -79,7 +80,7 @@ try {
     $apiImage = "$RegionKey.ocir.io/$TenancyNamespace/seriescatalog/api:$Tag"
 
     Write-Host "Logging in to OCIR..."
-    docker login "$RegionKey.ocir.io" -u "$TenancyNamespace/$OciUsername" -p "$OciAuthToken"
+    $OciAuthToken | docker login "$RegionKey.ocir.io" -u "$TenancyNamespace/$OciUsername" --password-stdin
 
     Write-Host "Tagging and pushing API image..."
     docker tag docker-api:latest $apiImage
@@ -121,6 +122,8 @@ try {
     kubectl rollout status deployment/seriescatalog-api -n $Namespace --timeout=180s
 
     kubectl get pods,svc,ingress -n $Namespace
+
+    Write-Host "OCI API update complete."
 }
 finally {
     Pop-Location

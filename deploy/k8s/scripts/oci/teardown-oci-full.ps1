@@ -8,6 +8,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
 @"
@@ -23,6 +24,9 @@ Examples:
     return
 }
 
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
+Set-Location $repoRoot
+
 if ([string]::IsNullOrWhiteSpace($Context)) {
     $Context = kubectl config current-context
 }
@@ -32,6 +36,7 @@ if ([string]::IsNullOrWhiteSpace($Context)) {
 }
 
 Write-Host "OCI full teardown mode"
+Write-Host "Using repository root: $repoRoot"
 Write-Host "Using context: $Context"
 kubectl config use-context $Context | Out-Null
 

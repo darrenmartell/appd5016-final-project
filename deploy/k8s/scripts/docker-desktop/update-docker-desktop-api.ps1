@@ -9,6 +9,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
 @"
@@ -24,6 +25,9 @@ Examples:
     return
 }
 
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
+Set-Location $repoRoot
+
 if ([string]::IsNullOrWhiteSpace($Context)) {
     $Context = kubectl config get-contexts -o name | Where-Object { $_ -match "docker-desktop|kind" } | Select-Object -First 1
 }
@@ -33,6 +37,7 @@ if ([string]::IsNullOrWhiteSpace($Context)) {
 }
 
 Write-Host "Docker Desktop API update mode"
+Write-Host "Using repository root: $repoRoot"
 Write-Host "Using context: $Context"
 kubectl config use-context $Context | Out-Null
 
@@ -49,4 +54,6 @@ kubectl rollout status deployment/seriescatalog-api -n $Namespace --timeout=180s
 
 Write-Host "Current namespace resources"
 kubectl get pods,svc,ingress -n $Namespace
+
+Write-Host "Docker Desktop API update complete."
 

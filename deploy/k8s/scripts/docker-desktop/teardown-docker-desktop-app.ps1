@@ -5,15 +5,16 @@ param(
     [string]$Namespace = "seriescatalog",
     [string]$Context,
     [switch]$DeletePvc,
-        [switch]$DeleteNamespace,
-        [Alias("?")]
-        [switch]$Help
+    [switch]$DeleteNamespace,
+    [Alias("?")]
+    [switch]$Help
 )
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
-        @"
+@"
 Docker Desktop/local kind teardown script.
 
 Usage:
@@ -24,8 +25,11 @@ Examples:
     pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -Overlay docker-desktop
     pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -DeletePvc
 "@ | Write-Host
-        return
+    return
 }
+
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
+Set-Location $repoRoot
 
 if ([string]::IsNullOrWhiteSpace($Context)) {
     $Context = kubectl config get-contexts -o name | Where-Object { $_ -match "docker-desktop|kind" } | Select-Object -First 1
@@ -36,6 +40,7 @@ if ([string]::IsNullOrWhiteSpace($Context)) {
 }
 
 Write-Host "Docker Desktop teardown mode"
+Write-Host "Using repository root: $repoRoot"
 Write-Host "Using context: $Context"
 kubectl config use-context $Context | Out-Null
 
@@ -61,5 +66,5 @@ else {
     kubectl get ingress -n $Namespace --ignore-not-found=true
 }
 
-Write-Host "Teardown complete."
+Write-Host "Docker Desktop app teardown complete."
 

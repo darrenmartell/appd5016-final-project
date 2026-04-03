@@ -3,6 +3,7 @@ param(
     [ValidateSet("oci-single", "oci")]
     [string]$Overlay = "oci-single",
     [string]$Namespace = "seriescatalog",
+    [string]$Context,
     [string]$RegionKey,
     [string]$RegionIdentifier,
     [string]$ClusterOcid,
@@ -17,11 +18,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $true
 
 if ($Help -or $args -contains "-?" -or $args -contains "/?") {
 @"
 Usage:
-    pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 -RegionKey <key> -RegionIdentifier <id> -ClusterOcid <ocid> -OciUsername <user> -OciAuthToken <token> -Email <email> [-TenancyNamespace <ns>] [-Tag <tag>] [-Overlay oci-single|oci] [-SkipBuild]
+    pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 -RegionKey <key> -RegionIdentifier <id> -ClusterOcid <ocid> -OciUsername <user> -OciAuthToken <token> -Email <email> [-Context <name>] [-TenancyNamespace <ns>] [-Tag <tag>] [-Overlay oci-single|oci] [-SkipBuild]
 
 Examples:
     pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 -RegionKey iad -RegionIdentifier us-ashburn-1 -ClusterOcid ocid1.cluster.oc1.iad.example -OciUsername my.user@company.com -OciAuthToken "<token>" -Email my.user@company.com -Overlay oci-single
@@ -45,10 +47,12 @@ if ($missing.Count -gt 0) {
     throw "Missing required parameters: $($missing -join ', '). Run with -Help for usage examples."
 }
 
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
 Push-Location $repoRoot
 
 try {
+    Write-Host "OCI deploy mode"
+
     if ([string]::IsNullOrWhiteSpace($TenancyNamespace)) {
         Write-Host "Resolving OCI tenancy namespace..."
         $TenancyNamespace = (oci os ns get --query data --raw-output).Trim()
@@ -77,7 +81,7 @@ try {
     }
 
     Write-Host "Logging in to OCIR..."
-    docker login "$RegionKey.ocir.io" -u "$TenancyNamespace/$OciUsername" -p "$OciAuthToken"
+    $OciAuthToken | docker login "$RegionKey.ocir.io" -u "$TenancyNamespace/$OciUsername" --password-stdin
 
     Write-Host "Tagging and pushing images..."
     docker tag docker-api:latest $apiImage
@@ -123,6 +127,17 @@ try {
         --token-version 2.0.0 `
         --kube-endpoint PUBLIC_ENDPOINT
 
+    if ([string]::IsNullOrWhiteSpace($Context)) {
+        $Context = kubectl config current-context
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Context)) {
+        throw "No kubectl context set after kubeconfig creation. Set -Context explicitly and retry."
+    }
+
+    Write-Host "Using context: $Context"
+    kubectl config use-context $Context | Out-Null
+
     kubectl get nodes
 
     Write-Host "Ensuring namespace and OCIR pull secret exist..."
@@ -145,6 +160,8 @@ try {
 
     Write-Host "Deployment complete. Current resources:"
     kubectl get pods,svc,ingress -n $Namespace
+
+    Write-Host "OCI deploy complete."
 }
 finally {
     Pop-Location
