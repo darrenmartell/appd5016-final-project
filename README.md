@@ -55,16 +55,79 @@ docker compose --env-file deploy/docker/.env -f deploy/docker/docker-compose.yml
 
 3. Open the containerized apps:
 
-- Frontend: http://localhost:8082
-- API: not published to the host (internal Docker network only)
+- Frontend: http://localhost:8082 (or the port configured by FRONTEND_PORT)
 
-Security note: only the frontend is published on a host port. The API is reachable only by other containers on the Docker network (for example, the frontend at http://api:8080).
+Security note: only the frontend is published on the host. API is internal-only and reachable by the frontend via the Docker network (`http://api:8080`).
 
 4. Stop and remove the stack when done:
 
 ```bash
 docker compose --env-file deploy/docker/.env -f deploy/docker/docker-compose.yml down
 ```
+
+### k3s Baseline
+
+This repository now includes a clean Kubernetes baseline under `deploy/k8s/base` with:
+
+- Namespace
+- Mongo secret placeholder
+- API deployment + service
+- Frontend deployment + service
+- Path-based ingress (`/`, `/api`, `/auth`, `/users`, `/series`)
+
+Apply it with:
+
+```bash
+kubectl apply -k deploy/k8s/base
+```
+
+If needed, customize:
+
+- `deploy/k8s/base/secret.yaml` for Mongo connection settings
+- `deploy/k8s/base/ingress.yaml` for host/domain and TLS
+- `deploy/k8s/base/deployment-*.yaml` for image names/tags and replica counts
+
+For Docker Desktop overlays and ingress-nginx installation steps, see `deploy/k8s/README.md`.
+
+Quick start (Docker Desktop Kubernetes):
+
+```powershell
+$ErrorActionPreference = "Stop"
+$ctx = kubectl config get-contexts -o name | Where-Object { $_ -match "docker-desktop|kind" } | Select-Object -First 1
+if (-not $ctx) { throw "No docker-desktop/kind context found. Enable Kubernetes in Docker Desktop first." }
+
+kubectl config use-context $ctx
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.1/deploy/static/provider/cloud/deploy.yaml
+kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=300s
+
+docker build -f deploy/docker/api/Dockerfile -t docker-api:latest .
+docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .
+
+kubectl apply -k deploy/k8s/overlays/docker-desktop-single
+kubectl get pods,svc,ingress -n seriescatalog
+```
+
+Use `deploy/k8s/overlays/docker-desktop` instead if you want the 2+2 replica setup.
+
+Frontend-only Kubernetes update:
+
+```powershell
+docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .
+kubectl apply -k deploy/k8s/overlays/docker-desktop-single
+kubectl rollout restart deployment/seriescatalog-frontend -n seriescatalog
+kubectl rollout status deployment/seriescatalog-frontend -n seriescatalog --timeout=180s
+```
+
+Backend-only Kubernetes update:
+
+```powershell
+docker build -f deploy/docker/api/Dockerfile -t docker-api:latest .
+kubectl apply -k deploy/k8s/overlays/docker-desktop-single
+kubectl rollout restart deployment/seriescatalog-api -n seriescatalog
+kubectl rollout status deployment/seriescatalog-api -n seriescatalog --timeout=180s
+```
+
+For full context-selection and troubleshooting steps, see `deploy/k8s/README.md`.
 
 ### Local Configuration
 

@@ -4,12 +4,20 @@ using SeriesCatalog.Frontend.Services.Auth;
 using SeriesCatalog.Frontend.Services.Series;
 using SeriesCatalog.Frontend.Services.Users;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+var dataProtectionPath = builder.Configuration["DataProtection:KeyRingPath"]
+    ?? Path.Combine(builder.Environment.ContentRootPath, ".aspnet", "DataProtection-Keys");
+Directory.CreateDirectory(dataProtectionPath);
+builder.Services
+    .AddDataProtection()
+    .SetApplicationName("SeriesCatalog.Frontend")
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionPath));
 builder.Services.Configure<ApiOptions>(builder.Configuration.GetSection(ApiOptions.SectionName));
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();

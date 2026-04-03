@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: seriescatalog-frontend-keys
+  namespace: seriescatalog
+  labels:
+    app.kubernetes.io/name: seriescatalog-frontend
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi

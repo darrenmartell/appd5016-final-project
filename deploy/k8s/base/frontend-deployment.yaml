@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seriescatalog-frontend
+  namespace: seriescatalog
+  labels:
+    app.kubernetes.io/name: seriescatalog-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: seriescatalog-frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seriescatalog-frontend
+    spec:
+      volumes:
+        - name: data-protection-keys
+          persistentVolumeClaim:
+            claimName: seriescatalog-frontend-keys
+      containers:
+        - name: frontend
+          image: ghcr.io/darrenmartell/seriescatalog-frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: Api__BaseUrl
+              value: http://seriescatalog-api:8080
+            - name: DataProtection__KeyRingPath
+              value: /var/app-keys
+          volumeMounts:
+            - name: data-protection-keys
+              mountPath: /var/app-keys
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
