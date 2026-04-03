@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using SeriesCatalog.Frontend.Models.Auth;
 using SeriesCatalog.Frontend.Services.Api;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace SeriesCatalog.Frontend.Services.Auth;
@@ -12,12 +13,18 @@ public sealed class AuthService : IAuthService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ClientAuthState _clientAuthState;
     private readonly ApiOptions _apiOptions;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IHttpClientFactory httpClientFactory, ClientAuthState clientAuthState, IOptions<ApiOptions> apiOptions)
+    public AuthService(
+        IHttpClientFactory httpClientFactory,
+        ClientAuthState clientAuthState,
+        IOptions<ApiOptions> apiOptions,
+        ILogger<AuthService> logger)
     {
         _httpClientFactory = httpClientFactory;
         _clientAuthState = clientAuthState;
         _apiOptions = apiOptions.Value;
+        _logger = logger;
     }
 
     public async Task LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -25,19 +32,39 @@ public sealed class AuthService : IAuthService
         try
         {
             var client = CreateClient();
-            using var response = await client.PostAsJsonAsync("auth/login", request, cancellationToken);
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(TimeSpan.FromSeconds(20));
+
+            _logger.LogInformation("Starting login request for {Email}", request.Email);
+            using var response = await client.PostAsJsonAsync("auth/login", request, timeoutCts.Token);
+            _logger.LogInformation("Login response status: {StatusCode}", (int)response.StatusCode);
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new InvalidOperationException("Error logging in. Please check your credentials and try again.");
             }
 
-            var authResult = await ParseAuthResultAsync(response, cancellationToken);
+            var authResult = await ParseAuthResultAsync(response, timeoutCts.Token);
             _clientAuthState.SetAuthentication(authResult.User, authResult.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            _logger.LogWarning("Login request timed out for {Email}", request.Email);
+            throw new InvalidOperationException("Login timed out. Please try again.");
         }
         catch (HttpRequestException)
         {
+            _logger.LogWarning("Login request network error for {Email}", request.Email);
             throw new InvalidOperationException("Error logging in. Please check your credentials and try again.");
+        }
+        catch (InvalidOperationException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Unexpected login error for {Email}", request.Email);
+            throw new InvalidOperationException("Unexpected login error. Please try again.");
         }
     }
 

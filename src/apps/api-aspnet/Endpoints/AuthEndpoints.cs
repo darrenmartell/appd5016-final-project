@@ -17,15 +17,35 @@ public static class AuthEndpoints
 
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/auth/login", async Task<IResult> (LoginRequest request, IAuthService authService, CancellationToken cancellationToken) =>
+        endpoints.MapPost("/auth/login", async Task<IResult> (
+                LoginRequest request,
+                IAuthService authService,
+                ILoggerFactory loggerFactory,
+                CancellationToken cancellationToken) =>
             {
-                var response = await authService.LoginAsync(request, cancellationToken);
-                if (response is null)
-                {
-                    return Results.Unauthorized();
-                }
+                var logger = loggerFactory.CreateLogger("Auth.Login");
+                logger.LogInformation("Login attempt started for {Email}", request.Email);
 
-                return Results.Ok(response);
+                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                timeoutCts.CancelAfter(TimeSpan.FromSeconds(20));
+
+                try
+                {
+                    var response = await authService.LoginAsync(request, timeoutCts.Token);
+                    if (response is null)
+                    {
+                        logger.LogInformation("Login rejected for {Email}", request.Email);
+                        return Results.Unauthorized();
+                    }
+
+                    logger.LogInformation("Login succeeded for {Email}", request.Email);
+                    return Results.Ok(response);
+                }
+                catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested)
+                {
+                    logger.LogWarning("Login timed out for {Email}", request.Email);
+                    return Results.StatusCode(StatusCodes.Status504GatewayTimeout);
+                }
             })
             .AddEndpointFilter<DataAnnotationsValidationFilter<LoginRequest>>();
 

@@ -78,6 +78,10 @@
         {
             _errorMessage = exception.Message;
         }
+        catch
+        {
+            _errorMessage = "Unexpected login error. Please try again.";
+        }
         finally
         {
             _isSubmitting = false;

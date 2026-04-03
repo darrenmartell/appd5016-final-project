@@ -7,15 +7,13 @@ This folder contains a clean baseline for running the app on k3s:
 - `overlays/docker-desktop/` adapts ingress and images for Docker Desktop Kubernetes.
 - `overlays/docker-desktop-single/` keeps Docker Desktop settings but forces one API pod and one frontend pod.
 
-## 1) Update Images and Secrets
+## 1) Update Secrets
 
-Before applying:
+Before applying, set Mongo values in:
 
-1. Update image names/tags in:
-   - `base/api-deployment.yaml`
-   - `base/frontend-deployment.yaml`
-2. Set Mongo values in:
-   - `base/secret.yaml`
+- `base/secret.yaml`
+
+> **Note**: Image names and tags are managed by kustomize overlays — do not edit the base deployment files for local Docker Desktop use.
 
 ## 2) Apply Baseline
 
@@ -45,6 +43,9 @@ This overlay keeps `base/` untouched and applies Docker Desktop defaults:
 - Uses `ingressClassName: nginx`
 - Removes Traefik-specific annotations
 - Rewrites images to local Docker images (`docker-api:latest`, `docker-frontend:latest`)
+- Sets `imagePullPolicy: Always` so Kubernetes always picks up freshly built images without tag changes
+- `docker-desktop` runs 2 API + 2 frontend replicas
+- `docker-desktop-single` inherits all docker-desktop settings but forces 1 + 1 replicas
 
 Build local images first:
 
@@ -53,18 +54,24 @@ docker build -f deploy/docker/api/Dockerfile -t docker-api:latest .
 docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .
 ```
 
-Apply overlay:
+Apply overlay (2+2 replicas):
 
 ```bash
 kubectl config use-context docker-desktop
 kubectl apply -k deploy/k8s/overlays/docker-desktop
 ```
 
-For a lighter local footprint (1 API + 1 frontend replica), apply:
+Or for a lighter local footprint (1+1 replicas):
 
 ```bash
 kubectl config use-context docker-desktop
 kubectl apply -k deploy/k8s/overlays/docker-desktop-single
+```
+
+After rebuilding images, trigger a rollout to pick up changes:
+
+```bash
+kubectl rollout restart deployment/seriescatalog-api deployment/seriescatalog-frontend -n seriescatalog
 ```
 
 Install ingress-nginx first if needed:
@@ -197,3 +204,67 @@ pwsh deploy/k8s/scripts/teardown-full.ps1 -DeleteIngressNginx
 - Frontend traffic: `/`
 - API traffic: `/api`, `/auth`, `/users`, `/series`
 - Frontend service uses `sessionAffinity: ClientIP` to reduce Blazor Server reconnect issues.
+
+## Known Issues
+
+### kube-proxy iptables failure on Docker Desktop (kind)
+
+Docker Desktop's Linux kernel uses nftables, but kube-proxy defaults to `iptables` mode. This can cause `iptables-restore` to fail silently, breaking **all ClusterIP service routing**. Symptoms:
+
+- Pod-to-pod communication via service DNS names times out
+- Health probes and ingress still work (they use pod IPs directly)
+- kube-proxy logs show `Extension recent is not supported, missing kernel module?` and `RULE_APPEND failed`
+
+**Fix**: Switch kube-proxy to IPVS mode:
+
+```powershell
+kubectl get configmap kube-proxy -n kube-system -o json |
+  ConvertFrom-Json |
+  ForEach-Object {
+    $_.data.'config.conf' = $_.data.'config.conf' -replace 'mode: iptables', 'mode: ipvs'
+    $_
+  } |
+  ConvertTo-Json -Depth 10 |
+  kubectl apply -f -
+
+kubectl delete pod -n kube-system -l k8s-app=kube-proxy
+kubectl wait --for=condition=ready pod -n kube-system -l k8s-app=kube-proxy --timeout=30s
+```
+
+Verify no sync errors:
+
+```powershell
+kubectl logs -n kube-system -l k8s-app=kube-proxy --tail=10 | Select-String "Proxier|Sync failed"
+```
+
+This change persists until the cluster is recreated. See [docs/kube-proxy-ipvs-fix.md](../../docs/kube-proxy-ipvs-fix.md) for full details.
+
+## Traffic Routing Logs
+
+Use these commands to watch request routing when you make calls from the browser or API client.
+
+Ingress controller routing logs:
+
+```powershell
+kubectl logs -n ingress-nginx deployment/ingress-nginx-controller -f --since=2m
+```
+
+Ingress logs filtered to app routes:
+
+```powershell
+kubectl logs -n ingress-nginx deployment/ingress-nginx-controller -f --since=2m | Select-String -Pattern "/api|/_blazor|/auth|/users|/series"
+```
+
+Frontend logs:
+
+```powershell
+kubectl logs -n seriescatalog deployment/seriescatalog-frontend -f --since=2m
+```
+
+API logs:
+
+```powershell
+kubectl logs -n seriescatalog deployment/seriescatalog-api -f --since=2m
+```
+
+Best practice: run ingress, frontend, and API log streams in separate terminals so you can correlate the same request across components.
