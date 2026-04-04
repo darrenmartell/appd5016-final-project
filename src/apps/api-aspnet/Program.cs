@@ -14,8 +14,6 @@ builder.Services.AddMongoPersistence(builder.Configuration);
 
 var app = builder.Build();
 
-LogMongoTarget(app);
-
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.UseCors(ApiPolicies.CorsPolicyName);
@@ -24,6 +22,7 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
+    LogMongoTarget(app);
     app.MapOpenApi();
 }
 
