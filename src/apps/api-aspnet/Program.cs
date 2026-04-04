@@ -18,18 +18,6 @@ LogMongoTarget(app);
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-app.Use(async (context, next) =>
-{
-    var startedAt = DateTime.UtcNow;
-    await next();
-    var elapsedMs = (DateTime.UtcNow - startedAt).TotalMilliseconds;
-    app.Logger.LogInformation(
-        "HTTP {Method} {Path} => {StatusCode} in {ElapsedMs:0.0}ms",
-        context.Request.Method,
-        context.Request.Path,
-        context.Response.StatusCode,
-        elapsedMs);
-});
 app.UseCors(ApiPolicies.CorsPolicyName);
 app.UseAuthentication();
 app.UseAuthorization();
@@ -68,9 +56,3 @@ static void LogMongoTarget(WebApplication app)
             mongoOptions.DatabaseName);
     }
 }
-
-public partial class Program
-{
-}
-
-
