@@ -28,6 +28,38 @@ Examples:
     return
 }
 
+function Assert-DockerBuildReady {
+    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+        throw "Docker CLI was not found on PATH. Install Docker Desktop and retry."
+    }
+
+    try {
+        docker info | Out-Null
+    }
+    catch {
+        throw "Docker daemon is not reachable. Start Docker Desktop and retry."
+    }
+
+    try {
+        docker buildx version | Out-Null
+    }
+    catch {
+        throw "Docker buildx is not available. Update Docker Desktop and retry."
+    }
+
+    try {
+        docker buildx inspect --bootstrap | Out-Null
+    }
+    catch {
+        throw @"
+No active docker buildx builder is available.
+Create and select one, then retry:
+  docker buildx create --name seriescatalog-builder --use
+  docker buildx inspect --bootstrap
+"@
+    }
+}
+
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
 Set-Location $repoRoot
 
@@ -60,6 +92,9 @@ else {
 }
 
 if (-not $SkipBuild) {
+    Write-Host "Running Docker preflight checks..."
+    Assert-DockerBuildReady
+
     Write-Host "Building local images"
     docker build -f deploy/docker/api/Dockerfile -t docker-api:latest .
     docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .

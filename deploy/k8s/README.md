@@ -2,6 +2,15 @@
 
 This folder contains Kubernetes manifests and scripts for three deployment targets: k3s baseline, Docker Desktop, and OCI OKE.
 
+## Preflight Troubleshooting (Docker Buildx)
+
+Docker Desktop and OCI scripts run a Docker/buildx preflight before image builds. If you see a "No active docker buildx builder is available" error, run:
+
+```powershell
+docker buildx create --name seriescatalog-builder --use
+docker buildx inspect --bootstrap
+```
+
 ## 1) k3s Baseline
 
 Use this section when you want a plain baseline deployment without Docker Desktop- or OCI-specific overlays.
@@ -161,6 +170,12 @@ Use this section when deploying to Oracle Kubernetes Engine (OKE) with images st
 - OKE deployments using OCI overlays.
 - Scripted deploy/update/teardown flows with OCIR image publishing.
 
+### Architecture note
+
+- OCI Free Tier OKE commonly uses Arm nodes.
+- OCI scripts default to building `linux/arm64` images.
+- Use `-MultiArch` to publish a combined `linux/amd64,linux/arm64` manifest when needed.
+
 ### Overlays
 
 - `deploy/k8s/overlays/oci` for 2 API + 2 frontend replicas
@@ -198,10 +213,26 @@ pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
   -RegionIdentifier us-ashburn-1 `
   -ClusterOcid ocid1.cluster.oc1.iad.example `
   -Context my-oke-context `
+  -ImagePlatform linux/arm64 `
   -OciUsername my.user@company.com `
   -OciAuthToken "<auth-token>" `
   -Email my.user@company.com `
   -Overlay oci-single
+```
+
+Deploy to OKE (multi-arch image):
+
+```powershell
+pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
+  -RegionKey iad `
+  -RegionIdentifier us-ashburn-1 `
+  -ClusterOcid ocid1.cluster.oc1.iad.example `
+  -Context my-oke-context `
+  -OciUsername my.user@company.com `
+  -OciAuthToken "<auth-token>" `
+  -Email my.user@company.com `
+  -Overlay oci-single `
+  -MultiArch
 ```
 
 Frontend-only update:
@@ -234,6 +265,7 @@ pwsh deploy/k8s/scripts/oci/teardown-oci-full.ps1
 ### Full OCI guide
 
 - [docs/oci-oke-free-tier-runbook.md](../../docs/oci-oke-free-tier-runbook.md)
+- [docs/oci-prerequisites-detailed.md](../../docs/oci-prerequisites-detailed.md)
 
 ## Routing model
 

@@ -5,11 +5,11 @@ resources:
 
 images:
   - name: ghcr.io/darrenmartell/seriescatalog-api
-    newName: iad.ocir.io/replace-tenancy-namespace/seriescatalog/api
-    newTag: replace-with-tag
+    newName: ca-montreal-1.ocir.io/axkn8fu74igu/seriescatalog/api
+    newTag: "20260403210137"
   - name: ghcr.io/darrenmartell/seriescatalog-frontend
-    newName: iad.ocir.io/replace-tenancy-namespace/seriescatalog/frontend
-    newTag: replace-with-tag
+    newName: ca-montreal-1.ocir.io/axkn8fu74igu/seriescatalog/frontend
+    newTag: "20260403210137"
 
 patches:
   - target:
@@ -20,3 +20,4 @@ patches:
     path: ingress-json-patch.yaml
   - path: api-imagepullsecret-patch.yaml
   - path: frontend-imagepullsecret-patch.yaml
+

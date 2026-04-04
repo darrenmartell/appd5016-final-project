@@ -10,6 +10,8 @@ param(
     [string]$OciAuthToken,
     [string]$Email,
     [string]$Tag = (Get-Date -Format "yyyyMMddHHmmss"),
+    [string]$ImagePlatform = "linux/arm64",
+    [switch]$MultiArch,
     [switch]$SkipBuild,
     [Alias("?")]
     [switch]$Help
@@ -23,7 +25,7 @@ if ($Help -or $args -contains "-?" -or $args -contains "/?") {
 OCI OKE frontend-only update script.
 
 Usage:
-    pwsh deploy/k8s/scripts/oci/update-oci-frontend.ps1 -RegionKey <key> -OciUsername <user> -OciAuthToken <token> -Email <email> [-TenancyNamespace <ns>] [-Tag <tag>] [-Overlay oci-single|oci] [-Namespace seriescatalog] [-Context <name>] [-SkipBuild]
+    pwsh deploy/k8s/scripts/oci/update-oci-frontend.ps1 -RegionKey <key> -OciUsername <user> -OciAuthToken <token> -Email <email> [-TenancyNamespace <ns>] [-Tag <tag>] [-ImagePlatform linux/arm64] [-MultiArch] [-Overlay oci-single|oci] [-Namespace seriescatalog] [-Context <name>] [-SkipBuild]
 
 Examples:
     pwsh deploy/k8s/scripts/oci/update-oci-frontend.ps1 -RegionKey iad -OciUsername my.user@company.com -OciAuthToken "<token>" -Email my.user@company.com
@@ -42,6 +44,38 @@ $requiredParams = @{
 $missing = $requiredParams.GetEnumerator() | Where-Object { [string]::IsNullOrWhiteSpace($_.Value) } | ForEach-Object { $_.Key }
 if ($missing.Count -gt 0) {
     throw "Missing required parameters: $($missing -join ', '). Run with -Help for usage examples."
+}
+
+function Assert-BuildxReady {
+    if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
+        throw "Docker CLI was not found on PATH. Install Docker Desktop (or Docker Engine) and retry."
+    }
+
+    try {
+        docker info | Out-Null
+    }
+    catch {
+        throw "Docker daemon is not reachable. Start Docker Desktop and retry."
+    }
+
+    try {
+        docker buildx version | Out-Null
+    }
+    catch {
+        throw "Docker buildx is not available in this Docker installation. Update Docker Desktop/CLI and retry."
+    }
+
+    try {
+        docker buildx inspect --bootstrap | Out-Null
+    }
+    catch {
+        throw @"
+No active docker buildx builder is available.
+Create and select one, then retry:
+  docker buildx create --name seriescatalog-builder --use
+  docker buildx inspect --bootstrap
+"@
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($TenancyNamespace)) {
@@ -69,22 +103,23 @@ try {
     Write-Host "Using context: $Context"
     kubectl config use-context $Context | Out-Null
 
-    if (-not $SkipBuild) {
-        Write-Host "Building frontend image..."
-        docker build -f deploy/docker/frontend/Dockerfile -t docker-frontend:latest .
-    }
-    else {
-        Write-Host "Skipping frontend build because -SkipBuild was provided."
-    }
-
+    $platforms = if ($MultiArch) { "linux/amd64,linux/arm64" } else { $ImagePlatform }
+    Write-Host "Using image platform(s): $platforms"
     $frontendImage = "$RegionKey.ocir.io/$TenancyNamespace/seriescatalog/frontend:$Tag"
 
-    Write-Host "Logging in to OCIR..."
-    $OciAuthToken | docker login "$RegionKey.ocir.io" -u "$TenancyNamespace/$OciUsername" --password-stdin
+    if (-not $SkipBuild) {
+        Write-Host "Running docker/buildx preflight checks..."
+        Assert-BuildxReady
 
-    Write-Host "Tagging and pushing frontend image..."
-    docker tag docker-frontend:latest $frontendImage
-    docker push $frontendImage
+        Write-Host "Logging in to OCIR..."
+        $OciAuthToken | docker login "$RegionKey.ocir.io" -u "$TenancyNamespace/$OciUsername" --password-stdin
+
+        Write-Host "Building and pushing frontend image with buildx..."
+        docker buildx build --platform $platforms -f deploy/docker/frontend/Dockerfile -t $frontendImage . --push
+    }
+    else {
+        Write-Host "Skipping frontend image build/push because -SkipBuild was provided. Ensure image tag already exists in OCIR."
+    }
 
     $overlayFile = "deploy/k8s/overlays/oci/kustomization.yaml"
     $content = Get-Content -Path $overlayFile -Raw
@@ -98,7 +133,7 @@ try {
     $content = [regex]::Replace(
         $content,
         '(?ms)(- name: ghcr\.io/darrenmartell/seriescatalog-frontend\s+newName:\s+[^\r\n]+\s+newTag:\s+)[^\r\n]+',
-        ('$1' + $Tag)
+        ('$1' + '"' + $Tag + '"')
     )
 
     Set-Content -Path $overlayFile -Value $content

@@ -4,14 +4,31 @@ This runbook deploys the SeriesCatalog application to Oracle Cloud Infrastructur
 
 - 2+2 replicas overlay: `deploy/k8s/overlays/oci`
 - 1+1 replicas overlay: `deploy/k8s/overlays/oci-single`
+- Detailed prerequisites: `docs/oci-prerequisites-detailed.md`
 
 ## 1. Prerequisites
 
 - OCI account and target compartment
 - OKE cluster created and Active
-- OCI CLI configured (`oci setup config`)
+- OCI CLI configured — use the persistent Docker container (`pwsh deploy/docker/oci-cli/oci-cli.ps1 setup`) or native install (`oci setup config`)
 - `kubectl` installed
 - Docker installed locally
+
+Architecture note:
+
+- OCI Free Tier OKE commonly runs Arm worker nodes.
+- OCI scripts default to `linux/arm64` image builds.
+- Use `-MultiArch` if you want combined `linux/amd64,linux/arm64` images.
+
+Preflight troubleshooting (Docker buildx):
+
+- OCI scripts run a Docker/buildx preflight before image builds.
+- If you see `No active docker buildx builder is available`, run:
+
+```powershell
+docker buildx create --name seriescatalog-builder --use
+docker buildx inspect --bootstrap
+```
 
 Reference docs (Oracle):
 
@@ -152,6 +169,7 @@ pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
   -RegionIdentifier us-ashburn-1 `
   -ClusterOcid ocid1.cluster.oc1.iad.example `
   -Context my-oke-context `
+  -ImagePlatform linux/arm64 `
   -OciUsername my.user@company.com `
   -OciAuthToken "<auth-token>" `
   -Email my.user@company.com `
@@ -173,6 +191,21 @@ pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
   -Tag v1 `
   -Overlay oci `
   -SkipBuild
+```
+
+Example command line (multi-arch image build + push):
+
+```powershell
+pwsh deploy/k8s/scripts/oci/deploy-oci.ps1 `
+  -RegionKey iad `
+  -RegionIdentifier us-ashburn-1 `
+  -ClusterOcid ocid1.cluster.oc1.iad.example `
+  -Context my-oke-context `
+  -OciUsername my.user@company.com `
+  -OciAuthToken "<auth-token>" `
+  -Email my.user@company.com `
+  -Overlay oci-single `
+  -MultiArch
 ```
 
 Frontend-only update example:
