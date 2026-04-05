@@ -78,6 +78,8 @@ Use this section for local development on Docker Desktop (or local kind) with lo
 - `deploy-docker-desktop.ps1`: bootstrap + deploy (optionally installs ingress-nginx)
 - `update-docker-desktop-frontend.ps1`: build/push local frontend image and restart frontend
 - `update-docker-desktop-api.ps1`: build/push local API image and restart API
+- `scale-to-multi-replica.ps1`: scale from 1+1 to 2+2 replicas
+- `scale-to-single-replica.ps1`: scale from 2+2 to 1+1 replicas
 - `teardown-docker-desktop-app.ps1`: remove app resources only
 - `teardown-docker-desktop-full.ps1`: remove app resources + namespace (optionally ingress-nginx)
 
@@ -89,6 +91,8 @@ Show help for all Docker Desktop scripts:
 pwsh deploy/k8s/scripts/docker-desktop/deploy-docker-desktop.ps1 -Help
 pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-frontend.ps1 -Help
 pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-api.ps1 -Help
+pwsh deploy/k8s/scripts/docker-desktop/scale-to-multi-replica.ps1 -Help
+pwsh deploy/k8s/scripts/docker-desktop/scale-to-single-replica.ps1 -Help
 pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-app.ps1 -Help
 pwsh deploy/k8s/scripts/docker-desktop/teardown-docker-desktop-full.ps1 -Help
 ```
@@ -105,16 +109,40 @@ One-shot local deploy (2+2):
 pwsh deploy/k8s/scripts/docker-desktop/deploy-docker-desktop.ps1 -Overlay docker-desktop
 ```
 
-Frontend-only update:
+Frontend-only update (single replica, default):
 
 ```powershell
 pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-frontend.ps1
 ```
 
-Backend-only update:
+Frontend-only update (2 replicas):
+
+```powershell
+pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-frontend.ps1 -Overlay docker-desktop
+```
+
+Backend-only update (single replica, default):
 
 ```powershell
 pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-api.ps1
+```
+
+Backend-only update (2 replicas):
+
+```powershell
+pwsh deploy/k8s/scripts/docker-desktop/update-docker-desktop-api.ps1 -Overlay docker-desktop
+```
+
+Scale up (1+1 → 2+2):
+
+```powershell
+pwsh deploy/k8s/scripts/docker-desktop/scale-to-multi-replica.ps1
+```
+
+Scale down (2+2 → 1+1):
+
+```powershell
+pwsh deploy/k8s/scripts/docker-desktop/scale-to-single-replica.ps1
 ```
 
 App teardown:
