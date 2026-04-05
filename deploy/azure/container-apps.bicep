@@ -5,15 +5,38 @@ param location string = resourceGroup().location
 param containerAppsEnvironmentName string = 'cae-series-catalog'
 param apiContainerAppName string = 'ca-api'
 param frontendContainerAppName string = 'ca-frontend'
-param acrLoginServer string
-param acrUsername string
+param acrLoginServer string = ''
+param acrUsername string = ''
 
 @secure()
-param acrPassword string
+param acrPassword string = ''
+
+// Container image references. Defaults target ACR-based flow.
+param apiImage string = '${acrLoginServer}/series-catalog-api:latest'
+param frontendImage string = '${acrLoginServer}/series-catalog-frontend:latest'
+
+// Registry authentication settings.
+param useRegistryCredentials bool = true
+param registryServer string = acrLoginServer
+param registryUsername string = acrUsername
+
+@secure()
+param registryPassword string = acrPassword
 
 // MongoDB settings - Use Azure Cosmos DB or MongoDB Atlas connection string
 @secure()
 param mongoDbConnectionString string
+
+// MongoDB database name
+param mongoDbDatabaseName string = 'series_catalog'
+
+// JWT signing key for API token issuance/validation
+@secure()
+param jwtSigningKey string
+
+// Optional Data Protection key-ring path inside the frontend container.
+// Set this to a mounted persistent path to keep auth cookies valid across restarts.
+param dataProtectionKeyRingPath string = ''
 
 // ============================================================================
 // Log Analytics Workspace - For Application Insights and Container App logs
@@ -30,6 +53,73 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 }
 
 // ============================================================================
+// Static IP for Outbound Connections - For MongoDB whitelisting
+// ============================================================================
+resource staticIpPublic 'Microsoft.Network/publicIPAddresses@2023-04-01' = {
+  name: 'pip-series-catalog'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+    publicIPAddressVersion: 'IPv4'
+    idleTimeoutInMinutes: 4
+  }
+}
+
+resource natGateway 'Microsoft.Network/natGateways@2023-04-01' = {
+  name: 'nat-series-catalog'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    idleTimeoutInMinutes: 4
+    publicIpAddresses: [
+      {
+        id: staticIpPublic.id
+      }
+    ]
+  }
+}
+
+// ============================================================================
+// Virtual Network - Required for NAT Gateway integration
+// ============================================================================
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
+  name: 'vnet-series-catalog'
+  location: location
+  properties: {
+    addressSpace: {
+      addressPrefixes: [
+        '10.0.0.0/16'
+      ]
+    }
+    subnets: [
+      {
+        name: 'subnet-container-apps'
+        properties: {
+          addressPrefix: '10.0.0.0/23'
+          natGateway: {
+            id: natGateway.id
+          }
+          delegations: [
+            {
+              name: 'delegation'
+              properties: {
+                serviceName: 'Microsoft.App/environments'
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+
+// ============================================================================
 // Container Apps Environment - Shared infrastructure for both containers
 // ============================================================================
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
@@ -40,8 +130,11 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01'
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
         customerId: logAnalyticsWorkspace.properties.customerId
-        sharedKey: listKeys(logAnalyticsWorkspace.id, logAnalyticsWorkspace.apiVersion).primarySharedKey
+        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
+    }
+    vnetConfiguration: {
+      infrastructureSubnetId: '${virtualNetwork.id}/subnets/subnet-container-apps'
     }
   }
 }
@@ -64,32 +157,37 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       }
       
       // Container registry credentials
-      registries: [
+      registries: useRegistryCredentials ? [
         {
-          server: acrLoginServer
-          username: acrUsername
-          passwordSecretRef: 'acr-password'
+          server: registryServer
+          username: registryUsername
+          passwordSecretRef: 'registry-password'
         }
-      ]
+      ] : []
       
       // Secrets - Referenced by environment variables
-      secrets: [
-        {
-          name: 'acr-password'
-          value: acrPassword
-        }
+      secrets: concat([
         {
           name: 'mongodb-connection'
           value: mongoDbConnectionString
         }
-      ]
+        {
+          name: 'jwt-signing-key'
+          value: jwtSigningKey
+        }
+      ], useRegistryCredentials ? [
+        {
+          name: 'registry-password'
+          value: registryPassword
+        }
+      ] : [])
     }
     
     template: {
       containers: [
         {
           name: 'api'
-          image: '${acrLoginServer}/series-catalog-api:latest'
+          image: apiImage
           
           // Environment variables injected into container
           env: [
@@ -98,19 +196,23 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: 'Production'
             }
             {
-              name: 'MongoDb__ConnectionString'
+              name: 'Mongo__ConnectionString'
               secretRef: 'mongodb-connection' // Reference to secret
             }
             {
-              name: 'MongoDb__DatabaseName'
-              value: 'series_catalog'
+              name: 'Mongo__DatabaseName'
+              value: mongoDbDatabaseName
+            }
+            {
+              name: 'Jwt__Key'
+              secretRef: 'jwt-signing-key'
             }
           ]
           
           // Resource allocation
           resources: {
-            cpu: json('0.5')
-            memory: '1Gi'
+            cpu: json('0.25')
+            memory: '0.5Gi'
           }
         }
       ]
@@ -118,7 +220,7 @@ resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       // Auto-scaling configuration
       scale: {
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 1
       }
     }
   }
@@ -143,31 +245,31 @@ resource frontendContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       }
       
       // Container registry credentials
-      registries: [
+      registries: useRegistryCredentials ? [
         {
-          server: acrLoginServer
-          username: acrUsername
-          passwordSecretRef: 'acr-password'
+          server: registryServer
+          username: registryUsername
+          passwordSecretRef: 'registry-password'
         }
-      ]
+      ] : []
       
       // Secrets
-      secrets: [
+      secrets: useRegistryCredentials ? [
         {
-          name: 'acr-password'
-          value: acrPassword
+          name: 'registry-password'
+          value: registryPassword
         }
-      ]
+      ] : []
     }
     
     template: {
       containers: [
         {
           name: 'frontend'
-          image: '${acrLoginServer}/series-catalog-frontend:latest'
+          image: frontendImage
           
           // Environment variables - Configured for API communication
-          env: [
+          env: concat([
             {
               name: 'ASPNETCORE_ENVIRONMENT'
               value: 'Production'
@@ -176,12 +278,17 @@ resource frontendContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
               name: 'Api__BaseUrl'
               value: 'https://${apiContainerApp.properties.configuration.ingress.fqdn}'
             }
-          ]
+          ], empty(dataProtectionKeyRingPath) ? [] : [
+            {
+              name: 'DataProtection__KeyRingPath'
+              value: dataProtectionKeyRingPath
+            }
+          ])
           
           // Resource allocation
           resources: {
-            cpu: json('0.5')
-            memory: '1Gi'
+            cpu: json('0.25')
+            memory: '0.5Gi'
           }
         }
       ]
@@ -189,7 +296,7 @@ resource frontendContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
       // Auto-scaling configuration
       scale: {
         minReplicas: 1
-        maxReplicas: 3
+        maxReplicas: 1
       }
     }
   }
@@ -207,3 +314,9 @@ output frontendPublicUrl string = 'https://${frontendContainerApp.properties.con
 
 @description('Log Analytics Workspace ID - for querying application logs')
 output logAnalyticsWorkspaceId string = logAnalyticsWorkspace.id
+
+@description('Static outgoing IP address for Container Apps - whitelist this in MongoDB Cloud')
+output staticOutboundIP string = staticIpPublic.properties.ipAddress
+
+@description('NAT Gateway ID - manages outbound connections to external services')
+output natGatewayId string = natGateway.id

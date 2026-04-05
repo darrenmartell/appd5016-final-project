@@ -25,22 +25,22 @@
 
 .EXAMPLE
     # Build and push using ACR (recommended)
-    .\deploy-to-acr.ps1 -AcrName "yourcompanyacr" -ResourceGroup "my-rg"
+    .\deploy\azure\deploy-to-acr.ps1 -AcrName "yourcompanyacr" -ResourceGroup "my-rg"
 
 .EXAMPLE
     # Build locally and push
-    .\deploy-to-acr.ps1 -AcrName "yourcompanyacr" -ResourceGroup "my-rg" -BuildLocal
+    .\deploy\azure\deploy-to-acr.ps1 -AcrName "yourcompanyacr" -ResourceGroup "my-rg" -BuildLocal
 
 .EXAMPLE
     # Only build locally
-    .\deploy-to-acr.ps1 -AcrName "yourcompanyacr" -BuildLocal -SkipPush
+    .\deploy\azure\deploy-to-acr.ps1 -AcrName "yourcompanyacr" -BuildLocal -SkipPush
 #>
 
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$AcrName,
 
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $false)]
     [string]$ResourceGroup,
 
     [string]$Location = "eastus",
@@ -51,6 +51,58 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+# ========================================================================
+# Load Configuration from azure-config.json
+# ========================================================================
+$configFilePath = $null
+$scriptRepoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+
+# Check in current working directory first (where setup script saves it)
+if (Test-Path -Path ".\azure-config.json") {
+    $configFilePath = ".\azure-config.json"
+}
+# Check in parent directory of script
+elseif (Test-Path -Path (Join-Path -Path $scriptRepoRoot -ChildPath "azure-config.json")) {
+    $configFilePath = Join-Path -Path $scriptRepoRoot -ChildPath "azure-config.json"
+}
+
+if ($configFilePath) {
+    Write-Host "ℹ Loading configuration from: $configFilePath" -ForegroundColor Cyan
+    try {
+        $config = Get-Content -Path $configFilePath -Raw | ConvertFrom-Json
+        
+        # Apply config values only if parameters weren't provided
+        if (-not $AcrName -and $config.acrName) {
+            $AcrName = $config.acrName
+            Write-Host "  ✓ Loaded AcrName from config: $AcrName" -ForegroundColor Gray
+        }
+        
+        if (-not $ResourceGroup -and $config.resourceGroup) {
+            $ResourceGroup = $config.resourceGroup
+            Write-Host "  ✓ Loaded ResourceGroup from config: $ResourceGroup" -ForegroundColor Gray
+        }
+        
+        if ($Location -eq "eastus" -and $config.location) {
+            $Location = $config.location
+            Write-Host "  ✓ Loaded Location from config: $Location" -ForegroundColor Gray
+        }
+    }
+    catch {
+        Write-Warning "Failed to parse azure-config.json: $_"
+    }
+}
+
+# Validate required parameters after loading config
+if (-not $AcrName) {
+    Write-Error-Custom "AcrName is required. Provide via -AcrName parameter or ensure azure-config.json exists in the root folder"
+    exit 1
+}
+
+if (-not $ResourceGroup) {
+    Write-Error-Custom "ResourceGroup is required. Provide via -ResourceGroup parameter or ensure azure-config.json exists in the root folder"
+    exit 1
+}
 
 # Color output helpers
 function Write-Success {
@@ -87,8 +139,8 @@ try {
     }
     Write-Success "Azure CLI found"
 
-    # Check if Docker is installed (only if building locally)
-    if ($BuildLocal -or -not $SkipPush) {
+    # Check if Docker is installed only when building locally.
+    if ($BuildLocal) {
         $dockerVersion = docker version --format "{{.Client.Version}}" 2>$null
         if (-not $dockerVersion) {
             Write-Warning-Custom "Docker not found. Install from https://www.docker.com or use ACR builds"
@@ -132,12 +184,18 @@ try {
         az acr create `
             --resource-group $ResourceGroup `
             --name $AcrName `
-            --sku Standard `
+            --sku Basic `
+            --admin-enabled true `
             --location $Location | Out-Null
         Write-Success "ACR created"
     }
     else {
         Write-Success "ACR found: $AcrName"
+        
+        # Ensure admin access is enabled for credential retrieval
+        Write-Info "Ensuring admin access is enabled..."
+        az acr update --name $AcrName --admin-enabled true --output none 2>$null
+        Write-Success "Admin access enabled"
     }
 
     # Get ACR details
@@ -262,8 +320,8 @@ try {
     Write-Host "  Frontend: $acrLoginServer/series-catalog-frontend:latest"
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor Yellow
-    Write-Host "  1. Update deploy/container-apps.bicep with ACR credentials"
-    Write-Host "  2. Deploy with: az deployment group create --resource-group $ResourceGroup --template-file deploy/container-apps.bicep"
+    Write-Host "  1. Update deploy/azure/container-apps.bicep with ACR credentials"
+    Write-Host "  2. Deploy with: az deployment group create --resource-group $ResourceGroup --template-file deploy/azure/container-apps.bicep"
     Write-Host "  3. Configure environment variables in the Bicep template"
     Write-Host ""
     Write-Host "Authentication for scripting:" -ForegroundColor Yellow

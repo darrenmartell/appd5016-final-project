@@ -1,1184 +1,473 @@
-# Blazor Server to Azure Container Apps: Complete Deployment Guide
+# Azure Container Apps Deployment Guide
 
 ## Overview
 
-This guide covers deploying your Series Catalog application to Azure Container Apps with two containers: frontend (Blazor Server) and API (ASP.NET Core).
+This repository deploys Series Catalog to Azure Container Apps using:
 
-**Key capabilities:**
-- 🔒 **Managed HTTPS** - automatic certs
-- 🌐 **Service-to-service** - internal networking via FQDN  
-- 📊 **Observability** - built-in with Log Analytics
-- 🔧 **Auto-scaling** - respond to demand
-- 💰 **Cost-effective** - pay only for what you use
+- API container: internal ingress only (`ca-api`)
+- Frontend container: public ingress (`ca-frontend`)
+- Shared Container Apps environment (`cae-series-catalog`)
+- Log Analytics workspace (`law-series-catalog`)
+- VNet + NAT gateway + static public IP for stable outbound connectivity
 
----
+Deployment assets are in [deploy/azure](deploy/azure):
 
-## 1. Dockerfile Optimization
-
-### API Dockerfile (`deploy/docker/api/Dockerfile`)
-
-```dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
-
-# Copy project files only first (for better layer caching)
-COPY src/apps/api-aspnet/SeriesCatalog.WebApi.csproj src/apps/api-aspnet/
-COPY src/infrastructure/data-mongodb/SeriesCatalog.Infrastructure.MongoDb.csproj src/infrastructure/data-mongodb/
-RUN dotnet restore src/apps/api-aspnet/SeriesCatalog.WebApi.csproj
-
-# Copy source and build
-COPY src/apps/api-aspnet/ src/apps/api-aspnet/
-COPY src/infrastructure/data-mongodb/ src/infrastructure/data-mongodb/
-RUN dotnet publish src/apps/api-aspnet/SeriesCatalog.WebApi.csproj \
-    -c Release -o /app/publish /p:UseAppHost=false
-
-# Runtime stage - smaller image
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
-WORKDIR /app
-
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
-
-COPY --from=build /app/publish .
-
-# Container Apps auto-injects these, but being explicit is good
-ENV ASPNETCORE_URLS=http://+:8080
-ENV ASPNETCORE_ENVIRONMENT=Production
-
-EXPOSE 8080
-
-ENTRYPOINT ["dotnet", "SeriesCatalog.WebApi.dll"]
-```
-
-### Frontend Dockerfile (`deploy/docker/frontend/Dockerfile`)
-
-```dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
-
-COPY src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj src/apps/frontend-blazor/
-RUN dotnet restore src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj
-
-COPY src/apps/frontend-blazor/ src/apps/frontend-blazor/
-RUN dotnet publish src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj \
-    -c Release -o /app/publish /p:UseAppHost=false
-
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
-WORKDIR /app
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
-
-COPY --from=build /app/publish .
-
-ENV ASPNETCORE_URLS=http://+:8080
-ENV ASPNETCORE_ENVIRONMENT=Production
-
-EXPOSE 8080
-
-ENTRYPOINT ["dotnet", "SeriesCatalog.Frontend.dll"]
-```
-
-### Key Points
-
-- ✅ Both listen on port 8080 (Container Apps default)
-- ✅ Multi-stage builds keep images slim
-- ✅ Health checks for Container Apps orchestration
-- ✅ Production environment configuration
+- `deploy/azure/setup-azure-prerequisites.ps1`
+- `deploy/azure/deploy-to-acr.ps1`
+- `deploy/azure/deploy-container-apps.ps1`
+- `deploy/azure/teardown-container-apps.ps1`
+- `deploy/azure/cleanup-containerapp-revisions.ps1`
+- `deploy/azure/container-apps.bicep`
 
 ---
 
-## 2. Build & Push to Azure Container Registry
+## Prerequisites
 
-### Option A: Using Azure CLI (Recommended for CI/CD)
+- Azure CLI installed and authenticated (`az login`)
+- Docker installed (required for local builds; optional when using ACR remote build; not required for external-image deploy mode)
+- Access to an Azure subscription
+- MongoDB connection string (Atlas/Cosmos DB Mongo API/other Mongo provider)
+- JWT signing key (32+ characters)
 
-Create `deploy-to-acr.ps1`:
+---
+
+## Quick Start (Recommended)
+
+### 1) Provision Azure prerequisites
 
 ```powershell
-# Set variables
-$resourceGroup = "your-rg"
-$acrName = "youracrname"  # Must be globally unique, no dashes
+.\deploy\azure\setup-azure-prerequisites.ps1
+```
+
+Optional:
+
+```powershell
+.\deploy\azure\setup-azure-prerequisites.ps1 `
+  -ResourceGroup "my-rg" `
+  -CreateAcr `
+  -AcrName "myacrname" `
+  -Location "eastus" `
+  -AcrSku "Basic"
+```
+
+What this script does:
+
+- Validates Azure CLI + authentication
+- Creates/verifies resource group
+- Creates/verifies ACR only when `-CreateAcr` is passed (or when `-AcrName` is explicitly provided)
+- Enables ACR admin credentials only when ACR is configured
+- Saves settings to `azure-config.json` at repo root
+
+### 2) Build and push images
+
+Use ACR build (default):
+
+```powershell
+.\deploy\azure\deploy-to-acr.ps1
+```
+
+Use local Docker builds and push:
+
+```powershell
+.\deploy\azure\deploy-to-acr.ps1 -BuildLocal
+```
+
+Build only (no push):
+
+```powershell
+.\deploy\azure\deploy-to-acr.ps1 -BuildLocal -SkipPush
+```
+
+### 3) Deploy Container Apps
+
+```powershell
+.\deploy\azure\deploy-container-apps.ps1
+```
+
+The default mode is ACR-based deployment (uses `AcrName` from parameter or `azure-config.json`).
+
+Pass Mongo explicitly if you do not want prompt-based entry:
+
+```powershell
+.\deploy\azure\deploy-container-apps.ps1 `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net/db" `
+  -MongoDbDatabaseName "harlan_coben" `
+  -JwtSigningKey "replace-with-a-long-random-secret-at-least-32-characters"
+```
+
+Deploy without ACR using public images:
+
+```powershell
+.\deploy\azure\deploy-container-apps.ps1 `
+  -ResourceGroup "my-rg" `
+  -ApiImage "ghcr.io/owner/series-catalog-api:latest" `
+  -FrontendImage "ghcr.io/owner/series-catalog-frontend:latest" `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net/db" `
+  -JwtSigningKey "replace-with-a-long-random-secret-at-least-32-characters"
+```
+
+Deploy without ACR using a private external registry:
+
+```powershell
+.\deploy\azure\deploy-container-apps.ps1 `
+  -ResourceGroup "my-rg" `
+  -ApiImage "my-registry.example.com/series-catalog-api:latest" `
+  -FrontendImage "my-registry.example.com/series-catalog-frontend:latest" `
+  -RegistryServer "my-registry.example.com" `
+  -RegistryUsername "my-user" `
+  -RegistryPassword "my-password-or-token" `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net/db" `
+  -JwtSigningKey "replace-with-a-long-random-secret-at-least-32-characters"
+```
+
+Optional Data Protection key-ring path (recommended when you mount persistent storage):
+
+```powershell
+.\deploy\azure\deploy-container-apps.ps1 `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net/db" `
+  -JwtSigningKey "replace-with-a-long-random-secret-at-least-32-characters" `
+  -DataProtectionKeyRingPath "/mnt/dpkeys"
+```
+
+The deploy script runs a `what-if` preview by default and asks for confirmation.
+
+---
+
+## Script Behavior Notes
+
+### `deploy/azure/deploy-to-acr.ps1`
+
+- Reads `AcrName`, `ResourceGroup`, and `Location` from `azure-config.json` when not passed.
+- Creates ACR if missing.
+- Supports:
+: `-BuildLocal` for local Docker build
+: default remote build in ACR for CI/CD-friendly flow
+- Pushes/creates:
+: `series-catalog-api:latest`
+: `series-catalog-frontend:latest`
+
+### `deploy/azure/deploy-container-apps.ps1`
+
+- Reads `AcrName`, `ResourceGroup`, and `Location` from `azure-config.json` when not passed.
+- Default template path is:
+: `deploy/azure/container-apps.bicep`
+- Supports two deployment modes:
+: ACR mode (default): uses `AcrName`, retrieves credentials automatically, deploys `series-catalog-api:latest` and `series-catalog-frontend:latest` from ACR.
+: External image mode: provide both `-ApiImage` and `-FrontendImage` to skip ACR entirely.
+- Optional external private registry auth:
+: provide `-RegistryServer`, `-RegistryUsername`, and `-RegistryPassword` together.
+- Requires Mongo connection string (parameter or prompt).
+- Uses `MongoDbDatabaseName` from parameter when provided; otherwise tries `src/apps/api-aspnet/appsettings.Development.json`, then defaults to `series_catalog`.
+- Requires JWT signing key (parameter, `JWT_SIGNING_KEY` env var, or prompt).
+- Supports optional `DataProtectionKeyRingPath` forwarding to frontend container env.
+- Runs `az deployment group what-if` unless `-SkipValidation` is provided.
+
+### `deploy/azure/teardown-container-apps.ps1`
+
+- Removes Container Apps resources in a resource group.
+- Supports full RG deletion via `-DeleteResourceGroup`.
+- Supports non-interactive confirmation bypass with `-Force`.
+
+---
+
+## Infrastructure Template Details
+
+Template: `deploy/azure/container-apps.bicep`
+
+Key parameters:
+
+- `location`
+- `acrLoginServer` (optional; primarily for ACR mode)
+- `acrUsername` (optional; primarily for ACR mode)
+- `acrPassword` (secure; optional; primarily for ACR mode)
+- `apiImage`
+- `frontendImage`
+- `useRegistryCredentials`
+- `registryServer`
+- `registryUsername`
+- `registryPassword` (secure)
+- `mongoDbConnectionString` (secure)
+- `mongoDbDatabaseName`
+- `jwtSigningKey` (secure)
+- `dataProtectionKeyRingPath` (optional)
+
+Key outputs:
+
+- `frontendPublicUrl`
+- `apiInternalFqdn`
+- `logAnalyticsWorkspaceId`
+- `staticOutboundIP`
+- `natGatewayId`
+
+### Important configuration mapping
+
+The API in this repo binds Mongo settings from section `Mongo`, so environment variable names must be:
+
+- `Mongo__ConnectionString`
+- `Mongo__DatabaseName`
+
+The API JWT signing key is injected via:
+
+- `Jwt__Key` (from a Container Apps secret)
+
+These are already set correctly in `deploy/azure/container-apps.bicep`.
+
+---
+
+## Manual Deployment Commands
+
+If you prefer manual deployment instead of the script:
+
+### ACR mode
+
+```powershell
+$resourceGroup = "my-rg"
 $location = "eastus"
+$acrName = "myacrname"
 
-# Create ACR if needed
-az acr create --resource-group $resourceGroup `
-              --name $acrName `
-              --sku Standard `
-              --location $location
+$acrLoginServer = az acr show --name $acrName --resource-group $resourceGroup --query loginServer -o tsv
+$acrUsername = az acr credential show --name $acrName --resource-group $resourceGroup --query username -o tsv
+$acrPassword = az acr credential show --name $acrName --resource-group $resourceGroup --query 'passwords[0].value' -o tsv
+$mongoConnStr = "mongodb+srv://user:pass@cluster.mongodb.net/db"
+$mongoDbName = "harlan_coben"
+$jwtSigningKey = "replace-with-a-long-random-secret-at-least-32-characters"
 
-# Get ACR login server
-$acrLoginServer = az acr show --name $acrName --query loginServer -o tsv
-
-# Build and push API
-Write-Host "Building and pushing API..."
-az acr build --registry $acrName `
-             --image "series-catalog-api:latest" `
-             --file deploy/docker/api/Dockerfile `
-             .
-
-# Build and push Frontend
-Write-Host "Building and pushing Frontend..."
-az acr build --registry $acrName `
-             --image "series-catalog-frontend:latest" `
-             --file deploy/docker/frontend/Dockerfile `
-             .
-
-# Log ACR URLs
-Write-Host "✓ API image: $acrLoginServer/series-catalog-api:latest"
-Write-Host "✓ Frontend image: $acrLoginServer/series-catalog-frontend:latest"
-```
-
-### Option B: Using Docker Locally (Recommended for Testing)
-
-```powershell
-# Build locally
-docker build -f deploy/docker/api/Dockerfile -t series-catalog-api:latest .
-docker build -f deploy/docker/frontend/Dockerfile -t series-catalog-frontend:latest .
-
-# Get ACR login server
-$acrName = "youracrname"
-$acrLoginServer = az acr show --name $acrName --query loginServer -o tsv
-
-# Tag for ACR
-docker tag series-catalog-api:latest $acrLoginServer/series-catalog-api:latest
-docker tag series-catalog-frontend:latest $acrLoginServer/series-catalog-frontend:latest
-
-# Login to ACR
-az acr login --name $acrName
-
-# Push to ACR
-docker push $acrLoginServer/series-catalog-api:latest
-docker push $acrLoginServer/series-catalog-frontend:latest
-```
-
-### Why Use Option B (Local Docker Build) for Testing?
-
-**Speed & Feedback Loop**
-- ⚡ **Instant feedback**: Local builds run immediately vs. 2-5+ minutes for ACR remote build
-- 🔍 **Fail fast**: Catch Dockerfile issues in seconds, not minutes
-- 🔄 **Iterate quickly**: Build → test → fix → rebuild in minutes
-
-**Debugging**
-- 🛠️ **Full control**: See complete build output and inspect the image immediately
-- ▶️ **Run locally**: Test with `docker run` before pushing to ACR
-- ✓ **Validate configuration**: Confirm the app runs on port 8080 before production
-
-**Cost Savings**
-- 💰 **No ACR compute charges**: ACR builds are billable resources
-- 📊 **Dev-friendly**: Don't burn ACR resources during iteration
-- 🌐 **Network efficient**: Large layers upload only once, not repeatedly
-
-**Risk Mitigation**
-- 🗂️ **Clean registry**: Keep ACR clean—only push tested images
-- 🐛 **Catch runtime issues**: Discover platform problems locally before production
-- 📤 **Bandwidth efficiency**: Avoid re-uploading artifacts during iteration
-
-### Recommended Workflow
-
-```
-Local Testing (Option B) → Validation → Push to ACR → Deploy to Container Apps (Bicep)
-```
-
-**Example Development Cycle**:
-```powershell
-# 1. Build locally and test (Option B)
-.\deploy-to-acr.ps1 -AcrName myacr -BuildLocal -SkipPush
-
-# 2. Test the image locally
-docker run -p 8080:8080 series-catalog-api:latest
-docker run -p 8081:8080 series-catalog-frontend:latest
-
-# 3. Verify endpoints work (health checks, API responses)
-curl http://localhost:8080/health
-
-# 4. Once validated, push to ACR
-$acrLoginServer = az acr show --name myacr --query loginServer -o tsv
-docker tag series-catalog-api:latest $acrLoginServer/series-catalog-api:latest
-docker push $acrLoginServer/series-catalog-api:latest
-```
-
-### General Best Practices
-
-- Test images locally before pushing to ACR (saves 10-15 minutes per iteration)
-- Use specific version tags in production (e.g., `v1.0.0` instead of just `latest`)
-- Consider separate ACRs for dev/staging/production
-- Enable soft delete on ACR for accidental image recovery
-- For CI/CD pipelines, use Option A (ACR remote build) after local validation
-
----
-
-## 3. Deploy to Azure Container Apps
-
-### Bicep Infrastructure Template (`infra/container-apps.bicep`)
-
-```bicep
-param location string = resourceGroup().location
-param containerAppsEnvironmentName string = 'cae-series-catalog'
-param apiContainerAppName string = 'ca-api'
-param frontendContainerAppName string = 'ca-frontend'
-param acrLoginServer string
-param acrUsername string
-@secure()
-param acrPassword string
-
-// MongoDB settings (from Key Vault or params)
-@secure()
-param mongoDbConnectionString string
-
-// Container Apps Environment
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2024-03-01' = {
-  name: containerAppsEnvironmentName
-  location: location
-  properties: {
-    appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: logAnalyticsWorkspace.properties.customerId
-        sharedKey: listKeys(logAnalyticsWorkspace.id, logAnalyticsWorkspace.apiVersion).primarySharedKey
-      }
-    }
-  }
-}
-
-// Log Analytics Workspace (for observability)
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: 'law-series-catalog'
-  location: location
-  properties: {
-    sku: {
-      name: 'PerGB2018'
-    }
-    retentionInDays: 30
-  }
-}
-
-// API Container App
-resource apiContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
-  name: apiContainerAppName
-  location: location
-  properties: {
-    managedEnvironmentId: containerAppsEnvironment.id
-    configuration: {
-      ingress: {
-        external: false  // Internal only, frontend calls it
-        targetPort: 8080
-        transport: 'auto'
-      }
-      registries: [
-        {
-          server: acrLoginServer
-          username: acrUsername
-          passwordSecretRef: 'acr-password'
-        }
-      ]
-      secrets: [
-        {
-          name: 'acr-password'
-          value: acrPassword
-        }
-        {
-          name: 'mongodb-connection'
-          value: mongoDbConnectionString
-        }
-      ]
-    }
-    template: {
-      containers: [
-        {
-          name: 'api'
-          image: '${acrLoginServer}/series-catalog-api:latest'
-          env: [
-            {
-              name: 'ASPNETCORE_ENVIRONMENT'
-              value: 'Production'
-            }
-            {
-              name: 'MongoDb__ConnectionString'
-              secretRef: 'mongodb-connection'
-            }
-            {
-              name: 'MongoDb__DatabaseName'
-              value: 'series_catalog'
-            }
-          ]
-          resources: {
-            cpu: json('0.5')
-            memory: '1Gi'
-          }
-        }
-      ]
-      scale: {
-        minReplicas: 1
-        maxReplicas: 3
-      }
-    }
-  }
-}
-
-// Frontend Container App
-resource frontendContainerApp 'Microsoft.App/containerApps@2024-03-01' = {
-  name: frontendContainerAppName
-  location: location
-  properties: {
-    managedEnvironmentId: containerAppsEnvironment.id
-    configuration: {
-      ingress: {
-        external: true  // Public-facing
-        targetPort: 8080
-        transport: 'auto'
-        allowInsecure: false
-      }
-      registries: [
-        {
-          server: acrLoginServer
-          username: acrUsername
-          passwordSecretRef: 'acr-password'
-        }
-      ]
-      secrets: [
-        {
-          name: 'acr-password'
-          value: acrPassword
-        }
-      ]
-    }
-    template: {
-      containers: [
-        {
-          name: 'frontend'
-          image: '${acrLoginServer}/series-catalog-frontend:latest'
-          env: [
-            {
-              name: 'ASPNETCORE_ENVIRONMENT'
-              value: 'Production'
-            }
-            {
-              name: 'Api__BaseUrl'
-              value: 'https://${apiContainerApp.properties.configuration.ingress.fqdn}'
-            }
-          ]
-          resources: {
-            cpu: json('0.5')
-            memory: '1Gi'
-          }
-        }
-      ]
-      scale: {
-        minReplicas: 1
-        maxReplicas: 3
-      }
-    }
-  }
-}
-
-output apiInternalFqdn string = apiContainerApp.properties.configuration.ingress.fqdn
-output frontendPublicUrl string = 'https://${frontendContainerApp.properties.configuration.ingress.fqdn}'
-```
-
-### Automated Deployment Script (Recommended) ⭐
-
-Use the provided PowerShell script at `deploy/deploy-container-apps.ps1` for fully automated deployment with validation:
-
-```powershell
-# Option 1: Interactive (prompts for MongoDB connection string)
-.\deploy/deploy-container-apps.ps1 `
-  -ResourceGroup "my-rg" `
-  -AcrName "myacr"
-
-# Option 2: Non-interactive with all parameters
-.\deploy/deploy-container-apps.ps1 `
-  -ResourceGroup "my-rg" `
-  -AcrName "myacr" `
-  -MongoDbConnectionString "mongodb+srv://user:pass@host/db"
-
-# Option 3: Skip what-if validation
-.\deploy/deploy-container-apps.ps1 `
-  -ResourceGroup "my-rg" `
-  -AcrName "myacr" `
-  -SkipValidation
-```
-
-**Script Features:**
-- ✅ Pre-flight validation (Azure CLI, authentication, resources)
-- ✅ Automatic credential retrieval from ACR
-- ✅ What-if deployment preview (shows changes before applying)
-- ✅ User confirmation before deployment
-- ✅ Extracts and displays deployment outputs (URLs, workspace IDs)
-- ✅ Post-deployment guidance (testing, logging, scaling)
-- ✅ Complete error handling and colored output
-
-**What the script does:**
-1. Validates prerequisites and Azure connectivity
-2. Verifies resource group and ACR exist
-3. Retrieves ACR credentials automatically
-4. Prompts for MongoDB connection string (if not provided)
-5. Runs what-if validation and shows preview
-6. Waits for user confirmation
-7. Deploys Container Apps (2-5 minutes)
-8. Displays frontend URL, API FQDN, and Log Analytics workspace ID
-9. Provides next steps for verification and monitoring
-
-### Manual Deployment (Alternative)
-
-If you prefer manual control or need to integrate with CI/CD pipelines:
-
-```powershell
-$resourceGroup = "your-rg"
-$location = "eastus"
-$acrName = "youracrname"
-
-# Retrieve ACR credentials
-$acrLoginServer = az acr show --name $acrName --query loginServer -o tsv
-$acrUsername = az acr credential show --name $acrName --query username -o tsv
-$acrPassword = az acr credential show --name $acrName --query 'passwords[0].value' -o tsv
-$mongoConnStr = "mongodb://your-user:your-pass@cosmos.mongo.cosmos.azure.com:10255/series_catalog?ssl=true&retryWrites=false&maxIdleTimeMS=120000"
-
-# Validate deployment first (what-if)
 az deployment group what-if `
   --resource-group $resourceGroup `
-  --template-file deploy/container-apps.bicep `
+  --template-file deploy/azure/container-apps.bicep `
   --parameters `
     location=$location `
     acrLoginServer=$acrLoginServer `
     acrUsername=$acrUsername `
     acrPassword=$acrPassword `
-    mongoDbConnectionString=$mongoConnStr
+    mongoDbConnectionString=$mongoConnStr `
+    mongoDbDatabaseName=$mongoDbName `
+    jwtSigningKey=$jwtSigningKey
 
-# Deploy
 az deployment group create `
   --resource-group $resourceGroup `
-  --template-file deploy/container-apps.bicep `
+  --template-file deploy/azure/container-apps.bicep `
   --parameters `
     location=$location `
     acrLoginServer=$acrLoginServer `
     acrUsername=$acrUsername `
     acrPassword=$acrPassword `
-    mongoDbConnectionString=$mongoConnStr
+    mongoDbConnectionString=$mongoConnStr `
+    mongoDbDatabaseName=$mongoDbName `
+    jwtSigningKey=$jwtSigningKey
+```
 
-# Get deployment outputs
-az deployment group show `
+### External image mode (no ACR)
+
+```powershell
+$resourceGroup = "my-rg"
+$location = "eastus"
+$mongoConnStr = "mongodb+srv://user:pass@cluster.mongodb.net/db"
+$mongoDbName = "harlan_coben"
+$jwtSigningKey = "replace-with-a-long-random-secret-at-least-32-characters"
+$apiImage = "ghcr.io/owner/series-catalog-api:latest"
+$frontendImage = "ghcr.io/owner/series-catalog-frontend:latest"
+
+az deployment group what-if `
   --resource-group $resourceGroup `
-  --name MicrosoftResources `
-  --query properties.outputs `
-  --output table
+  --template-file deploy/azure/container-apps.bicep `
+  --parameters `
+    location=$location `
+    apiImage=$apiImage `
+    frontendImage=$frontendImage `
+    useRegistryCredentials=false `
+    mongoDbConnectionString=$mongoConnStr `
+    mongoDbDatabaseName=$mongoDbName `
+    jwtSigningKey=$jwtSigningKey
+
+az deployment group create `
+  --resource-group $resourceGroup `
+  --template-file deploy/azure/container-apps.bicep `
+  --parameters `
+    location=$location `
+    apiImage=$apiImage `
+    frontendImage=$frontendImage `
+    useRegistryCredentials=false `
+    mongoDbConnectionString=$mongoConnStr `
+    mongoDbDatabaseName=$mongoDbName `
+    jwtSigningKey=$jwtSigningKey
 ```
 
-### Verifying Deployment
+  If login immediately fails with 401 after deployment, verify the deployed MongoDB database name matches the database where your users are stored.
 
-After deployment completes (2-5 minutes for containers to start):
+---
+
+## Validation and Troubleshooting
+
+### Check deployment outputs
 
 ```powershell
-# Check container app status
+$deploymentName = az deployment group list --resource-group $resourceGroup --query "[0].name" -o tsv
+az deployment group show --resource-group $resourceGroup --name $deploymentName --query properties.outputs
+```
+
+### Check app status and logs
+
+```powershell
 az containerapp show --name ca-api --resource-group $resourceGroup
+az containerapp show --name ca-frontend --resource-group $resourceGroup
 
-# View API logs
 az containerapp logs show --name ca-api --resource-group $resourceGroup --container-name api --tail 100
-
-# View Frontend logs
 az containerapp logs show --name ca-frontend --resource-group $resourceGroup --container-name frontend --tail 100
-
-# Get frontend URL
-$frontendUrl = az deployment group show --resource-group $resourceGroup --name MicrosoftResources --query properties.outputs.frontendPublicUrl.value -o tsv
-echo "Frontend: $frontendUrl"
-
-# Test health endpoint
-curl "$frontendUrl/health"
 ```
 
----
-
-## 4. Environment Variables & Configuration
-
-### Environment Variable Naming Convention
-
-**Pattern:** Colon `:` in JSON configuration → Double underscore `__` in environment variables
-
-ASP.NET Core automatically converts hierarchical configuration:
-
-Examples:
-- `Api:BaseUrl` → `Api__BaseUrl`
-- `MongoDb:ConnectionString` → `MongoDb__ConnectionString`
-- `Logging:LogLevel:Default` → `Logging__LogLevel__Default`
-
----
-
-### Development Configuration
-
-#### Local Development (`src/apps/frontend-blazor/appsettings.Development.json`)
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Debug",
-      "Microsoft.AspNetCore": "Information"
-    }
-  },
-  "Api": {
-    "BaseUrl": "http://localhost:5130"
-  },
-  "MongoDb": {
-    "ConnectionString": "mongodb://localhost:27017",
-    "DatabaseName": "series_catalog_dev"
-  },
-  "AllowedHosts": "*"
-}
-```
-
-#### Local API Development (`src/apps/api-aspnet/appsettings.Development.json`)
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Debug",
-      "Microsoft.AspNetCore": "Information",
-      "Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware": "Debug"
-    }
-  },
-  "MongoDb": {
-    "ConnectionString": "mongodb://localhost:27017",
-    "DatabaseName": "series_catalog_dev"
-  },
-  "AllowedHosts": "*"
-}
-```
-
-**Development-specific settings:**
-- ✅ Debug logging for detailed troubleshooting
-- ✅ Local MongoDB (container or local instance)
-- ✅ HTTP URLs (no HTTPS overhead)
-- ✅ Development database names for isolation
-- ✅ Separate logging configurations
-
-**Run locally:**
-```powershell
-# Terminal 1: API
-cd src/apps/api-aspnet
-dotnet run --configuration Development
-
-# Terminal 2: Frontend
-cd src/apps/frontend-blazor
-dotnet run --configuration Development
-
-# Access at http://localhost:3000 (frontend default) or http://localhost:5214 (API default)
-```
-
----
-
-### Production Configuration
-
-#### Production Defaults (`src/apps/frontend-blazor/appsettings.json`)
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "Api": {
-    "BaseUrl": "https://ca-api.PLACEHOLDER.azurecontainerapps.io"
-  },
-  "MongoDb": {
-    "DatabaseName": "series_catalog_prod"
-  },
-  "AllowedHosts": "*"
-}
-```
-
-#### Production API Configuration (`src/apps/api-aspnet/appsettings.json`)
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "MongoDb": {
-    "DatabaseName": "series_catalog_prod"
-  },
-  "AllowedHosts": "*"
-}
-```
-
-**Production-specific settings:**
-- ✅ Minimal logging (Information level only)
-- ✅ Production database names
-- ✅ Base URLs set via environment variables
-- ✅ Encrypted connections (MongoDB Atlas, Cosmos DB)
-
----
-
-### Container Apps Environment Variables (via Bicep)
-
-Set via the deployment script or Bicep template:
-
-```bicep
-// Frontend environment variables
-env: [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Production'
-  }
-  {
-    name: 'Api__BaseUrl'
-    value: 'https://${apiContainerApp.properties.configuration.ingress.fqdn}'
-  }
-]
-
-// API environment variables
-env: [
-  {
-    name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Production'
-  }
-  {
-    name: 'MongoDb__ConnectionString'
-    secretRef: 'mongodb-connection'
-  }
-  {
-    name: 'MongoDb__DatabaseName'
-    value: 'series_catalog_prod'
-  }
-]
-```
-
-**Priority order** (ASP.NET Core configuration):
-1. Environment variables (container-level)
-2. User Secrets (dev only)
-3. appsettings.json
-4. appsettings.{Environment}.json
-
----
-
-### Secrets Management
-
-#### ❌ DON'T Do This (Insecure)
-```bicep
-// NEVER hardcode secrets in code or Bicep
-env: [
-  {
-    name: 'MongoDb__ConnectionString'
-    value: 'mongodb+srv://username:password@cluster.mongodb.net/db'  // ❌ BAD
-  }
-]
-```
-
-#### ✅ DO This (Secure)
-
-**Option 1: Azure Key Vault (Recommended for Production)**
-
-Create and store secrets in Key Vault:
+### Open frontend URL
 
 ```powershell
-# Create Key Vault
-az keyvault create --name "kv-series-catalog" --resource-group $resourceGroup --location $location
-
-# Store MongoDB connection string
-az keyvault secret set --vault-name "kv-series-catalog" `
-  --name "mongodb-connection-string" `
-  --value "mongodb+srv://user:pass@cluster.mongodb.net/db"
-
-# Store ACR password
-az keyvault secret set --vault-name "kv-series-catalog" `
-  --name "acr-password" `
-  --value $acrPassword
-
-# Grant Container App access (Managed Identity)
-az keyvault set-policy --name "kv-series-catalog" `
-  --object-id $containerAppPrincipalId `
-  --secret-permissions get
+$deploymentName = az deployment group list --resource-group $resourceGroup --query "[0].name" -o tsv
+$frontendUrl = az deployment group show --resource-group $resourceGroup --name $deploymentName --query properties.outputs.frontendPublicUrl.value -o tsv
+Start-Process $frontendUrl
 ```
 
-Reference in Bicep with Managed Identity:
+### Common issues
 
-```bicep
-@secure()
-param keyVaultName string
-@secure()
-param mongoDbSecretName string
-
-// Use Key Vault reference in secrets
-secrets: [
-  {
-    name: 'mongodb-connection'
-    value: '@Microsoft.KeyVault(VaultName=${keyVaultName};SecretName=${mongoDbSecretName})'
-  }
-]
-```
-
-**Option 2: Environment Variables via Script**
-
-Use the deployment script to inject secrets from environment:
-
-```powershell
-# Store in secure variable before deployment
-$mongoDbConnectionString = "mongodb+srv://user:pass@cluster.mongodb.net/db"
-
-# Pass to deployment script
-.\deploy/deploy-container-apps.ps1 `
-  -ResourceGroup $resourceGroup `
-  -AcrName $acrName `
-  -MongoDbConnectionString $mongoDbConnectionString
-```
-
-The script stores it in Container Apps secrets (encrypted at rest):
-
-```bicep
-secrets: [
-  {
-    name: 'mongodb-connection'
-    value: mongoDbConnectionString  // ← Passed as secure parameter
-  }
-]
-```
-
-**Option 3: Local Development Secrets**
-
-Use User Secrets for local development (never commit to git):
-
-```powershell
-# Initialize secrets storage for project
-cd src/apps/frontend-blazor
-dotnet user-secrets init
-
-# Store API URL separately for local testing
-dotnet user-secrets set "Api:BaseUrl" "http://localhost:5130"
-
-# API project secrets
-cd ../api-aspnet
-dotnet user-secrets init
-dotnet user-secrets set "MongoDb:ConnectionString" "mongodb://localhost:27017"
-dotnet user-secrets set "MongoDb:DatabaseName" "series_catalog_dev"
-
-# List stored secrets (values hidden for security)
-dotnet user-secrets list
-```
-
-Secrets are stored in: `%APPDATA%\Microsoft\UserSecrets\<project-id>\secrets.json` (Windows)
+- ACR not found:
+: verify `AcrName` and `ResourceGroup`, then run setup script again (ACR mode only).
+- External private registry image pull fails:
+: verify `RegistryServer`, `RegistryUsername`, `RegistryPassword`, and image path/tag.
+- Mongo connection failures:
+: verify the connection string and remote access/network allow-list.
+- Frontend cannot call API:
+: verify `Api__BaseUrl` in frontend container environment and API container health.
+- First request returns transient 502/503:
+: wait for revision readiness, then retry.
 
 ---
 
-### Development vs Production Comparison
+## Teardown
 
-| Setting | Development | Production |
-|---------|-------------|-----------|
-| **Environment** | `Development` | `Production` |
-| **Logging Level** | Debug/Information | Information/Warning |
-| **API URL** | `http://localhost:5130` | `https://ca-api.FQDN.azurecontainerapps.io` |
-| **MongoDB** | Local/Docker container | Azure Cosmos DB or MongoDB Atlas |
-| **Database** | `series_catalog_dev` | `series_catalog_prod` |
-| **HTTPS** | Disabled | Enforced |
-| **Secrets Storage** | User Secrets | Key Vault or Container App Secrets |
-| **Config Source** | appsettings.Development.json | appsettings.json + Env Vars |
+Remove Container Apps resources only:
 
----
-
-### Configuration Best Practices
-
-**Security:**
-- 🔒 Never commit secrets to git (add to `.gitignore`)
-- 🔒 Use Azure Key Vault for production secrets
-- 🔒 Use Managed Identity for Key Vault access (no connection strings)
-- 🔒 Rotate secrets regularly
-- 🔒 Use secure, complex passwords for databases
-
-**Operational:**
-- 📝 Document all required environment variables
-- 📝 Use consistent naming (double underscores for hierarchy)
-- 📝 Separate dev/staging/prod configurations
-- 📝 Keep appsettings.json free of secrets
-- 📝 Use feature flags for environment-specific behavior
-
-**Troubleshooting:**
 ```powershell
-# View all environment variables in running container
-az containerapp exec --name ca-api --resource-group $resourceGroup --command "env"
+.\deploy\azure\teardown-container-apps.ps1 -ResourceGroup "series-catalog-rg"
+```
 
-# Check if secrets are properly referenced
-az containerapp secrets show --resource-group $resourceGroup --name ca-api
+Delete entire resource group:
 
-# View application configuration (no secrets displayed)
-az containerapp show --resource-group $resourceGroup --name ca-api --query properties.template.containers[0].env
+```powershell
+.\deploy\azure\teardown-container-apps.ps1 -ResourceGroup "series-catalog-rg" -DeleteResourceGroup
+```
+
+Force mode (skip prompt):
+
+```powershell
+.\deploy\azure\teardown-container-apps.ps1 -ResourceGroup "series-catalog-rg" -DeleteResourceGroup -Force
 ```
 
 ---
 
-## 5. HTTPS & TLS Configuration
+## Redeploy Workflows
 
-### Container Apps Auto-HTTPS
+Use one of the following depending on how much you want to reset.
 
-Azure Container Apps provides automatic HTTPS for you:
+### 1) Fast redeploy (keep existing infrastructure)
 
-✅ **Automatically provided:**
-- Auto-generated self-signed certificate for `*.azurecontainerapps.io`
-- HTTPS endpoint by default
-- HTTP automatically redirects to HTTPS
-- No additional configuration needed
+```powershell
+# Set JWT key for this session
+$env:JWT_SIGNING_KEY = "put-a-long-random-32+-char-key-here"
 
-### Custom Domain (Optional)
-
-To use your own domain, add to Bicep configuration:
-
-```bicep
-configuration: {
-  ingress: {
-    customDomains: [
-      {
-        name: 'api.yourdomain.com'
-        certificateId: '/subscriptions/.../providers/Microsoft.App/managedCertificates/your-cert'
-      }
-    ]
-  }
-}
+# Redeploy container apps
+.\deploy\azure\deploy-container-apps.ps1 `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net" `
+  -MongoDbDatabaseName "harlan_coben"
 ```
 
-### Application-Level HTTPS Configuration
+Fast redeploy updates existing app resources in place. It does not create duplicate `ca-api` or `ca-frontend` apps, but it can leave older inactive revisions.
 
-Update your `Program.cs` to enforce HTTPS in production:
+To keep only the latest active revision for each app:
 
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddApiApplication(builder.Configuration);
-builder.Services.AddMongoPersistence(builder.Configuration);
+```powershell
+$cfg = Get-Content azure-config.json -Raw | ConvertFrom-Json
+$rg = $cfg.resourceGroup
 
-var app = builder.Build();
+# Review revisions first
+az containerapp revision list --name ca-api --resource-group $rg -o table
+az containerapp revision list --name ca-frontend --resource-group $rg -o table
 
-// Enforce HTTPS in production only
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+# Deactivate all inactive API revisions (safe: keeps active revision)
+az containerapp revision list --name ca-api --resource-group $rg --query "[?properties.active==\`false\`].name" -o tsv |
+  ForEach-Object { az containerapp revision deactivate --name ca-api --resource-group $rg --revision $_ }
 
-app.UseHsts();
-app.UseExceptionHandler();
-app.UseStatusCodePages();
-app.UseCors(ApiPolicies.CorsPolicyName);
-app.UseAuthentication();
-app.UseAuthorization();
-
-// ... rest of configuration
+# Deactivate all inactive Frontend revisions (safe: keeps active revision)
+az containerapp revision list --name ca-frontend --resource-group $rg --query "[?properties.active==\`false\`].name" -o tsv |
+  ForEach-Object { az containerapp revision deactivate --name ca-frontend --resource-group $rg --revision $_ }
 ```
 
-### Certificate Pinning (Optional for Extra Security)
+Equivalent script-based cleanup:
 
-For highly sensitive applications, implement certificate pinning in your frontend HttpClient configuration.
+```powershell
+# Preview only
+.\deploy\azure\cleanup-containerapp-revisions.ps1 -Preview
+
+# Apply cleanup for default apps (ca-api and ca-frontend)
+.\deploy\azure\cleanup-containerapp-revisions.ps1
+
+# Apply cleanup for a specific app
+.\deploy\azure\cleanup-containerapp-revisions.ps1 -ContainerApps "ca-api"
+```
+
+Note: ARM deployment history records are retained by Azure Resource Manager. This cleanup targets Container Apps revision clutter only.
+
+### 2) Clean redeploy (remove app infra, keep resource group)
+
+```powershell
+# Remove Container Apps resources only (keeps resource group)
+.\deploy\azure\teardown-container-apps.ps1 -ResourceGroup "series-catalog-rg" -Force
+
+# Set JWT key for this session
+$env:JWT_SIGNING_KEY = "put-a-long-random-32+-char-key-here"
+
+# Deploy again
+.\deploy\azure\deploy-container-apps.ps1 `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net" `
+  -MongoDbDatabaseName "harlan_coben"
+```
+
+### 3) Full rebuild from scratch (delete entire resource group)
+
+```powershell
+# Delete everything in resource group
+.\deploy\azure\teardown-container-apps.ps1 `
+  -ResourceGroup "series-catalog-rg" `
+  -DeleteResourceGroup `
+  -Force
+
+# Recreate Azure prerequisites and ACR
+.\deploy\azure\setup-azure-prerequisites.ps1 -ResourceGroup "series-catalog-rg" -CreateAcr
+
+# Rebuild/push images to ACR
+.\deploy\azure\deploy-to-acr.ps1
+
+# Set JWT key for this session
+$env:JWT_SIGNING_KEY = "put-a-long-random-32+-char-key-here"
+
+# Deploy apps
+.\deploy\azure\deploy-container-apps.ps1 `
+  -MongoDbConnectionString "mongodb+srv://user:pass@cluster.mongodb.net" `
+  -MongoDbDatabaseName "harlan_coben"
+```
+
+Notes:
+
+- If you run the full rebuild flow, ACR and images are deleted with the resource group. Running `deploy-to-acr.ps1` is required before `deploy-container-apps.ps1`.
+- Keep JWT keys out of source control; use environment variables or Key Vault.
 
 ---
 
-## 6. Wiring Up Backend API
+## Current Azure Deployment File Layout
 
-### Frontend Configuration
-
-Update `src/apps/frontend-blazor/appsettings.json`:
-
-```json
-{
-  "Api": {
-    "BaseUrl": "https://ca-api.xyz.eastus.azurecontainerapps.io"
-  }
-}
+```text
+deploy/
+  azure/
+    container-apps.bicep
+    setup-azure-prerequisites.ps1
+    deploy-to-acr.ps1
+    deploy-container-apps.ps1
+    cleanup-containerapp-revisions.ps1
+    teardown-container-apps.ps1
 ```
-
-### Frontend HttpClient Setup (`Program.cs`)
-
-```csharp
-var builder = WebApplicationBuilder.CreateBuilder(args);
-
-// Read API base URL from configuration
-var apiBaseUrl = builder.Configuration["Api:BaseUrl"] 
-                 ?? "http://localhost:5130";
-
-// Register HttpClient with resilience policies
-builder.Services.AddHttpClient("SeriesCatalogApi", client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-    client.DefaultRequestHeaders.Add("User-Agent", "SeriesCatalog-Frontend");
-})
-.AddTransientHttpErrorPolicy(p => 
-    p.WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(2)))
-.AddPolicyHandler(GetRetryPolicy());
-
-var app = builder.Build();
-// ... rest of configuration
-```
-
-### API CORS Configuration
-
-Update `src/apps/api-aspnet/Program.cs` to allow frontend calls:
-
-```csharp
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins(
-            "https://ca-frontend.xyz.eastus.azurecontainerapps.io",  // Production
-            "http://localhost:3000",  // Local development
-            "http://localhost:3001"   // Alternate local port
-        )
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .AllowCredentials();
-    });
-});
-
-// ... rest of configuration
-
-var app = builder.Build();
-
-app.UseCors("AllowFrontend");
-app.UseExceptionHandler();
-app.UseStatusCodePages();
-// ... rest of middleware
-```
-
-### Service-to-Service Communication
-
-Container Apps provides automatic internal networking:
-
-```csharp
-// Frontend can call API by internal FQDN
-// Example: https://ca-api.internal.eastus.azurecontainerapps.io
-var apiBaseUrl = "https://ca-api.internal.eastus.azurecontainerapps.io";
-```
-
-**Benefits of internal FQDN:**
-- 🔒 Encrypted internal communication
-- 🔐 Bypasses public internet
-- ⚡ Lower latency
-- 💰 No egress charges
-
----
-
-## 7. Deployment Checklist
-
-### Pre-Deployment
-
-- [ ] Test Dockerfiles locally
-  ```powershell
-  docker build -f deploy/docker/api/Dockerfile -t test-api .
-  docker build -f deploy/docker/frontend/Dockerfile -t test-frontend .
-  ```
-
-- [ ] Verify port configuration (8080)
-- [ ] Validate environment variables in `appsettings.json`
-- [ ] Confirm MongoDB connection string
-- [ ] Create/verify Azure resource group
-
-### Build & Push
-
-```powershell
-# 1. Build and push API
-az acr build --registry $acrName --image series-catalog-api:latest --file deploy/docker/api/Dockerfile .
-
-# 2. Build and push Frontend
-az acr build --registry $acrName --image series-catalog-frontend:latest --file deploy/docker/frontend/Dockerfile .
-
-# 3. Verify images in ACR
-az acr repository list --name $acrName.azurecr.io
-```
-
-### Deploy Infrastructure
-
-**Recommended: Use the automated deployment script:**
-
-```powershell
-.\\deploy/deploy-container-apps.ps1 -ResourceGroup "my-rg" -AcrName "myacr"
-```
-
-**Alternative: Manual deployment (for CI/CD integration):**
-
-```powershell
-# 1. Validate deployment first
-az deployment group what-if --resource-group $rg --template-file deploy/container-apps.bicep `
-  --parameters location=$location acrLoginServer=$acrLoginServer acrUsername=$acrUsername `
-               acrPassword=$acrPassword mongoDbConnectionString=$mongoConnStr
-
-# 2. Deploy (if validation looks good)
-az deployment group create --resource-group $rg --template-file deploy/container-apps.bicep `
-  --parameters location=$location acrLoginServer=$acrLoginServer acrUsername=$acrUsername `
-               acrPassword=$acrPassword mongoDbConnectionString=$mongoConnStr
-```
-
-### Post-Deployment
-
-- [ ] Get deployment outputs
-  ```powershell
-  $frontendUrl = az deployment group show --name MicrosoftResources --resource-group $rg `
-    --query properties.outputs.frontendPublicUrl.value -o tsv
-  ```
-
-- [ ] Test application
-  ```powershell
-  Start-Process $frontendUrl
-  ```
-
-- [ ] Verify frontend can reach API
-- [ ] Check container logs
-  ```powershell
-  az containerapp logs show --name ca-api --resource-group $rg --container-name api
-  az containerapp logs show --name ca-frontend --resource-group $rg --container-name frontend
-  ```
-
-- [ ] Monitor application performance
-  ```powershell
-  az monitor metrics list --resource /subscriptions/$sub/resourceGroups/$rg/providers/Microsoft.App/containerApps/ca-api
-  ```
-
----
-
-## 8. Monitoring & Troubleshooting
-
-### View Container Logs
-
-```powershell
-# API logs
-az containerapp logs show --name ca-api --resource-group $rg --container-name api --tail 50
-
-# Frontend logs
-az containerapp logs show --name ca-frontend --resource-group $rg --container-name frontend --tail 50
-```
-
-### Check Application Health
-
-```powershell
-# Get container app details
-az containerapp show --name ca-api --resource-group $rg
-
-# Check replica status
-az containerapp replica list --name ca-api --resource-group $rg
-```
-
-### Common Issues
-
-**Issue:** Frontend cannot reach API
-- Solution: Verify CORS policy includes frontend FQDN
-- Check: API service BaseUrl configuration
-- Test: Call API directly from browser
-
-**Issue:** Application fails to start
-- Check: Container logs for startup errors
-- Verify: Environment variables are set correctly
-- Validate: MongoDB connection string
-
-**Issue:** High CPU/Memory usage
-- Check: Application logs for bottlenecks
-- Review: Replica scaling configuration
-- Monitor: Real-time metrics in Azure Portal
-
----
-
-## 9. Complete File Structure
-
-After implementing this guide, your project will have the following deployment structure:
-
-```
-appd5016-final-project/
-├── docs/
-│   └── azure-container-apps-deployment.md        ← This guide
-├── deploy/                                       ← Deployment artifacts
-│   ├── docker/
-│   │   ├── api/Dockerfile
-│   │   └── frontend/Dockerfile
-│   ├── container-apps.bicep                      ← Bicep IaC template
-│   ├── deploy-to-acr.ps1                         ← Build & push images
-│   ├── deploy-container-apps.ps1                 ← Deploy to Azure ⭐
-│   └── k8s/                                      ← (Optional: Kubernetes)
-├── src/
-│   ├── apps/
-│   │   ├── api-aspnet/
-│   │   │   ├── Program.cs                        ← UPDATE: Add CORS
-│   │   │   ├── appsettings.json                  ← UPDATE: Production config
-│   │   │   └── appsettings.Development.json      ← UPDATE: Dev config
-│   │   └── frontend-blazor/
-│   │       ├── Program.cs                        ← UPDATE: Add HttpClient
-│   │       ├── appsettings.json                  ← UPDATE: Production config
-│   │       └── appsettings.Development.json      ← UPDATE: Dev config
-│   └── infrastructure/
-└── appd5016-final-project.sln
-```
-
----
-
-## 10. Quick Start Workflow
-
-### Phase 1: Local Testing
-```powershell
-# Build images locally to validate Dockerfiles
-.\\deploy/deploy-to-acr.ps1 -AcrName myacr -BuildLocal -SkipPush
-
-# Test images locally
-docker run -p 8080:8080 series-catalog-api:latest
-docker run -p 8081:8080 series-catalog-frontend:latest
-
-# Verify endpoints respond
-curl http://localhost:8080/health
-curl http://localhost:8081/health
-```
-
-### Phase 2: Push to Azure Container Registry
-```powershell
-# Push validated images to ACR
-.\\deploy/deploy-to-acr.ps1 -AcrName myacr
-
-# Verify images in ACR
-az acr repository list --name myacr --output table
-```
-
-### Phase 3: Deploy to Container Apps
-```powershell
-# Deploy infrastructure with one command
-.\\deploy/deploy-container-apps.ps1 `
-  -ResourceGroup "my-rg" `
-  -AcrName "myacr" `
-  -MongoDbConnectionString "mongodb+srv://..."
-
-# (Script handles: validation, credentials, deployment, outputs)
-```
-
-### Phase 4: Verify & Monitor
-```powershell
-# Check deployment status
-az containerapp show --name ca-frontend --resource-group my-rg
-
-# View container logs
-az containerapp logs show --name ca-api --resource-group my-rg --container-name api --tail 50
-
-# Get frontend URL (wait 2-5 minutes for startup)
-$url = az deployment group show --resource-group my-rg `
-  --query properties.outputs.frontendPublicUrl.value -o tsv
-Start-Process $url
-```
-
----
-
-## Troubleshooting Quick Reference
-
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| Dockerfile build fails | Syntax error or missing files | Check Docker logs; verify file paths in COPY commands |
-| Port already in use | Another process on 8080 | Use different port locally: `docker run -p 9090:8080 ...` |
-| Container won't start | App crash or missing dependency | Check logs: `az containerapp logs show --name ca-api --tail 100` |
-| Frontend can't reach API | CORS or URL mismatch | Verify CORS policy; check `Api__BaseUrl` environment variable |
-| 503 Service Unavailable | Containers still starting | Wait 2-5 minutes; check replica status |
-| Secrets not loading | Bicep reference error | Verify secret names match between definition and `secretRef` |
-| High latency | Resource constraints | Check Container Apps CPU/memory; enable auto-scaling |
-
----
-
-## References
-
-- 📚 [Azure Container Apps Documentation](https://learn.microsoft.com/en-us/azure/container-apps/)
-- 📚 [Bicep Language Reference](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
-- 📚 [Azure Container Registry Best Practices](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-best-practices)
-- 📚 [ASP.NET Core Configuration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/)
-- 📚 [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
-- 📚 [Azure CLI Container Apps](https://learn.microsoft.com/en-us/cli/azure/containerapp/)

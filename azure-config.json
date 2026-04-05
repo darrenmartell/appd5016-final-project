@@ -1,0 +1,11 @@
+{
+  "location": "eastus",
+  "acrSku": "Basic",
+  "acrLoginServer": "acrseriescatalogrg142454.azurecr.io",
+  "timestamp": "2026-04-05 14:25:36",
+  "resourceGroup": "series-catalog-rg",
+  "subscription": "Azure subscription 1",
+  "acrUsername": null,
+  "subscriptionId": "ace1e60a-588f-4013-9f70-9bc8e9e1a844",
+  "acrName": "acrseriescatalogrg142454"
+}
