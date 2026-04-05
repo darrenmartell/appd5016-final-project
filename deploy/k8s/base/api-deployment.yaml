@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seriescatalog-api
+  namespace: seriescatalog
+  labels:
+    app.kubernetes.io/name: seriescatalog-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: seriescatalog-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seriescatalog-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/darrenmartell/seriescatalog-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: Mongo__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: seriescatalog-mongo
+                  key: MONGO_CONNECTION_STRING
+            - name: Mongo__DatabaseName
+              valueFrom:
+                secretKeyRef:
+                  name: seriescatalog-mongo
+                  key: MONGO_DATABASE_NAME
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

@@ -1,0 +1,34 @@
+<li class="group">
+    <NavLink href="@Href" 
+             Match="@Match" 
+             class="flex items-center py-2.5 px-3 text-[#a0a0a5] hover:bg-[#333] hover:text-white transition-colors rounded-md"
+             ActiveClass="bg-[#333] border-l-2 border-[#e50914] text-white pl-2.5 font-semibold">
+        <span class="inline-flex items-center justify-center min-w-6 h-6 text-sm text-[#b3b3b3] group-hover:text-white">
+            <i class="fa-solid @IconClass" aria-hidden="true"></i>
+        </span>
+
+        @if (!IsCollapsed)
+        {
+            <span class="ml-4 text-sm font-medium whitespace-nowrap">
+                @Label
+            </span>
+        }
+    </NavLink>
+</li>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Href { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string IconClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public NavLinkMatch Match { get; set; }
+
+    [Parameter]
+    public bool IsCollapsed { get; set; }
+}

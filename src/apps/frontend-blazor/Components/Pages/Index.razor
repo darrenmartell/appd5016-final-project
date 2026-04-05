@@ -1,0 +1,28 @@
+@page "/"
+@page "/admin"
+@inject NavigationManager Navigation
+@inject ClientAuthState ClientAuthState
+
+<PageTitle>Redirecting</PageTitle>
+
+<section class="max-w-2xl mx-auto px-6 py-8">
+    <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Redirect</span>
+    <h1 class="text-4xl font-bold text-white mb-2">Redirecting</h1>
+    <p class="text-[#a0a0a5]">Taking you to the right page.</p>
+</section>
+
+@code {
+    private const string AdminHomePath = "/admin/home";
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var target = ClientAuthState.IsAuthenticated
+                ? AdminHomePath
+                : $"/login?returnUrl={Uri.EscapeDataString(AdminHomePath)}";
+
+            Navigation.NavigateTo(target, replace: true);
+        }
+    }
+}

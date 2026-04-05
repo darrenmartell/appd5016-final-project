@@ -1,0 +1,108 @@
+@SeriesCatalog_WebApi_HostAddress = http://localhost:5130
+
+# Paste the token you get from /auth/register or /auth/login.
+@BearerToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXJAZXhhbXBsZS5jb20iLCJfaWQiOiIwYzkyZGViMjFkNTM0NDQ1OGEyZWUzZTkyNjc1YmEwOSIsImZpcnN0TmFtZSI6IlRlc3QiLCJsYXN0TmFtZSI6IlVzZXIiLCJleHAiOjE3NzUxNzAxODAsImlzcyI6IlNlcmllc0NhdGFsb2cuV2ViQXBpIiwiYXVkIjoiU2VyaWVzQ2F0YWxvZy5DbGllbnQifQ.RJ42FJ6LUGroOhbD0JMRP1lbS6fgk1UGS7n6GgUgVW8
+
+# Update these after creating resources.
+@UserId = 0c92deb21d5344458a2ee3e92675ba09
+@SeriesId = REPLACE_WITH_SERIES_ID
+
+### Health
+GET {{SeriesCatalog_WebApi_HostAddress}}/api/health
+Accept: application/json
+
+### Public: list series
+GET {{SeriesCatalog_WebApi_HostAddress}}/series
+Accept: application/json
+
+### Auth: register (returns access_token and _id)
+POST {{SeriesCatalog_WebApi_HostAddress}}/auth/register
+Content-Type: application/json
+
+{
+	"email": "tester@example.com",
+	"firstName": "Test",
+	"lastName": "User",
+	"password": "Password1!"
+}
+
+### Auth: login (returns access_token and _id)
+POST {{SeriesCatalog_WebApi_HostAddress}}/auth/login
+Content-Type: application/json
+
+{
+	"email": "tester@example.com",
+	"password": "Password1!"
+}
+
+### Protected: ping
+GET {{SeriesCatalog_WebApi_HostAddress}}/api/protected/ping
+Accept: application/json
+Authorization: Bearer {{BearerToken}}
+
+### Protected: list users
+GET {{SeriesCatalog_WebApi_HostAddress}}/users
+Accept: application/json
+
+### Protected: get user by id
+GET {{SeriesCatalog_WebApi_HostAddress}}/users/{{UserId}}
+Accept: application/json
+
+### Protected: create series
+POST {{SeriesCatalog_WebApi_HostAddress}}/series
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+	"title": "Example Series",
+	"plot_summary": "An example plot summary for quick API testing.",
+	"runtime_minutes": 42,
+	"released_year": 2024,
+	"cast": ["Actor A"],
+	"directors": ["Director A"],
+	"genres": ["Drama"],
+	"countries": ["Canada"],
+	"languages": ["English"],
+	"producers": ["Producer A"],
+	"production_companies": ["Company A"],
+	"ratings": {
+		"imdb": 8.2,
+		"rotten_tomatoes": 88
+	},
+	"episodes": [
+		{
+			"season": 1,
+			"episode": 1,
+			"title": "Pilot"
+		}
+	]
+}
+
+### Public: get series by id
+GET {{SeriesCatalog_WebApi_HostAddress}}/series/{{SeriesId}}
+Accept: application/json
+
+### Protected: patch series
+PATCH {{SeriesCatalog_WebApi_HostAddress}}/series/{{SeriesId}}
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+{
+	"title": "Example Series (Updated)",
+	"genres": ["Drama", "Mystery"]
+}
+
+### Protected: delete series
+DELETE {{SeriesCatalog_WebApi_HostAddress}}/series/{{SeriesId}}
+Authorization: Bearer {{BearerToken}}
+
+### Protected: change password
+PATCH {{SeriesCatalog_WebApi_HostAddress}}/auth/{{UserId}}/changepassword
+Content-Type: application/json
+Authorization: Bearer {{BearerToken}}
+
+"Password2!"
+
+### Protected: delete user
+DELETE {{SeriesCatalog_WebApi_HostAddress}}/users/{{UserId}}
+Authorization: Bearer {{BearerToken}}

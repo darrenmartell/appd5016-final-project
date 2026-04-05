@@ -1,0 +1,92 @@
+@page "/admin/users"
+@layout AdminLayout
+@inject IUsersService UsersService
+
+<PageTitle>User Management</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6">
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Users</span>
+            <h1 class="text-4xl font-bold text-white mb-6">User Management</h1>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading users...</div>
+            }
+            else if (_users.Count == 0)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">No users found.</div>
+            }
+            else
+            {
+                <div class="bg-zinc-900 rounded-lg shadow-lg p-8 my-8 mx-auto max-w-4xl border border-zinc-800">
+                    <table class="w-full border-separate border-spacing-0">
+                        <thead>
+                            <tr class="bg-zinc-950">
+                                <th class="text-left py-3 px-2 rounded-tl-lg text-zinc-300">First Name</th>
+                                <th class="text-left py-3 px-2 text-zinc-300">Last Name</th>
+                                <th class="text-left py-3 px-2 text-zinc-300">Email</th>
+                                <th class="text-center py-3 px-2 text-zinc-300">Actions</th>
+                                <th class="py-3 px-2 rounded-tr-lg"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < _users.Count; i++)
+                            {
+                                var user = _users[i];
+                                <tr class="@(i % 2 == 0 ? "bg-zinc-800" : "bg-zinc-900")">
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-white">@user.FirstName</td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-white">@user.LastName</td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-zinc-300">@user.Email</td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800 text-center">
+                                        <div class="flex justify-center gap-2">
+                                            <a class="mr-2 py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/users/{user.Id}/delete")" title="Delete" aria-label="Delete user">
+                                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                            </a>
+                                            <a class="py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/users/{user.Id}/details")" title="Details" aria-label="View user details">
+                                                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="py-2.5 px-2 border-b border-zinc-800"></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private readonly List<UserSummary> _users = [];
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var users = await UsersService.GetUsersAsync();
+            _users.Clear();
+            _users.AddRange(users);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

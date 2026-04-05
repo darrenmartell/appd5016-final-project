@@ -1,0 +1,123 @@
+@page "/admin/users/{Id}/delete"
+@layout AdminLayout
+@inject IUsersService UsersService
+@inject NavigationManager Navigation
+@inject ClientAuthState AuthState
+
+<PageTitle>Delete User</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6 p-8 border-2 border-red-500 bg-[#222] rounded-2xl">
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-widest">Users</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Delete User</h1>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading user record...</div>
+            }
+            else if (_user is null)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">User not found.</div>
+            }
+            else if (IsLoggedInUser)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">You cannot delete the currently logged in user.</div>
+            }
+            else
+            {
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">ID</span>
+                        <span>@_user.Id</span>
+                    </div>
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">Name</span>
+                        <span>@_user.FirstName @_user.LastName</span>
+                    </div>
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">Email</span>
+                        <span>@_user.Email</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 mb-6">
+                    <button class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-[0_0.8rem_2rem_rgba(229,9,20,0.16)] transition-all disabled:opacity-50" type="button" disabled="@_isDeleting" @onclick="DeleteAsync">@(_isDeleting ? "Deleting..." : "Delete User")</button>
+                </div>
+            }
+
+            <div class="flex gap-4">
+                <button class="px-6 py-2 bg-[#232327] text-[#d0d0d2] border border-[#333] font-bold rounded-full hover:bg-[#2d2d31] transition-colors" type="button" @onclick="GoBack">Back to Users List</button>
+            </div>
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    private UserSummary? _user;
+    private bool _isLoading = true;
+    private bool _isDeleting;
+    private string? _errorMessage;
+
+    private bool IsLoggedInUser => _user is not null && _user.Id == AuthState.User?.EffectiveId;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var users = await UsersService.GetUsersAsync();
+            _user = users.FirstOrDefault(item => item.Id == Id);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (_user is null || IsLoggedInUser)
+        {
+            return;
+        }
+
+        _isDeleting = true;
+        _errorMessage = null;
+
+        try
+        {
+            await UsersService.DeleteUserAsync(_user.Id);
+            Navigation.NavigateTo("/admin/users", replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isDeleting = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/admin/users");
+    }
+}

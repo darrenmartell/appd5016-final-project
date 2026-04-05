@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+images:
+  - name: ghcr.io/darrenmartell/seriescatalog-api
+    newName: ca-montreal-1.ocir.io/axkn8fu74igu/seriescatalog/api
+    newTag: "20260403210137"
+  - name: ghcr.io/darrenmartell/seriescatalog-frontend
+    newName: ca-montreal-1.ocir.io/axkn8fu74igu/seriescatalog/frontend
+    newTag: "20260403210137"
+
+patches:
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: seriescatalog-ingress
+    path: ingress-json-patch.yaml
+  - path: api-imagepullsecret-patch.yaml
+  - path: frontend-imagepullsecret-patch.yaml
+

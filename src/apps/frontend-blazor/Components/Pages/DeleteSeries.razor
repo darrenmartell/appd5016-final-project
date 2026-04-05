@@ -1,0 +1,116 @@
+@page "/admin/series/{Id}/delete"
+@layout AdminLayout
+@inject ISeriesService SeriesService
+@inject NavigationManager Navigation
+
+<PageTitle>Delete Series</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6 p-8 border-2 border-red-500 bg-[#222] rounded-2xl">
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-[0.18em]">Series</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Delete Series</h1>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading series record...</div>
+            }
+            else if (_seriesItem is null)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Series not found.</div>
+            }
+            else
+            {
+                <div class="space-y-4 mb-6">
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">ID</span>
+                        <span>@_seriesItem.Id</span>
+                    </div>
+                    <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                        <span class="text-[#a0a0a5] font-semibold min-w-max">Name</span>
+                        <span>@_seriesItem.Title</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(_seriesItem.PlotSummary))
+                    {
+                        <div class="flex justify-between items-start p-3 border-b border-[#333]">
+                            <span class="text-[#a0a0a5] font-semibold min-w-max">Plot Summary</span>
+                            <span>@_seriesItem.PlotSummary</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="button" class="px-6 py-2 bg-gradient-to-br from-[#e50914] to-[#b20710] text-white font-bold rounded-full hover:shadow-[0_0.8rem_2rem_rgba(229,9,20,0.16)] transition-all disabled:opacity-50" disabled="@_isDeleting" @onclick="DeleteAsync">@(_isDeleting ? "Deleting..." : "Delete Series")</button>
+                    <button type="button" class="px-6 py-2 bg-[#232327] text-[#d0d0d2] border border-[#333] font-bold rounded-full hover:bg-[#2d2d31] transition-colors" @onclick="GoBack">Back to Series List</button>
+                </div>
+            }
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    private SeriesRecord? _seriesItem;
+    private bool _isLoading = true;
+    private bool _isDeleting;
+    private string? _errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var series = await SeriesService.GetSeriesAsync();
+            _seriesItem = series.FirstOrDefault(item => item.Id == Id);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (_seriesItem is null)
+        {
+            return;
+        }
+
+        _isDeleting = true;
+        _errorMessage = null;
+
+        try
+        {
+            await SeriesService.DeleteSeriesAsync(_seriesItem.Id);
+            Navigation.NavigateTo("/admin/series", replace: true);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isDeleting = false;
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/admin/series");
+    }
+}

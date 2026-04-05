@@ -1,0 +1,95 @@
+Y4gJe$#h*0aNM6ym
+
+
+
+ocid1.tenancy.oc1..aaaaaaaasju5ykbjy4ifckedaemb6yduwrerzdcycxe6n6twji2nxym2dgca
+
+ocid1.user.oc1..aaaaaaaa2kgw5fze27ve2zstfptc2xiv4pv3d3xdp4bok3xcmstfuioufufa
+
+
+
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaa2kgw5fze27ve2zstfptc2xiv4pv3d3xdp4bok3xcmstfuioufufa
+fingerprint=56:9b:05:02:5f:d8:61:bc:ec:aa:2c:05:78:34:98:3c
+tenancy=ocid1.tenancy.oc1..aaaaaaaasju5ykbjy4ifckedaemb6yduwrerzdcycxe6n6twji2nxym2dgca
+region=ca-montreal-1
+key_file=<path to your private keyfile> # TODO
+
+[DEFAULT]
+user=ocid1.user.oc1..aaaaaaaa2kgw5fze27ve2zstfptc2xiv4pv3d3xdp4bok3xcmstfuioufufa
+fingerprint=56:9b:05:02:5f:d8:61:bc:ec:aa:2c:05:78:34:98:3c
+key_file=/oracle/.oci/oci_api_key.pem
+tenancy=ocid1.tenancy.oc1..aaaaaaaasju5ykbjy4ifckedaemb6yduwrerzdcycxe6n6twji2nxym2dgca
+region=ca-montreal-1
+
+
+context-crrcgjkmimq
+
+
+ocid1.cluster.oc1.ca-montreal-1.aaaaaaaae6fer6hm5n6ui5e4lgfr3z3upvezx3ijxoluivomacrrcgjkmimq
+
+
+oci ce cluster get --cluster-id ocid1.cluster.oc1.ca-montreal-1.aaaaaaaae6fer6hm5n6ui5e4lgfr3z3upvezx3ijxoluivomacrrcgjkmimq --query 'data."lifecycle-state"' --raw-output
+
+
+oci ce cluster create-kubeconfig --cluster-id ocid1.cluster.oc1.ca-montreal-1.aaaaaaaae6fer6hm5n6ui5e4lgfr3z3upvezx3ijxoluivomacrrcgjkmimq --file $HOME/.kube/config --region ca-montreal-1 --token-version 2.0.0 --kube-endpoint PUBLIC_ENDPOINT
+
+
+$OciAuthToken ='+c0ZANI_UCA9A230C+ga'
+
+$OciAuthToken | docker login "ca-montreal-1.ocir.io" -u "axkn8fu74igu/darren.martell@live.ca" --password-stdin
+
+
+$RegionKey = "ca-montreal-1"                                  # Example: iad, us-ashburn-1, ca-toronto-1
+$RegionIdentifier = "ca-montreal-1"                  # OKE region identifier
+$ClusterOcid = "ocid1.cluster.oc1.ca-montreal-1.aaaaaaaae6fer6hm5n6ui5e4lgfr3z3upvezx3ijxoluivomacrrcgjkmimq"
+$TenancyNamespace = "axkn8fu74igu"
+$OciUsername = "darren.martell@live.ca"                # If federated, use OCI documented federated username format
+$OciAuthToken = "+c0ZANI_UCA9A230C+ga"
+$Email = "darren.martell@live.ca"
+$Tag = (Get-Date -Format "yyyyMMddHHmmss")
+
+
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run oci ce cluster create-kubeconfig `
+  --cluster-id $ClusterOcid `
+  --file "$HOME/.kube/config" `
+  --region $RegionIdentifier `
+  --token-version 2.0.0 `
+  --kube-endpoint PUBLIC_ENDPOINT
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run  kubectl get nodes
+
+
+docker exec oci-cli bash -c "kubectl create namespace seriescatalog --dry-run=client -o yaml | kubectl apply -f -"
+
+# pwsh deploy/docker/oci-cli/oci-cli.ps1 run  kubectl create namespace seriescatalog --dry-run=client -o yaml | kubectl apply -f -
+
+#docker exec oci-cli bash -c "kubectl create secret docker-registry ocir-secret `
+#  -n seriescatalog `
+#  --docker-server="$RegionKey.ocir.io" `
+#  --docker-username="$TenancyNamespace/$OciUsername" `
+#  --docker-password="$OciAuthToken" `
+#  --docker-email="$Email" `
+#  --dry-run=client -o yaml | kubectl apply -f -"
+  
+ docker exec oci-cli bash -c 'kubectl create secret docker-registry ocir-secret -n seriescatalog --docker-server="ca-montreal-1.ocir.io" --docker-username="axkn8fu74igu/darren.martell@live.ca" --docker-password="YOUR_AUTH_TOKEN" --docker-email="darren.martell@live.ca" --dry-run=client -o yaml | kubectl apply -f -'
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run  kubectl get secret ocir-secret -n seriescatalog
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run  kubectl apply -k deploy/k8s/overlays/oci-single
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run  kubectl rollout status deployment/seriescatalog-api -n seriescatalog --timeout=180s
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run  kubectl rollout status deployment/seriescatalog-frontend -n seriescatalog --timeout=180s
+
+
+
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run kubectl get pods,svc,ingress -n seriescatalog
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run kubectl logs -n seriescatalog deployment/seriescatalog-api --since=5m
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run kubectl logs -n seriescatalog deployment/seriescatalog-frontend --since=5m
+
+
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run oci ce node-pool list --compartment-id ocid1.tenancy.oc1..aaaaaaaasju5ykbjy4ifckedaemb6yduwrerzdcycxe6n6twji2nxym2dgca --cluster-id ocid1.cluster.oc1.ca-montreal-1.aaaaaaaae6fer6hm5n6ui5e4lgfr3z3upvezx3ijxoluivomacrrcgjkmimq --query 'data[].{"name":name,"state":"lifecycle-state","size":"node-config-details"."size"}' --output table
+
+pwsh deploy/docker/oci-cli/oci-cli.ps1 run kubectl get nodes

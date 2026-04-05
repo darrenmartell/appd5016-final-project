@@ -1,0 +1,135 @@
+@page "/admin/series"
+@layout AdminLayout
+@inject ISeriesService SeriesService
+
+<PageTitle>Series</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <section class="max-w-5xl mx-auto px-6 py-6 my-6">
+            <span class="inline-block mb-3 px-2 py-1 text-[0.72rem] font-bold text-[#ff7b84] uppercase tracking-[0.18em]">Series</span>
+            <h1 class="text-4xl font-bold text-white mb-6">Series Management</h1>
+
+            <div class="mb-6">
+                <a class="inline-block px-6 py-2 bg-[#b20710] hover:bg-[#8f050d] text-white font-bold rounded transition-colors" href="/admin/series/add">+ Add Series</a>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(_errorMessage))
+            {
+                <div class="p-4 rounded-lg bg-red-900/20 border border-red-500/30 text-red-300 text-sm mb-6">@_errorMessage</div>
+            }
+            else if (_isLoading)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">Loading series...</div>
+            }
+            else if (_series.Count == 0)
+            {
+                <div class="p-4 rounded-lg bg-blue-900/20 border border-blue-500/30 text-blue-300 text-sm mb-6">No series found.</div>
+            }
+            else
+            {
+                <div class="bg-zinc-900 rounded-lg shadow-lg p-8 my-8 mx-auto max-w-4xl border border-zinc-800">
+                    <div class="hidden sm:block overflow-x-auto">
+                        <table class="w-full border-separate border-spacing-0 table-fixed min-w-[480px] md:min-w-0">
+                            <colgroup>
+                                <col class="w-1/3 md:w-1/4" />
+                                <col class="w-1/3 md:w-[320px]" />
+                                <col class="w-1/3 md:w-[160px]" />
+                            </colgroup>
+                            <thead>
+                                <tr class="bg-zinc-950">
+                                    <th class="text-left py-3 px-2 rounded-tl-lg text-zinc-300">Title</th>
+                                    <th class="py-3 px-2 text-zinc-300">Plot Summary</th>
+                                    <th class="py-3 px-2 rounded-tr-lg text-zinc-300 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < _series.Count; i++)
+                                {
+                                    var item = _series[i];
+                                    <tr class="@(i % 2 == 0 ? "bg-zinc-800" : "bg-zinc-900")">
+                                        <td class="py-2.5 px-2 border-b border-zinc-800 text-white break-words align-top">
+                                            <span class="block md:inline">@item.Title</span>
+                                        </td>
+                                        <td class="py-2.5 px-2 border-b border-zinc-800 text-zinc-300 break-words align-top">
+                                            <span class="block md:inline">@item.PlotSummary</span>
+                                        </td>
+                                        <td class="py-2.5 px-2 border-b border-zinc-800 text-center align-top">
+                                            <div class="flex flex-col md:flex-row md:justify-center gap-2 md:gap-2">
+                                                <a class="py-1 px-2.5 bg-red-700 hover:bg-red-800 text-white border-none rounded font-bold text-sm transition" href="@($"/admin/series/{item.Id}/update")" title="Edit" aria-label="Edit series">
+                                                    <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/series/{item.Id}/delete")" title="Delete" aria-label="Delete series">
+                                                    <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                                </a>
+                                                <a class="py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/series/{item.Id}/details")" title="Details" aria-label="View series details">
+                                                    <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="sm:hidden space-y-6">
+                        @for (var i = 0; i < _series.Count; i++)
+                        {
+                            var item = _series[i];
+                            <div class="grid grid-cols-2 gap-2 rounded-lg border border-zinc-800 p-4 @(i % 2 == 0 ? "bg-zinc-800" : "bg-zinc-900")">
+                                <div class="flex flex-col gap-4 text-xs text-zinc-400 font-semibold uppercase tracking-wider pt-1">
+                                    <span>Title</span>
+                                    <span>Plot Summary</span>
+                                    <span>Actions</span>
+                                </div>
+                                <div class="flex flex-col gap-4">
+                                    <span class="text-white font-bold break-words">@item.Title</span>
+                                    <span class="text-zinc-300 break-words">@item.PlotSummary</span>
+                                    <div class="flex gap-2">
+                                        <a class="py-1 px-2.5 bg-red-700 hover:bg-red-800 text-white border-none rounded font-bold text-sm transition" href="@($"/admin/series/{item.Id}/update")" title="Edit" aria-label="Edit series">
+                                            <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                                        </a>
+                                        <a class="py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/series/{item.Id}/delete")" title="Delete" aria-label="Delete series">
+                                            <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                                        </a>
+                                        <a class="py-1 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded font-bold text-sm transition" href="@($"/admin/series/{item.Id}/details")" title="Details" aria-label="View series details">
+                                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private readonly List<SeriesRecord> _series = [];
+    private bool _isLoading = true;
+    private string? _errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var series = await SeriesService.GetSeriesAsync();
+            _series.Clear();
+            _series.AddRange(series);
+        }
+        catch (InvalidOperationException exception)
+        {
+            _errorMessage = exception.Message;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

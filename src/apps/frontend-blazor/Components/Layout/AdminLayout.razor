@@ -1,0 +1,32 @@
+@inherits LayoutComponentBase
+
+<div class="h-screen flex flex-col bg-[#141414]">
+    <!-- Full-width Header -->
+    <Navbar ShowSearch="true" />
+
+    <!-- Sidebar and Content Below -->
+    <div class="flex flex-grow overflow-hidden bg-[#141414]">
+        <!-- Sidebar -->
+        <Sidebar IsCollapsed="_isSidebarCollapsed" OnToggle="ToggleSidebar" />
+
+        <!-- Main Content Area -->
+        <main class="flex-grow p-4 overflow-y-auto bg-[#141414]">
+            @Body
+        </main>
+    </div>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet class="hidden fixed bottom-0 left-0 z-20 w-full bg-[#fff7d6] text-[#222] shadow-[0_-0.25rem_0.75rem_rgba(0,0,0,0.2)] px-5 py-3">
+    An unhandled error has occurred.
+    <a href="." class="reload ml-2 underline font-semibold">Reload</a>
+    <span class="dismiss absolute right-3 top-2 cursor-pointer">X</span>
+</div>
+
+@code {
+    private bool _isSidebarCollapsed;
+
+    private void ToggleSidebar()
+    {
+        _isSidebarCollapsed = !_isSidebarCollapsed;
+    }
+}
