@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
+  <ProjectName>SeriesCatalog.WebApi.IntegrationTests</ProjectName>
+  <ProjectLanguage>C#</ProjectLanguage>
+  <ProjectType>Test</ProjectType>
+  <ProjectGuid>e80d9394-ebaa-4bc0-b4f9-c78558998b65</ProjectGuid>
+  <FullPath>C:\git\APPD5016\appd5016-final-project\tests\SeriesCatalog.WebApi.IntegrationTests\SeriesCatalog.WebApi.IntegrationTests.csproj</FullPath>
+  <IsExcluded>false</IsExcluded>
+  <AnalysisResultFiles>
+    <AnalysisResultFile Id="FilesToAnalyze" Location="C:\git\APPD5016\appd5016-final-project\.sonarqube\conf\3\FilesToAnalyze.txt" />
+  </AnalysisResultFiles>
+  <AnalysisSettings>
+    <Property Name="sonar.cs.roslyn.reportFilePaths">C:\git\APPD5016\appd5016-final-project\.sonarqube\out\3\Issues.json</Property>
+    <Property Name="sonar.cs.analyzer.projectOutPaths">C:\git\APPD5016\appd5016-final-project\.sonarqube\out\3</Property>
+    <Property Name="sonar.cs.scanner.telemetry">C:\git\APPD5016\appd5016-final-project\.sonarqube\out\3\Telemetry.json</Property>
+  </AnalysisSettings>
+  <Configuration>Debug</Configuration>
+  <Platform>AnyCPU</Platform>
+  <TargetFramework>net10.0</TargetFramework>
+</ProjectInfo>

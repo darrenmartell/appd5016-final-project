@@ -1,0 +1,249 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "5.3.0.0",
+        "fileVersion": "5.3.0-2.26153.122 (4d3023de605a78ba3e59e50c657eed70f125c68a)",
+        "semanticVersion": "5.3.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "S2365",
+          "level": "warning",
+          "message": "Refactor 'FilteredSeries' into a method, properties should not copy collections.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Pages/Home.razor",
+                "region": {
+                  "startLine": 112,
+                  "startColumn": 5,
+                  "endLine": 112,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Remove this hardcoded path-delimiter.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Auth/RedirectToLogin.razor",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 28,
+                  "endLine": 17,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'RemoveTag' a static method.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Series/SeriesEditor.razor",
+                "region": {
+                  "startLine": 211,
+                  "startColumn": 18,
+                  "endLine": 211,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S3878",
+          "level": "warning",
+          "message": "Remove this array creation and simply pass the elements.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Pages/Home.razor",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 4,
+                  "endLine": 165,
+                  "endColumn": 5
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1854",
+          "level": "warning",
+          "message": "Remove this useless assignment to local variable 'sequence'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Pages/SeriesDetails.razor",
+                "region": {
+                  "startLine": 230,
+                  "startColumn": 28,
+                  "endLine": 230,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'RenderTagSection' a static method.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Pages/SeriesDetails.razor",
+                "region": {
+                  "startLine": 185,
+                  "startColumn": 28,
+                  "endLine": 185,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'RenderDetailLine' a static method.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/git/APPD5016/appd5016-final-project/src/apps/frontend-blazor/Components/Pages/SeriesDetails.razor",
+                "region": {
+                  "startLine": 214,
+                  "startColumn": 28,
+                  "endLine": 214,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "S1075": {
+          "id": "S1075",
+          "shortDescription": "URIs should not be hardcoded",
+          "fullDescription": "Hard-coding a URI makes it difficult to test a program for a variety of reasons:",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1075",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S1854": {
+          "id": "S1854",
+          "shortDescription": "Unused assignments should be removed",
+          "fullDescription": "Dead stores refer to assignments made to local variables that are subsequently never used or immediately overwritten. Such assignments are unnecessary and don’t contribute to the functionality or clarity of the code. They may even negatively impact performance. Removing them enhances code cleanliness and readability. Even if the unnecessary operations do not do any harm in terms of the program’s correctness, they are - at best - a waste of computing resources.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1854",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2325": {
+          "id": "S2325",
+          "shortDescription": "Methods and properties that don't access instance data should be static",
+          "fullDescription": "Methods and properties that don’t access instance data should be marked as static for the following reasons:",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2325",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2365": {
+          "id": "S2365",
+          "shortDescription": "Properties should not make collection or array copies",
+          "fullDescription": "Most developers expect property access to be as efficient as field access. However, if a property returns a copy of an array or collection, it will be much slower than a simple field access, contrary to the caller’s likely expectations. Therefore, such properties should be refactored into methods so that callers are not surprised by the unexpectedly poor performance.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2365",
+          "properties": {
+            "category": "Critical Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S3878": {
+          "id": "S3878",
+          "shortDescription": "Arrays should not be created for params parameters",
+          "fullDescription": "Creating an array or using a collection expression solely for the purpose of passing it to a params parameter is unnecessary. Simply pass the elements directly, and they will be automatically consolidated into the appropriate collection type.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-3878",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

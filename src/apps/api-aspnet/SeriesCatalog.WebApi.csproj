@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>SeriesCatalog.WebApi</AssemblyName>
     <RootNamespace>SeriesCatalog.WebApi</RootNamespace>
+    <UserSecretsId>SeriesCatalog.WebApi-4db13f62-9eec-4f11-90a2-3f2d335cc793</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

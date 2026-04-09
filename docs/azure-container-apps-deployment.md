@@ -156,9 +156,10 @@ The deploy script runs a `what-if` preview by default and asks for confirmation.
 : External image mode: provide both `-ApiImage` and `-FrontendImage` to skip ACR entirely.
 - Optional external private registry auth:
 : provide `-RegistryServer`, `-RegistryUsername`, and `-RegistryPassword` together.
-- Requires Mongo connection string (parameter or prompt).
-- Uses `MongoDbDatabaseName` from parameter when provided; otherwise tries `src/apps/api-aspnet/appsettings.Development.json`, then defaults to `series_catalog`.
-- Requires JWT signing key (parameter, `JWT_SIGNING_KEY` env var, or prompt).
+: if omitted, the script also checks `REGISTRY_SERVER`, `REGISTRY_USERNAME`, `REGISTRY_PASSWORD` env vars, then API .NET user-secrets keys `Registry:Server`, `Registry:Username`, `Registry:Password`.
+- Requires Mongo connection string (parameter, or API .NET user-secrets key `Mongo:ConnectionString`, or prompt).
+- Uses `MongoDbDatabaseName` from parameter when provided; otherwise tries API .NET user-secrets key `Mongo:DatabaseName`, then `src/apps/api-aspnet/appsettings.Development.json`, then defaults to `series_catalog`.
+- Requires JWT signing key (parameter, `JWT_SIGNING_KEY` env var, API .NET user-secrets key `Jwt:Key`, or prompt).
 - Supports optional `DataProtectionKeyRingPath` forwarding to frontend container env.
 - Runs `az deployment group what-if` unless `-SkipValidation` is provided.
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
+  <ProjectName>SeriesCatalog.Frontend</ProjectName>
+  <ProjectLanguage>C#</ProjectLanguage>
+  <ProjectType>Product</ProjectType>
+  <ProjectGuid>7a3ed495-c7ce-4299-b36d-7bd3218a90e5</ProjectGuid>
+  <FullPath>C:\git\APPD5016\appd5016-final-project\src\apps\frontend-blazor\SeriesCatalog.Frontend.csproj</FullPath>
+  <IsExcluded>false</IsExcluded>
+  <AnalysisResultFiles>
+    <AnalysisResultFile Id="FilesToAnalyze" Location="C:\git\APPD5016\appd5016-final-project\.sonarqube\conf\1\FilesToAnalyze.txt" />
+  </AnalysisResultFiles>
+  <AnalysisSettings>
+    <Property Name="sonar.cs.roslyn.reportFilePaths">C:\git\APPD5016\appd5016-final-project\.sonarqube\out\1\Issues.json</Property>
+    <Property Name="sonar.cs.analyzer.projectOutPaths">C:\git\APPD5016\appd5016-final-project\.sonarqube\out\1</Property>
+    <Property Name="sonar.cs.scanner.telemetry">C:\git\APPD5016\appd5016-final-project\.sonarqube\out\1\Telemetry.json</Property>
+  </AnalysisSettings>
+  <Configuration>Debug</Configuration>
+  <Platform>AnyCPU</Platform>
+  <TargetFramework>net10.0</TargetFramework>
+</ProjectInfo>

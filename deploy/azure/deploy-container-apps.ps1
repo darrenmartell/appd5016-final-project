@@ -26,28 +26,31 @@
 
 .PARAMETER RegistryServer
     Registry server hostname for private external registries
+    If not provided, attempts REGISTRY_SERVER environment variable, then API .NET user-secrets (Registry:Server)
     Example: ghcr.io or index.docker.io
 
 .PARAMETER RegistryUsername
     Registry username for private external registries
+    If not provided, attempts REGISTRY_USERNAME environment variable, then API .NET user-secrets (Registry:Username)
 
 .PARAMETER RegistryPassword
     Registry password/token for private external registries
+    If not provided, attempts REGISTRY_PASSWORD environment variable, then API .NET user-secrets (Registry:Password)
 
 .PARAMETER Location
     Azure region (default: eastus)
 
 .PARAMETER MongoDbConnectionString
     MongoDB connection string for the application
-    If not provided, will prompt for it
+    If not provided, attempts API .NET user-secrets (Mongo:ConnectionString), then prompts
 
 .PARAMETER MongoDbDatabaseName
     MongoDB database name for the application
-    If not provided, attempts appsettings.Development.json, then defaults to series_catalog
+    If not provided, attempts API .NET user-secrets (Mongo:DatabaseName), then appsettings.Development.json, then defaults to series_catalog
 
 .PARAMETER JwtSigningKey
     JWT signing key for API auth tokens
-    If not provided, attempts JWT_SIGNING_KEY environment variable, then prompts
+    If not provided, attempts JWT_SIGNING_KEY environment variable, then API .NET user-secrets (Jwt:Key), then prompts
 
 .PARAMETER DataProtectionKeyRingPath
     Optional Data Protection key-ring path for frontend cookie protection
@@ -140,6 +143,7 @@ $ErrorActionPreference = "Stop"
 # ========================================================================
 $configFilePath = $null
 $scriptRepoRoot = Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent
+$apiProjectPath = Join-Path -Path $scriptRepoRoot -ChildPath "src/apps/api-aspnet/SeriesCatalog.WebApi.csproj"
 
 if (Test-Path -Path ".\azure-config.json") {
     $configFilePath = ".\azure-config.json"
@@ -200,6 +204,38 @@ function Write-Section {
     Write-Host "════════════════════════════════════════" -ForegroundColor Cyan
     Write-Host $Title -ForegroundColor Cyan
     Write-Host "════════════════════════════════════════" -ForegroundColor Cyan
+}
+
+function Get-UserSecretValue {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ProjectPath,
+
+        [Parameter(Mandatory = $true)]
+        [string]$SecretKey
+    )
+
+    if (-not (Test-Path -Path $ProjectPath)) {
+        return $null
+    }
+
+    if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+        return $null
+    }
+
+    $secretLines = dotnet user-secrets --project $ProjectPath list 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $secretLines) {
+        return $null
+    }
+
+    $escapedSecretKey = [regex]::Escape($SecretKey)
+    foreach ($line in $secretLines) {
+        if ($line -match "^\s*$escapedSecretKey\s*=\s*(.*)$") {
+            return $matches[1]
+        }
+    }
+
+    return $null
 }
 
 if (-not $ResourceGroup) {
@@ -316,6 +352,48 @@ try {
     $deployRegistryPassword = ""
 
     if ($useExternalImages) {
+        if ([string]::IsNullOrWhiteSpace($RegistryServer)) {
+            if ($env:REGISTRY_SERVER) {
+                $RegistryServer = $env:REGISTRY_SERVER
+                Write-Info "Using registry server from REGISTRY_SERVER environment variable"
+            }
+            else {
+                $secretRegistryServer = Get-UserSecretValue -ProjectPath $apiProjectPath -SecretKey "Registry:Server"
+                if ($secretRegistryServer) {
+                    $RegistryServer = $secretRegistryServer
+                    Write-Info "Using registry server from API .NET user-secrets (Registry:Server)"
+                }
+            }
+        }
+
+        if ([string]::IsNullOrWhiteSpace($RegistryUsername)) {
+            if ($env:REGISTRY_USERNAME) {
+                $RegistryUsername = $env:REGISTRY_USERNAME
+                Write-Info "Using registry username from REGISTRY_USERNAME environment variable"
+            }
+            else {
+                $secretRegistryUsername = Get-UserSecretValue -ProjectPath $apiProjectPath -SecretKey "Registry:Username"
+                if ($secretRegistryUsername) {
+                    $RegistryUsername = $secretRegistryUsername
+                    Write-Info "Using registry username from API .NET user-secrets (Registry:Username)"
+                }
+            }
+        }
+
+        if ([string]::IsNullOrWhiteSpace($RegistryPassword)) {
+            if ($env:REGISTRY_PASSWORD) {
+                $RegistryPassword = $env:REGISTRY_PASSWORD
+                Write-Info "Using registry password from REGISTRY_PASSWORD environment variable"
+            }
+            else {
+                $secretRegistryPassword = Get-UserSecretValue -ProjectPath $apiProjectPath -SecretKey "Registry:Password"
+                if ($secretRegistryPassword) {
+                    $RegistryPassword = $secretRegistryPassword
+                    Write-Info "Using registry password from API .NET user-secrets (Registry:Password)"
+                }
+            }
+        }
+
         $hasAnyRegistryCredentialField =
             -not [string]::IsNullOrWhiteSpace($RegistryServer) -or
             -not [string]::IsNullOrWhiteSpace($RegistryUsername) -or
@@ -360,6 +438,13 @@ try {
 
     # Get or prompt for MongoDB connection string
     if (-not $MongoDbConnectionString) {
+        $MongoDbConnectionString = Get-UserSecretValue -ProjectPath $apiProjectPath -SecretKey "Mongo:ConnectionString"
+        if ($MongoDbConnectionString) {
+            Write-Info "Using MongoDB connection string from API .NET user-secrets"
+        }
+    }
+
+    if (-not $MongoDbConnectionString) {
         Write-Info ""
         Write-Host "MongoDB Connection String is required" -ForegroundColor Yellow
         Write-Host "Example: mongodb+srv://user:pass@cluster.mongodb.net/db" -ForegroundColor Gray
@@ -374,6 +459,13 @@ try {
     Write-Success "MongoDB connection string configured"
 
     # Get MongoDB database name
+    if (-not $MongoDbDatabaseName) {
+        $MongoDbDatabaseName = Get-UserSecretValue -ProjectPath $apiProjectPath -SecretKey "Mongo:DatabaseName"
+        if ($MongoDbDatabaseName) {
+            Write-Info "Using MongoDB database name from API .NET user-secrets: $MongoDbDatabaseName"
+        }
+    }
+
     if (-not $MongoDbDatabaseName) {
         $devSettingsPath = "src/apps/api-aspnet/appsettings.Development.json"
         if (Test-Path $devSettingsPath) {
@@ -402,6 +494,13 @@ try {
         if ($env:JWT_SIGNING_KEY) {
             $JwtSigningKey = $env:JWT_SIGNING_KEY
             Write-Info "Using JWT signing key from JWT_SIGNING_KEY environment variable"
+        }
+    }
+
+    if (-not $JwtSigningKey) {
+        $JwtSigningKey = Get-UserSecretValue -ProjectPath $apiProjectPath -SecretKey "Jwt:Key"
+        if ($JwtSigningKey) {
+            Write-Info "Using JWT signing key from API .NET user-secrets"
         }
     }
 

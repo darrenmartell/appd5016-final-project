@@ -1,0 +1,9 @@
+﻿C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\AppMongoDbContext.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\DependencyInjection\ServiceCollectionExtensions.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Documents\SeriesDocument.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Documents\UserDocument.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Options\MongoOptions.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Repositories\ISeriesRepository.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Repositories\IUserRepository.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Repositories\SeriesRepository.cs
+C:\git\APPD5016\appd5016-final-project\src\infrastructure\data-mongodb\Repositories\UserRepository.cs
