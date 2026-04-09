@@ -30,4 +30,8 @@ obj
 
 .env*
 
+# Local secret overrides
+**/appsettings.*.local.json
+deploy/k8s/base/secret.local.yaml
+
 *.pem

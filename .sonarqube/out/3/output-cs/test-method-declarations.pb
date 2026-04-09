@@ -1,0 +1,8 @@
+Õ
+dC:\git\APPD5016\appd5016-final-project\tests\SeriesCatalog.WebApi.IntegrationTests\ApiParityTests.cs%SeriesCatalog.WebApi.IntegrationTests]
+4SeriesCatalog.WebApi.IntegrationTests.ApiParityTests%Register_ReturnsTokenAndIdentityShaped
+4SeriesCatalog.WebApi.IntegrationTests.ApiParityTests,Login_InvalidCredentials_ReturnsUnauthorizedP
+4SeriesCatalog.WebApi.IntegrationTests.ApiParityTestsUsers_Delete_RequiresJwth
+4SeriesCatalog.WebApi.IntegrationTests.ApiParityTests0Series_CreateAndUpdateFlow_UsesExpectedContracts]
+4SeriesCatalog.WebApi.IntegrationTests.ApiParityTests%ChangePassword_AllowsNewPasswordLoginf
+4SeriesCatalog.WebApi.IntegrationTests.ApiParityTests.Series_InvalidPayload_ReturnsValidationProblem

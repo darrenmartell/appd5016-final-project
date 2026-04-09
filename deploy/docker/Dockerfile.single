@@ -1,0 +1,65 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+
+WORKDIR /src
+
+# Copy and restore API project
+COPY src/apps/api-aspnet/SeriesCatalog.WebApi.csproj src/apps/api-aspnet/
+COPY src/infrastructure/data-mongodb/SeriesCatalog.Infrastructure.MongoDb.csproj src/infrastructure/data-mongodb/
+RUN dotnet restore src/apps/api-aspnet/SeriesCatalog.WebApi.csproj
+
+# Copy and restore Frontend project
+COPY src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj src/apps/frontend-blazor/
+RUN dotnet restore src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj
+
+# Copy all source code
+COPY src/apps/api-aspnet/ src/apps/api-aspnet/
+COPY src/infrastructure/data-mongodb/ src/infrastructure/data-mongodb/
+COPY src/apps/frontend-blazor/ src/apps/frontend-blazor/
+
+# Build API
+RUN dotnet publish src/apps/api-aspnet/SeriesCatalog.WebApi.csproj \
+    -c Release -o /app/api /p:UseAppHost=false
+
+# Build Frontend
+RUN dotnet publish src/apps/frontend-blazor/SeriesCatalog.Frontend.csproj \
+    -c Release -o /app/frontend /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+
+WORKDIR /app
+
+# Install Nginx and supervisor
+RUN apt-get update && apt-get install -y \
+    nginx \
+    supervisor \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy built applications
+COPY --from=build /app/api /app/api
+COPY --from=build /app/frontend /app/frontend
+
+# Copy Nginx configuration
+COPY deploy/docker/nginx.conf /etc/nginx/sites-available/default
+
+# Copy Supervisor configuration
+COPY deploy/docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copy entrypoint script
+COPY deploy/docker/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Environment variables
+ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV NGINX_PORT=8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+EXPOSE 8080
+
+ENTRYPOINT ["/app/entrypoint.sh"]

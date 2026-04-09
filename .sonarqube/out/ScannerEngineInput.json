@@ -1,0 +1,216 @@
+{
+  "scannerProperties": [
+    {
+      "key": "sonar.scanner.app",
+      "value": "ScannerMSBuild"
+    },
+    {
+      "key": "sonar.scanner.appVersion",
+      "value": "11.2.1"
+    },
+    {
+      "key": "sonar.scanner.bootstrapStartTime",
+      "value": "1775424670000"
+    },
+    {
+      "key": "sonar.projectKey",
+      "value": "Series"
+    },
+    {
+      "key": "sonar.working.directory",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\.sonar"
+    },
+    {
+      "key": "sonar.projectBaseDir",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project"
+    },
+    {
+      "key": "sonar.pullrequest.cache.basepath",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project"
+    },
+    {
+      "key": "sonar.sources",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.vscode\\settings.json,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\azure\\cleanup-containerapp-revisions.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\azure\\container-apps.bicep,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\azure\\deploy-container-apps.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\azure\\deploy-to-acr.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\azure\\setup-azure-prerequisites.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\azure\\teardown-container-apps.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\docker-compose.single.yml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\docker-compose.yml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\Dockerfile.single,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\entrypoint.sh,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\nginx.conf,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\run-single-container.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\supervisord.conf,C:\\git\\APPD5016\\appd5016-final-project\\src\\obj\\BlazorMigration.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\obj\\project.assets.json,C:\\git\\APPD5016\\appd5016-final-project\\.vs\\appd5016-final-project\\v18\\DocumentLayout.backup.json,C:\\git\\APPD5016\\appd5016-final-project\\.vs\\appd5016-final-project\\v18\\DocumentLayout.json,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\api\\Dockerfile,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\docker\\frontend\\Dockerfile,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\api-deployment.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\api-service.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\frontend-deployment.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\frontend-keys-pvc.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\frontend-service.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\ingress.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\kustomization.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\namespace.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\base\\secret.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\optional\\hpa.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\overlays\\docker-desktop\\ingress-json-patch.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\overlays\\docker-desktop\\kustomization.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\overlays\\docker-desktop-single\\api-replicas-patch.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\overlays\\docker-desktop-single\\frontend-replicas-patch.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\overlays\\docker-desktop-single\\kustomization.yaml,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\deploy-docker-desktop.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\scale-to-multi-replica.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\scale-to-single-replica.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\teardown-docker-desktop-app.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\teardown-docker-desktop-full.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\update-docker-desktop-api.ps1,C:\\git\\APPD5016\\appd5016-final-project\\deploy\\k8s\\scripts\\docker-desktop\\update-docker-desktop-frontend.ps1,C:\\git\\APPD5016\\appd5016-final-project\\azure-config.json,C:\\git\\APPD5016\\appd5016-final-project\\settings.json"
+    },
+    {
+      "key": "sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "sonar.modules",
+      "value": "7E37B3B1-81C4-4716-B202-C7B385308A95,7A3ED495-C7CE-4299-B36D-7BD3218A90E5,C6A78017-2CA3-411E-8635-4350A37E4909,E80D9394-EBAA-4BC0-B4F9-C78558998B65"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.projectKey",
+      "value": "Series:7E37B3B1-81C4-4716-B202-C7B385308A95"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.projectName",
+      "value": "SeriesCatalog.Infrastructure.MongoDb"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.projectBaseDir",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.working.directory",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\.sonar\\mod0"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.sources",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\AppMongoDbContext.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\DependencyInjection\\ServiceCollectionExtensions.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Documents\\SeriesDocument.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Documents\\UserDocument.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Options\\MongoOptions.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Repositories\\ISeriesRepository.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Repositories\\IUserRepository.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Repositories\\SeriesRepository.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\Repositories\\UserRepository.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\obj\\Appd.Infrastructure.MongoDb.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\obj\\project.assets.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\obj\\SeriesCatalog.Infrastructure.MongoDb.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\bin\\Debug\\net10.0\\Appd.Infrastructure.MongoDb.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\bin\\Debug\\net10.0\\SeriesCatalog.Infrastructure.MongoDb.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\obj\\Debug\\net10.0\\Appd.Infrastructure.MongoDb.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\infrastructure\\data-mongodb\\obj\\Debug\\net10.0\\SeriesCatalog.Infrastructure.MongoDb.sourcelink.json"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\0"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\0\\Issues.json"
+    },
+    {
+      "key": "7E37B3B1-81C4-4716-B202-C7B385308A95.sonar.cs.scanner.telemetry",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\0\\Telemetry.json"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.projectKey",
+      "value": "Series:7A3ED495-C7CE-4299-B36D-7BD3218A90E5"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.projectName",
+      "value": "SeriesCatalog.Frontend"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.projectBaseDir",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.working.directory",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\.sonar\\mod1"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.sources",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\appsettings.Development.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\appsettings.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\BlazorFrontend.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\BlazorMigration.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\project.assets.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\SeriesCatalog.Frontend.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Properties\\launchSettings.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\wwwroot\\app.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\wwwroot\\tailwind.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\ReconnectModal.razor.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\ReconnectModal.razor.js,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\appsettings.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\BlazorFrontend.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\BlazorFrontend.runtimeconfig.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\BlazorFrontend.staticwebassets.endpoints.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\BlazorFrontend.staticwebassets.runtime.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\SeriesCatalog.Frontend.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\SeriesCatalog.Frontend.runtimeconfig.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\SeriesCatalog.Frontend.staticwebassets.endpoints.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\bin\\Debug\\net10.0\\SeriesCatalog.Frontend.staticwebassets.runtime.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\BlazorFrontend.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\BlazorMigration.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\rbcswa.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\rjimswa.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\rjsmcshtml.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\rjsmrazor.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\rpswa.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\SeriesCatalog.Frontend.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\staticwebassets.build.endpoints.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\staticwebassets.build.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\staticwebassets.development.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\scopedcss\\bundle\\BlazorFrontend.styles.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\scopedcss\\bundle\\SeriesCatalog.Frontend.styles.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\scopedcss\\projectbundle\\BlazorFrontend.bundle.scp.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\scopedcss\\projectbundle\\SeriesCatalog.Frontend.bundle.scp.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\scopedcss\\Components\\Layout\\ReconnectModal.razor.rz.scp.css,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\AuthenticatedUser.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\AuthResult.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\ChangePasswordInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\ChangePasswordRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\LoginInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\LoginRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\RegisterInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\RegisterRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Auth\\ValidationPatterns.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesEpisode.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesEpisodeInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesFormInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesFormMapper.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesRatings.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesRatingsInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesRecord.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesTagValueInput.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Series\\SeriesUpsertRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Models\\Users\\UserSummary.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Program.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Api\\ApiOptions.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Auth\\AuthService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Auth\\BlazorAuthStateProvider.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Auth\\ClientAuthState.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Auth\\IAuthService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Series\\ISeriesService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Series\\SeriesSearchState.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Series\\SeriesService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Users\\IUsersService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Services\\Users\\UsersService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\EmbeddedAttribute.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\ValidatableTypeAttribute.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\SeriesCatalog.Frontend.GlobalUsings.g.cs,\"C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs\",C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\obj\\Debug\\net10.0\\SeriesCatalog.Frontend.AssemblyInfo.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\App.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Auth\\RedirectToLogin.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\AdminLayout.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\MainLayout.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\Navbar.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\ReconnectModal.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\Sidebar.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Layout\\SidebarItem.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\AddSeries.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\ChangePassword.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\DeleteSeries.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\DeleteUser.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Error.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Home.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Index.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Login.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\NotFound.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Register.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Series.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\SeriesDetails.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\UpdateSeries.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\UserDetails.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Pages\\Users.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Routes.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\Series\\SeriesEditor.razor,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\frontend-blazor\\Components\\_Imports.razor"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\1"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\1\\Issues.json"
+    },
+    {
+      "key": "7A3ED495-C7CE-4299-B36D-7BD3218A90E5.sonar.cs.scanner.telemetry",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\1\\Telemetry.json"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.projectKey",
+      "value": "Series:C6A78017-2CA3-411E-8635-4350A37E4909"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.projectName",
+      "value": "SeriesCatalog.WebApi"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.projectBaseDir",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.working.directory",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\.sonar\\mod2"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.sources",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\appsettings.Development.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\appsettings.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Appd.Api.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\project.assets.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\SeriesCatalog.WebApi.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Properties\\launchSettings.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\bin\\Debug\\net10.0\\appsettings.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.runtimeconfig.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.staticwebassets.endpoints.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\Appd.Api.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\rjsmcshtml.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\rjsmrazor.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\rpswa.dswa.cache.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\SeriesCatalog.WebApi.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\staticwebassets.build.endpoints.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\staticwebassets.build.json,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Auth\\IAuthTokenService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Auth\\JwtAuthTokenService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Auth\\JwtOptions.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Common\\Authorization\\ApiPolicies.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Common\\DependencyInjection\\ServiceCollectionExtensions.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Common\\Validation\\DataAnnotationsValidationFilter.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Auth\\LoginRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Auth\\LoginResponse.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Auth\\RegisterRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Series\\SeriesEpisodeDto.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Series\\SeriesPatchRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Series\\SeriesRatingsDto.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Series\\SeriesUpsertRequest.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Series\\SeriesValidation.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Contracts\\Users\\UserResponse.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Endpoints\\AuthEndpoints.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Endpoints\\HealthEndpoints.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Endpoints\\SeriesDomainEndpoints.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Endpoints\\UserEndpoints.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Mappers\\SeriesDomainMapper.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Mappers\\UserMapper.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Program.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Services\\Auth\\AuthService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Services\\Auth\\IAuthService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Services\\Series\\ISeriesService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\Services\\Series\\SeriesService.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\SeriesCatalog.WebApi.GlobalUsings.g.cs,\"C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs\",C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\SeriesCatalog.WebApi.AssemblyInfo.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\obj\\Debug\\net10.0\\SeriesCatalog.WebApi.MvcApplicationPartsAssemblyInfo.cs,C:\\git\\APPD5016\\appd5016-final-project\\src\\apps\\api-aspnet\\SeriesCatalog.WebApi.http"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\2"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\2\\Issues.json"
+    },
+    {
+      "key": "C6A78017-2CA3-411E-8635-4350A37E4909.sonar.cs.scanner.telemetry",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\2\\Telemetry.json"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.projectKey",
+      "value": "Series:E80D9394-EBAA-4BC0-B4F9-C78558998B65"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.projectName",
+      "value": "SeriesCatalog.WebApi.IntegrationTests"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.projectBaseDir",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.working.directory",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\.sonar\\mod3"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.sources",
+      "value": ""
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.tests",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\obj\\Appd.Api.IntegrationTests.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\obj\\project.assets.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\obj\\SeriesCatalog.WebApi.IntegrationTests.csproj.nuget.dgspec.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\Appd.Api.IntegrationTests.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\Appd.Api.IntegrationTests.runtimeconfig.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\Appd.Infrastructure.MongoDb.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\appsettings.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\MvcTestingAppManifest.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\SeriesCatalog.Infrastructure.MongoDb.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.IntegrationTests.deps.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.IntegrationTests.runtimeconfig.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.runtimeconfig.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\bin\\Debug\\net10.0\\SeriesCatalog.WebApi.staticwebassets.endpoints.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\obj\\Debug\\net10.0\\Appd.Api.IntegrationTests.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\obj\\Debug\\net10.0\\MvcTestingAppManifest.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\obj\\Debug\\net10.0\\SeriesCatalog.WebApi.IntegrationTests.sourcelink.json,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\ApiParityTests.cs,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\Support\\ApiTestFactory.cs,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\Support\\InMemorySeriesRepository.cs,C:\\git\\APPD5016\\appd5016-final-project\\tests\\SeriesCatalog.WebApi.IntegrationTests\\Support\\InMemoryUserRepository.cs"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\3"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\3\\Issues.json"
+    },
+    {
+      "key": "E80D9394-EBAA-4BC0-B4F9-C78558998B65.sonar.cs.scanner.telemetry",
+      "value": "C:\\git\\APPD5016\\appd5016-final-project\\.sonarqube\\out\\3\\Telemetry.json"
+    },
+    {
+      "key": "sonar.token",
+      "value": "***"
+    },
+    {
+      "key": "sonar.host.url",
+      "value": "http://localhost:9000"
+    },
+    {
+      "key": "sonar.visualstudio.enable",
+      "value": "false"
+    }
+  ]
+}

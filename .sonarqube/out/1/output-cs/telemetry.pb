@@ -1,0 +1,1 @@
+jR]C:\git\APPD5016\appd5016-final-project\src\apps\frontend-blazor\SeriesCatalog.Frontend.csprojòCSharp14

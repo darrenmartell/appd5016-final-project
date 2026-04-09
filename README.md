@@ -140,3 +140,50 @@ For full context-selection and troubleshooting steps, see `deploy/k8s/README.md`
 - Migration prompts live in `.github/prompts/`
 - API migration planning and gate documentation live in docs/api-migration
 
+## Local Secrets (API)
+
+Use .NET User Secrets for local development instead of committing credentials.
+
+Set API secrets:
+
+```bash
+dotnet user-secrets --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj set "Mongo:ConnectionString" "mongodb+srv://<user>:<password>@<cluster>.mongodb.net/"
+dotnet user-secrets --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj set "Mongo:DatabaseName" "<database-name>"
+dotnet user-secrets --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj set "Jwt:Key" "<long-random-secret-at-least-32-characters>"
+```
+
+Optional checks:
+
+```bash
+dotnet user-secrets --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj list
+dotnet user-secrets --project src/apps/api-aspnet/SeriesCatalog.WebApi.csproj remove "Jwt:Key"
+```
+
+## SonarQube Scan
+
+Run a full local Sonar scan from the repository root using the script `scan-sonar.ps1`.
+
+1. Start SonarQube (if not already running):
+
+```powershell
+docker run -d --name sonarqube -p 9000:9000 sonarqube:latest
+```
+
+2. Set your Sonar token in the current shell:
+
+```powershell
+$env:SONAR_TOKEN = "<your-sonar-token>"
+```
+
+3. Run the scan:
+
+```powershell
+.\scan-sonar.ps1
+```
+
+Optional overrides:
+
+```powershell
+.\scan-sonar.ps1 -ProjectKey "Series" -SonarHostUrl "http://localhost:9000"
+```
+
